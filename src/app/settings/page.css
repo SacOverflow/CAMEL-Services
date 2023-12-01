@@ -1,0 +1,60 @@
+@tailwind base;
+
+@layer base {
+	#settings-page {
+		/* layout */
+		@apply flex flex-col;
+		@apply h-screen;
+		/* styling */
+		@apply bg-white;
+		/* spacing */
+		@apply px-6;
+
+		.header {
+			/* layout / flex */
+			@apply flex items-center justify-start gap-4;
+			/* styling */
+			/* spacing */
+			@apply py-4;
+
+			/* effects */
+			&:hover {
+				@apply transition-all duration-300 ease-in-out;
+				svg:not(.gear-icon) {
+					@apply cursor-pointer;
+					@apply transition-all duration-300 ease-in-out;
+					@apply stroke-primary-green-500;
+				}
+			}
+
+			svg {
+				/* layout / flex */
+				/* styling */
+				@apply w-10 h-10;
+				@apply stroke-primary-green-200;
+				/* spacing */
+			}
+
+			.gear-icon {
+				/* layout / flex */
+				/* styling */
+				@apply w-10 h-10;
+				@apply stroke-gray-400 fill-gray-400;
+				/* spacing */
+			}
+
+			.title {
+				/* typography */
+				@apply font-bold;
+				@apply text-primary-green-500;
+				font-size: clamp(1.5rem, 5vw, 2.5rem);
+			}
+		}
+	}
+
+	#settings {
+		@apply flex flex-col items-center justify-center h-3/4;
+		/* @apply px-6; */
+		@apply gap-4;
+	}
+}

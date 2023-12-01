@@ -1,0 +1,66 @@
+@tailwind base;
+
+@layer base {
+	.settings-item {
+		/* layout / flex */
+		@apply flex items-center justify-between;
+		@apply w-full;
+
+		/* styling */
+		@apply border-b-2 border-primary-green-300;
+		/* spacing */
+		@apply p-2;
+
+		/* effects */
+		@apply transition-all duration-300 ease-in-out;
+		&:hover {
+			/* styling */
+			@apply border-primary-green-700;
+
+			svg {
+				@apply transition-all duration-300 ease-in-out;
+				@apply stroke-primary-green-700;
+			}
+			.text {
+				@apply transition-all duration-300 ease-in-out;
+				@apply text-primary-green-300;
+			}
+		}
+
+		.content {
+			/* layout / flex */
+			@apply flex items-center justify-start gap-2;
+			@apply w-3/4;
+			/* styling */
+			/* spacing */
+			svg {
+				/* layout / flex */
+				/* styling */
+				@apply w-8 h-8;
+				@apply stroke-primary-green-300;
+				/* spacing */
+			}
+
+			.text {
+				/* layout / flex */
+				@apply justify-self-start;
+				/* styling */
+				/* typography */
+
+				@apply capitalize;
+				@apply font-bold;
+				font-size: clamp(1rem, 2vw, 1.5rem);
+				/* spacing */
+			}
+		}
+
+		.arrow-right {
+			/* layout / flex */
+			@apply justify-self-end;
+			/* styling */
+			@apply w-8 h-8;
+			@apply stroke-primary-green-300;
+			/* spacing */
+		}
+	}
+}
