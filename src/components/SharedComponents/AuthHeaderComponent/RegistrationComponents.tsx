@@ -49,6 +49,10 @@ function BrandHeroSection() {
 	let text = 'Please Sign up to Proceed';
 	if (path === '/login') {
 		text = 'Please Login to Proceed';
+	} else if (path === '/recoverpassword') {
+		text = 'Enter email to reset password';
+	} else if (path === '/updatepassword') {
+		text = 'Please enter your new password';
 	}
 	return (
 		<div id="icon-content">
