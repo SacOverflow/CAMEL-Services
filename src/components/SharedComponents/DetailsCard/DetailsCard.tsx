@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// import CSS
+// CSS imports
 import './DetailsCard.css';
 import { useState } from 'react';
 import CreateOrgModal from '@/components/Organization/CreateOrgModal';
@@ -25,7 +25,6 @@ export function CreateOrgCard({
 			className={`${className}`}
 		>
 			<button
-				// href={'/projects/new'}
 				onClick={() => setModalOpen(true)}
 				className="flex flex-col h-full justify-center items-center"
 			>
@@ -86,7 +85,6 @@ export function OrgDetailsCard({
 
 	return (
 		<Link
-			// href={'/projects/new'}
 			href={`/dashboard`}
 			onClick={setOrg}
 			className={`${className} org-card`}

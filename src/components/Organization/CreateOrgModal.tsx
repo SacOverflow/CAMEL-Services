@@ -63,6 +63,8 @@ export default function CreateOrgModal({
 
 			if (error) {
 				console.error(error);
+				setOrgError('Error uploading image');
+				return;
 			}
 
 			// get image url
@@ -93,7 +95,6 @@ export default function CreateOrgModal({
 				'duplicate key value violates unique constraint "organization_name_key"' ||
 			entryError?.code === '23505'
 		) {
-			console.log('hello wrld');
 			setOrgError('Org name is already taken. Choose a new one.');
 			return;
 		}
@@ -119,11 +120,6 @@ export default function CreateOrgModal({
 					<span className="org-error text-xs text-primary-green-200 font-semibold">
 						{orgError}
 					</span>
-					{/* <input
-						type="text"
-						placeholder="Organization Image"
-					/> */}
-
 					<Image
 						src={imageURL}
 						alt="Organization Image"

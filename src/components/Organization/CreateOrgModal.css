@@ -2,38 +2,40 @@
 
 @layer base {
 	.organization-modal {
-		/* @apply fixed inset-0 z-50 overflow-y-auto; */
-
-		@apply rounded-lg bg-gray-50 shadow-lg;
+		/* layout */
 		@apply flex flex-col;
-
-		/* @apply w-[35vw] md:w-[25vw] max-w-sm mx-auto my-8; */
-		/* @apply mx my-8; */
-
+		/* styling */
+		@apply rounded-lg bg-gray-50 shadow-lg;
+		/* typography */
+		/* spacing */
 		@apply p-3;
 
 		/* Org Title Section */
 		.header-section {
+			/* layout */
 			@apply flex flex-row items-center justify-between;
 
 			.title {
+				/* layout */
+				/* stylingm */
+				/* typography */
+				/* spacing */
 				@apply text-xl font-bold text-primary-green-two-600;
 			}
 		}
 	}
 
 	input[type='text'] {
-		/* Text */
-		@apply sm:text-sm text-primary-green-500;
-
 		/* layout */
-		@apply bg-white;
 		/* styling */
+		@apply bg-white;
 		@apply rounded-md;
 		@apply appearance-none ring-2 ring-primary-green-400;
-
-		/* layout styling */
-		@apply mt-2 px-3 h-10 shadow-sm;
+		@apply h-10 shadow-sm;
+		/* typography */
+		@apply sm:text-sm text-primary-green-500;
+		/* spacing*/
+		@apply mt-2 px-3;
 		/* placeholder styling */
 		@apply placeholder:text-primary-green-400;
 		@apply focus:outline-none focus:ring-primary-green-700;
@@ -41,13 +43,20 @@
 	}
 
 	.button-section {
+		/* layout */
 		@apply flex justify-between items-center;
 
 		button {
-			@apply p-2 md:px-3 md:py-2 rounded-md text-white font-bold text-xs;
-
+			/* layout */
+			/* styling */
+			@apply rounded-md;
 			@apply bg-primary-green-300 hover:bg-primary-green-400;
+			/* typography */
+			@apply text-white font-bold text-xs;
+			/* spacing */
+			@apply p-2 md:px-3 md:py-2;
 
+			/* effects */
 			@apply transition-all duration-300 ease-in-out;
 		}
 	}
