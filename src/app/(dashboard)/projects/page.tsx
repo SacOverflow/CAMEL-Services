@@ -1,54 +1,39 @@
 import AddCard from '@/components/projects/AddCard';
+import { ProjectCard } from '@/components/projects/ProjectCard';
 import SearchBar from '@/components/projects/SearchBar/SearchBar';
 import StatusBar from '@/components/projects/StatusBar/StatusBar';
-import TicketCard from '@/components/projects/TicketCard';
-import { ITicketCardProps } from '@/types/componentTypes';
-import React from 'react';
+import {
+	getAllProjects,
+	getOrganizationMemberRole,
+	getUserInformation,
+} from '@/lib/actions';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-const ticketOne: ITicketCardProps = {
-	id: 1,
-	title: 'Leaky Faucet',
-	status: 'In-Progress',
-	createdDate: new Date('2023-10-31T05:48:33.124+00:00'),
-	address: {
-		street: '1234 Main St',
-		city: 'Anytown',
-		state: 'CA',
-		zipCode: '12345',
-	},
-};
+const page = async () => {
+	// retrieve client info
+	const userInfo = await getUserInformation();
 
-const ticketTwo: ITicketCardProps = {
-	id: 2,
-	title: 'Light Replacement',
-	status: 'Completed',
-	createdDate: new Date('2023-10-31T05:48:33.124+00:00'),
-	address: {
-		street: '1111 Main St',
-		city: 'Anytown',
-		state: 'CA',
-		zipCode: '12345',
-	},
-};
+	// check if the user has a valid organization stored in their cookies
+	const cookieStore = cookies();
+	const org = cookieStore.get('org')?.value as string;
 
-const ticketThree: ITicketCardProps = {
-	id: 3,
-	title: 'Clean HVAC',
-	status: 'Action-Needed',
-	createdDate: new Date('2023-10-31T05:48:33.124+00:00'),
-	address: {
-		street: '0001 Main Street',
-		city: 'Anytown',
-		state: 'CA',
-		zipCode: '12345',
-	},
-};
+	// if there is no cookie association with the use ror the org, redirect to the organization page
+	if (!org) {
+		redirect('/organization');
+	}
+	const roleResponse = await getOrganizationMemberRole(org);
+	const role: string = roleResponse?.role || '';
 
-const page = () => {
+	// if role supervisor or admin retrieve all projects
+	const projects = await getAllProjects(org, userInfo?.id);
+
+	// console.log(projects);
+
 	return (
 		<div className="w-full">
 			<div className="flex flex-col justify-between md:flex-row m-1">
-				<div className="flex flex-row grow">
+				<div className="flex flex-row grow ">
 					<div className="text-primary-green-600 text-4xl mt-1 font-bold px-2 py-1">
 						Projects
 					</div>
@@ -56,21 +41,34 @@ const page = () => {
 						<SearchBar />
 					</div>
 				</div>
-				<div className="flex flex-row justify-between text-white">
-					<StatusBar status="In-Progress" />
+				<div className="flex flex-row justify-start text-white overflow-x-auto">
 					<StatusBar status="Completed" />
+					<StatusBar status="In-Progress" />
 					<StatusBar status="Needs-Approval" />
 					<StatusBar status="Action-Needed" />
 				</div>
 			</div>
-			<div className="flex flex-col h-screen max-h-screen">
+			<div className="flex flex-col h-screen overflow-y-auto">
 				<div>
-					<div className="flex-grow overflow-y-auto bg-white text-default-text">
+					<div className="flex-grow overflow-y-auto text-default-text h-full">
 						<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-4">
-							<AddCard />
-							<TicketCard {...ticketOne} />
-							<TicketCard {...ticketTwo} />
-							<TicketCard {...ticketThree} />
+							{/* create new project if they have perms */}
+							{role === 'supervisor' || role === 'admin' ? (
+								<AddCard />
+							) : null}
+							{/* all associated or filtered projects */}
+							{projects.length ? (
+								projects.map(project => (
+									<ProjectCard
+										key={project.id}
+										{...project}
+									/>
+								))
+							) : (
+								<div className="no-projects text-center my-auto text-2xl text-primary-green-300 ">
+									No projects found
+								</div>
+							)}
 						</div>
 					</div>
 				</div>

@@ -2,34 +2,30 @@
 
 @layer base {
 	.status-bar {
-		/* default styling */
-		@apply rounded-full;
-		/* typography */
-		@apply text-center font-bold;
-		font-size: clamp(0.6rem, 1.5vw, 1.2rem);
-		/* spacing */
-		@apply px-4 py-2;
-		@apply m-2;
 		/* completed tasks */
-		&.status-Completed {
+		&.status-Completed,
+		&.status-complete {
 			/* styling */
 			@apply bg-green-800 hover:bg-green-900;
 		}
 
 		/* in progress tasks */
-		&.status-In-Progress {
+		&.status-In-Progress,
+		&.status-in-progress {
 			/* styling */
 			@apply bg-yellow-400 hover:bg-yellow-500;
 		}
 
 		/* tasks that need approval*/
-		&.status-Needs-Approval {
+		&.status-Needs-Approval,
+		&.status-needs-approval {
 			/* styling */
 			@apply bg-blue-500 hover:bg-blue-600;
 		}
 
 		/* tasks that action is needed */
-		&.status-Action-Needed {
+		&.status-Action-Needed,
+		&.status-action-needed {
 			/* styling */
 			@apply bg-red-700 hover:bg-red-800;
 		}
