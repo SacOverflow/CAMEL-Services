@@ -1,6 +1,7 @@
 // CSS imports
 import './SettingsNav.css';
 interface SettingsNavItem {
+	//interface for code below
 	//rules
 	title: 'Settings' | string;
 	href?: string; //optional parameter, question mark is optional
