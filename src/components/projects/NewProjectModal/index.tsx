@@ -1,10 +1,18 @@
-'use client';
-
 import InputComponent from '@/components/SharedComponents/InputComponent';
+import { createSupbaseClient } from '@/lib/supabase/client';
+import { Status } from '@/types/database.interface';
 import { useState } from 'react';
 import './NewProjectModal.css';
 
-export const NewProjectModal = ({ onClose }: { onClose: () => void }) => {
+export const NewProjectModal = ({
+	onClose,
+	org_id,
+}: {
+	onClose: () => void;
+	org_id: string;
+}) => {
+	const [error, setError] = useState(false);
+
 	const [formData, setFormData] = useState({
 		projectTitle: '',
 		projectBudget: '',
@@ -17,6 +25,21 @@ export const NewProjectModal = ({ onClose }: { onClose: () => void }) => {
 		projectCreator: '',
 		projectCreatedDate: '',
 	});
+
+	const returnDefaultDate = () => {
+		const date = new Date();
+		// string format passed in
+		const pstDate = new Date(
+			date.toLocaleString('en-US', {
+				timeZone: 'America/Los_Angeles',
+			}),
+		);
+		const dd = String(pstDate.getDate()).padStart(2, '0');
+		const mm = String(pstDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+		const yyyy = pstDate.getFullYear();
+
+		return `${yyyy}-${mm}-${dd}`;
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
@@ -32,20 +55,72 @@ export const NewProjectModal = ({ onClose }: { onClose: () => void }) => {
 		});
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const updatedFormData = {
-			...formData,
+		// Submit to DB once API is ready
+		const supabase = await createSupbaseClient();
 
+		const {
+			data: { user },
+			error,
+		} = await supabase.auth.getUser();
+
+		// if startDate is empty, set it to the current date
+		if (formData.projectStartDate === '') {
+			formData.projectStartDate = new Date().toISOString();
+		}
+
+		const submissionData = {
+			org_id: org_id,
+			title: formData.projectTitle,
+			address: formData.projectLocation,
+			status: getStatus(formData.projectStatus),
+			budget: formData.projectBudget,
+			details: formData.projectDescription,
+			due_date: formData.projectEndDate,
+			start_date: formData.projectStartDate,
 			created_at: new Date().toISOString(),
+			current_spent: 0,
+			created_by: user?.id,
 		};
 
-		// TODO: implement logic here once we setup trigger on supabase
+		// query db to create new entry
+		const { data: entryData, error: entryError } = await supabase
+			.from('projects')
+			.insert([submissionData]);
 
-		const jsonFormData = JSON.stringify(updatedFormData);
+		// if there is an error, set error to true and display error message
+		if (entryError) {
+			setError(true);
+			setTimeout(() => {
+				setError(false);
+			}, 5000);
+			return;
+		}
 
-		// Submit to DB once API is ready
+		window.location.reload();
+	};
+
+	const getStatus = (status: string) => {
+		switch (status.toLowerCase()) {
+			case 'in-progress':
+			case 'in progress':
+				return Status.InProgress;
+			case 'needs-approval':
+			case 'needs approval':
+				return Status.NeedsApproval;
+			case 'action-needed':
+			case 'action needed':
+				return Status.ActionNeeded;
+			case 'to-do':
+			case 'to do':
+				return Status.ToDo;
+			case 'cancelled':
+				return Status.Cancelled;
+			default:
+				return Status.InProgress;
+		}
 	};
 
 	return (
@@ -176,7 +251,11 @@ export const NewProjectModal = ({ onClose }: { onClose: () => void }) => {
 							type="date"
 							id="projectStartDate"
 							placeholder="Start Date"
-							value={formData.projectStartDate}
+							value={
+								formData.projectStartDate !== ''
+									? formData.projectStartDate
+									: returnDefaultDate()
+							}
 							onChange={handleChange}
 							required={true}
 						/>
@@ -201,6 +280,11 @@ export const NewProjectModal = ({ onClose }: { onClose: () => void }) => {
 							required={true}
 							className="mb-4"
 						/>
+						{error && (
+							<span className="text-primary-red-300 text-center">
+								Error submitting new project
+							</span>
+						)}
 						<button
 							className="submit-new-project-button"
 							type="submit"

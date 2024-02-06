@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { NewProjectModal } from './NewProjectModal';
 
-const AddCard = () => {
+const AddCard = ({ org_id }: { org_id: string }) => {
 	const [enabled, setEnabled] = useState(false);
 
 	const handleCloseModal = () => {
@@ -32,7 +32,12 @@ const AddCard = () => {
 				</button>
 			</div>
 
-			{enabled && <NewProjectModal onClose={handleCloseModal} />}
+			{enabled && (
+				<NewProjectModal
+					onClose={handleCloseModal}
+					org_id={org_id}
+				/>
+			)}
 		</>
 	);
 };

@@ -1,12 +1,12 @@
+import { IProjects, Status } from '@/types/database.interface';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { faWarehouse } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React from 'react';
 import './status.css';
-import { IProjects_table, Status } from '@/types/database.interface';
 
-export const ProjectCard = ({ ...project }: IProjects_table) => {
+export const ProjectCard = ({ ...project }: IProjects) => {
 	// method to retrieve timestamp in Month day, Year format
 	const formatTimeStamp = (timestamp: Date) => {
 		const date = new Date(timestamp);
@@ -90,11 +90,6 @@ export const ProjectCard = ({ ...project }: IProjects_table) => {
 					</div>
 					<div className="flex flex-col place-items-center text-md">
 						<div>{project.address}</div>
-						{/* <div>
-							{ticketCard.address.city} {', '}
-							{ticketCard.address.state}{' '}
-							{ticketCard.address.zipCode}
-						</div> */}
 					</div>
 				</div>
 			</Link>

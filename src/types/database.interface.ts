@@ -24,6 +24,7 @@ export enum Status {
 	NeedsApproval = 'needs approval',
 	ActionNeeded = 'action needed',
 	ToDo = 'to do',
+	Cancelled = 'cancelled',
 }
 
 export interface IProjects {
