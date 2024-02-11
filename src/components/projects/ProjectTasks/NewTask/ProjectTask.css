@@ -1,0 +1,136 @@
+@tailwind base;
+
+@layer base {
+	.all-tasks {
+		@apply flex flex-col;
+		@apply gap-2;
+	}
+
+	.project-task {
+		@apply flex flex-col items-center justify-start;
+		@apply rounded-xl;
+		/* @apply w-[30rem] max-w-[30rem]; */
+		/* @apply h-[10rem] max-h-[15rem]; */
+
+		.status {
+			@apply w-full;
+			@apply text-start capitalize;
+			font-size: clamp(0.8rem, 1vw, 1rem);
+
+			@apply p-2;
+			@apply rounded-t-xl;
+
+			@apply bg-primary-green-200;
+
+			&.inprogress {
+				@apply bg-blue-900/50;
+			}
+
+			&.todo,
+			&.actionneeded,
+			&.cancelled {
+				@apply bg-amber-900/50;
+			}
+		}
+
+		.task-content {
+			@apply w-full;
+			@apply flex flex-col gap-2 items-start justify-start;
+			@apply rounded-b-xl;
+
+			@apply bg-primary-green-300;
+			@apply p-2;
+
+			&.inprogress {
+				@apply bg-blue-950/50;
+			}
+
+			&.todo,
+			&.actionneeded,
+			&.cancelled {
+				@apply bg-amber-950/50;
+			}
+
+			.title,
+			.date,
+			.members {
+				@apply w-full;
+				@apply flex items-center justify-start gap-2;
+
+				font-size: clamp(1rem, 1vw, 1.2rem);
+
+				.icon {
+					@apply w-6 h-6;
+					/* @apply mr-2; */
+					@apply stroke-white;
+				}
+
+				.text {
+					@apply text-white text-start;
+					@apply font-light;
+					@apply capitalize;
+
+					@apply text-ellipsis overflow-hidden;
+					@apply max-h-16;
+				}
+			}
+		}
+
+		/* edit and delete btn */
+
+		.delete-task-btn,
+		.select-task-btn {
+			@apply w-6 h-6;
+			@apply transition-colors duration-200 ease-in-out;
+			@apply hidden;
+			@apply cursor-pointer;
+		}
+
+		.select-task-btn {
+			@apply stroke-slate-600 hover:stroke-slate-950;
+		}
+		.delete-task-btn {
+			@apply stroke-red-400 hover:stroke-red-500;
+		}
+		&:hover {
+			.delete-task-btn,
+			.select-task-btn {
+				@apply block;
+			}
+		}
+	}
+
+	.task-member-search-container {
+		/* layout */
+		@apply flex flex-col gap-1;
+		/* @apply  border border-green-500; */
+		/* styling */
+		@apply absolute top-full;
+
+		.task-member-search-badge {
+			/* layout */
+			@apply flex gap-2 justify-between items-center;
+			/* styling */
+			@apply rounded-md bg-primary-green-50 shadow-sm;
+			@apply w-[10em] max-w-[10em];
+			@apply z-50;
+			/* spacing */
+			@apply p-2;
+
+			/* effects */
+			@apply transition-all duration-300 ease-in-out;
+			&:hover {
+				@apply bg-primary-green-100;
+				@apply border border-primary-green-300;
+			}
+
+			.name {
+				@apply text-primary-green-700 text-xs text-start truncate;
+			}
+
+			.add-icon {
+				@apply text-primary-green-700;
+			}
+		}
+	}
+}

@@ -43,5 +43,16 @@
 	}
 	.project-tasks {
 		/* hashem */
+		@apply flex flex-col gap-y-2;
+
+		/* @apply p-5; */
+
+		.title {
+			@apply flex items-center gap-2;
+			svg {
+				@apply w-6 h-6;
+				@apply stroke-primary-green-200;
+			}
+		}
 	}
 }

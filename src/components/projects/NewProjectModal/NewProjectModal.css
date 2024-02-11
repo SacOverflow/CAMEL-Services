@@ -4,7 +4,7 @@
 	.modal-overlay {
 		/* layout */
 		/* styling */
-		@apply absolute inset-0 z-40;
+		@apply absolute inset-0 z-20;
 		@apply bg-black bg-opacity-50;
 		@apply overflow-y-auto;
 		/* typography */

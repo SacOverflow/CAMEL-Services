@@ -1,5 +1,6 @@
 import {
 	checkProjectMember,
+	getAllTasks,
 	getOrganizationMemberRole,
 	getProjectActivities,
 	getProjectMembers,
@@ -18,6 +19,9 @@ import ProjectAttachments from '@/components/projects/ProjectAttachments';
 import { AddProjectActivity } from '@/components/projects/ProjectActivity';
 import { IUsers } from '@/types/database.interface';
 
+
+import { TasksSectionContainer } from '@/components/projects/ProjectTasks/server';
+import { SearchBar as AddNewTaskButton } from '@/components/projects/ProjectTasks/AddNewTask/index';
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -75,12 +79,16 @@ export default async function SingleProjectPage({
 	const timestamps = await getProjectActivities(org, project_id);
 	const currUser = await getUserInformation();
 
+	/* get all projects */
+	const projectTasks = await getAllTasks(project_id);
+
 	return (
 		<div className={`project-details ${PoppinsSemiBold.className}`}>
 			<div className="project-title">{title}</div>
 			<div className="project-address">{address}</div>
 
 			{/* Hashem's components for Project tasks */}
+
 			<div className="project-tasks">
 				<div className="title">
 					<svg
@@ -96,7 +104,14 @@ export default async function SingleProjectPage({
 						/>
 					</svg>
 					<span>Project Tasks</span>
+					{role === 'admin' ? <AddNewTaskButton /> : null}
 				</div>
+				<TasksSectionContainer
+					project_id={params.id}
+					tasks={projectTasks}
+					// role acts as check for delete ability; maybe use created_by
+					role={role}
+				/>
 			</div>
 
 			<div className="project-members">

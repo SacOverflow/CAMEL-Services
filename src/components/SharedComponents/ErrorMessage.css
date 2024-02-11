@@ -1,0 +1,92 @@
+.error-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 20px;
+	max-width: 90%;
+	margin: 20px auto; /* Added some margin to the top and bottom */
+	background-color: #fff; /* White background for the card */
+	border-radius: 8px; /* Rounded corners */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+	transition: box-shadow 0.3s ease-in-out; /* Smooth transition for hover effect */
+}
+
+.error-container:hover {
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly larger shadow on hover for interactive effect */
+}
+
+.error-title {
+	color: #d32f2f; /* Adjusted to a more pronounced red color for error titles */
+	margin-bottom: 20px;
+	font-size: 22px; /* Slightly larger font size for emphasis */
+}
+
+.error-image {
+	max-width: 80%; /* Adjusted to prevent the image from being too large */
+	height: auto;
+	margin-bottom: 20px;
+	border-radius: 4px; /* Optional: rounded corners for the image */
+}
+
+.error-message {
+	color: #333; /* Dark grey color for the message */
+	font-size: 16px; /* Adjusted for consistent font size */
+	margin: 0 10px; /* Added some margin to the sides for better text alignment */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+	.error-container {
+		padding: 15px; /* Adjusted padding for a tighter look on small screens */
+	}
+
+	.error-title {
+		font-size: 20px; /* Slightly reduced font size on small screens */
+	}
+
+	.error-message {
+		font-size: 14px; /* Slightly reduced font size for messages on small screens */
+	}
+}
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1050; /* Ensure it's above other content */
+}
+
+.modal-content {
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	z-index: 1051; /* Above the backdrop */
+	max-width: 500px; /* Adjust based on your needs */
+	width: 90%; /* Responsive width */
+}
+
+/* You might need to adjust your existing styles for .error-container, .error-title, etc., 
+     to better fit within the modal context. */
+
+/* Style for the close button */
+.modal-content button {
+	display: block;
+	margin: 20px auto 0;
+	padding: 10px 20px;
+	border: none;
+	background-color: #d32f2f;
+	color: #fff;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.modal-content button:hover {
+	background-color: #a72828;
+}

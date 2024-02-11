@@ -1,0 +1,75 @@
+@tailwind base;
+
+@layer base {
+	.task-modal {
+		/* layout */
+		@apply flex flex-col gap-2 items-center justify-center;
+		/* styling */
+		@apply fixed inset-0 z-30;
+		@apply bg-white shadow-md rounded-lg;
+		@apply max-w-lg md:max-w-2xl;
+		/* spacing */
+		@apply mx-auto my-5;
+
+		@apply p-5;
+
+		.task-modal-title {
+			/* Typography */
+			@apply text-5xl text-primary-green-500 font-bold;
+		}
+	}
+
+	.task-input-field {
+		@apply w-full;
+		label,
+		.task-labels {
+			/* layout */
+			@apply block;
+			/* Typography */
+			@apply text-start;
+			@apply text-lg text-gray-800 font-semibold leading-6;
+		}
+
+		input {
+			/* Text */
+			@apply sm:text-sm text-primary-green-500;
+
+			/* layout */
+			@apply block w-full bg-white;
+			/* styling */
+			@apply rounded-md;
+			@apply appearance-none ring-2 ring-primary-green-400;
+
+			/* layout styling */
+			@apply mt-2 px-3 h-10 shadow-sm w-full;
+
+			/* placeholder styling */
+			@apply placeholder:text-primary-green-400;
+			@apply focus:outline-none focus:ring-primary-green-700;
+		}
+
+		.option-input {
+			@apply shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none;
+		}
+	}
+
+	/* .task-member-input-badge {
+		@apply relative items-center gap-2;
+		@apply right-0;
+		@apply border border-red-500;
+		@apply font-bold py-2 px-4 rounded focus:outline-none !important;
+	} */
+
+	.task-btns {
+		@apply flex justify-end gap-2;
+	}
+	.cancel-btn {
+		@apply transition-colors duration-300 ease-in-out;
+		@apply bg-red-300 hover:bg-red-400 text-white font-bold py-2 px-4 rounded focus:outline-none !important;
+	}
+
+	.save-btn {
+		@apply transition-colors duration-300 ease-in-out;
+		@apply bg-primary-green-200 hover:bg-primary-green-300 text-white font-bold py-2 px-4 rounded focus:outline-none !important;
+	}
+}
