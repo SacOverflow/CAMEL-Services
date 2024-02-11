@@ -1,13 +1,27 @@
 'use client';
 
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import {
+	getFilteredRevenueChartData,
+	ChartData,
+} from '@/lib/actions/dashboard';
 
 function LineChart(props: { id: string; className: string }) {
 	const { id, className } = props;
 	const chartRef = useRef<am5xy.XYChart | null>(null);
+	const [chartData, setChartData] = useState<ChartData[]>([]);
+
+	useEffect(() => {
+		// Call the function to fetch and set data for the chart
+		const fetchData = async () => {
+			const data = await getFilteredRevenueChartData('month'); // or 'yearly', based on your requirement
+			setChartData(data);
+		};
+		fetchData();
+	}, []);
 
 	useLayoutEffect(() => {
 		const root = am5.Root.new(`${id}`);
@@ -86,33 +100,41 @@ function LineChart(props: { id: string; className: string }) {
 		}
 
 		// Set data
-		const chartData = [
-			{
-				date: new Date('2023-01-01'),
-				income: 6500,
-				expenses: 4800,
-			},
-			{
-				date: new Date('2023-02-15'),
-				income: 5400,
-				expenses: 4100,
-			},
-			{
-				date: new Date('2023-02-20'),
-				income: 6700,
-				expenses: 4300,
-			},
-			{
-				date: new Date('2023-03-10'),
-				income: 7100,
-				expenses: 3900,
-			},
-		];
+		// const chartData = [
+		// 	{
+		// 		date: new Date('2023-01-01'),
+		// 		income: 6500,
+		// 		expenses: 4800,
+		// 	},
+		// 	{
+		// 		date: new Date('2023-02-15'),
+		// 		income: 5400,
+		// 		expenses: 4100,
+		// 	},
+		// 	{
+		// 		date: new Date('2023-02-20'),
+		// 		income: 6700,
+		// 		expenses: 4300,
+		// 	},
+		// 	{
+		// 		date: new Date('2023-03-10'),
+		// 		income: 7100,
+		// 		expenses: 3900,
+		// 	},
+		// ];
 
 		// Create series for each category
-		makeSeries('Income', 'income', '#34568B');
-		makeSeries('Expenses', 'expenses', '#FF6F61');
+		if (chartData.length > 0) {
+			// Create series for each category
+			makeSeries('Income', 'income', '#34568B');
+			makeSeries('Expenses', 'expenses', '#FF6F61');
 
+			// This should update whenever chartData changes, hence included in useLayoutEffect
+			xAxis.data.setAll(chartData.map(item => ({ date: item.date })));
+			chart.series.each(series => {
+				series.data.setAll(chartData);
+			});
+		}
 		// Add legend
 		const legend = chart.children.push(
 			am5.Legend.new(root, {
@@ -123,11 +145,12 @@ function LineChart(props: { id: string; className: string }) {
 		legend.data.setAll(chart.series.values);
 
 		xAxis.data.setAll(chartData);
+		console.log('CHARTDATA LINE CHART', chartData);
 
 		return () => {
 			root.dispose();
 		};
-	}, []);
+	}, [chartData]);
 
 	return (
 		<div

@@ -88,7 +88,7 @@ const DashboardPage = async () => {
 				<div id="dashboard-charts-recent-activity">
 					<div className="earnings-sales-container">
 						<div className="total-earnings-container">
-							<TotalEarningWidget />
+							<TotalEarningWidget org_id={org} />
 						</div>
 						<SalesTrendWidget {...salesTrendData} />
 					</div>
@@ -111,7 +111,7 @@ const DashboardPage = async () => {
 				<br />
 
 				<div className="total-earnings-container">
-					<TotalEarningWidget />
+					<TotalEarningWidget org_id={org} />
 				</div>
 				<div className="spending-table">
 					<MonthlySpending />

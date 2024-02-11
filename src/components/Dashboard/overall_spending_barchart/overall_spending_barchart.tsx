@@ -1,17 +1,31 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5percent from '@amcharts/amcharts5/percent';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import {
+	getFilteredCategoryPieChart,
+	PieChartDataElement,
+} from '@/lib/actions/dashboard';
 
-interface PieChartDataElement {
-	value: number;
-	category: string;
+function capitalizeFirstLetter(inputString: string): string {
+	return inputString.charAt(0).toUpperCase() + inputString.slice(1);
 }
 
 function PieChart(props: { className: string }) {
 	const { className } = props;
+	const [chartData, setChartData] = useState<PieChartDataElement[]>([]);
+
+	useEffect(() => {
+		// Asynchronously fetch data when the component mounts
+		const fetchData = async () => {
+			const data = await getFilteredCategoryPieChart(); // Ensure this function is implemented to fetch data from Supabase
+			setChartData(data);
+		};
+
+		fetchData();
+	}, []);
 	useEffect(() => {
 		// Create root element
 		const root = am5.Root.new('chartdiv1');
@@ -52,35 +66,35 @@ function PieChart(props: { className: string }) {
 
 		series.labelsContainer.set('paddingTop', 30);
 
-		const data: PieChartDataElement[] = [
-			{
-				value: 10,
-				category: 'One',
-			},
-			{
-				value: 9,
-				category: 'Two',
-			},
-			{
-				value: 6,
-				category: 'Three',
-			},
-			{
-				value: 5,
-				category: 'Four',
-			},
-			{
-				value: 4,
-				category: 'Five',
-			},
-			{
-				value: 3,
-				category: 'Six',
-			},
-		];
+		// const data: PieChartDataElement[] = [
+		// 	{
+		// 		value: 10,
+		// 		category: 'One',
+		// 	},
+		// 	{
+		// 		value: 9,
+		// 		category: 'Two',
+		// 	},
+		// 	{
+		// 		value: 6,
+		// 		category: 'Three',
+		// 	},
+		// 	{
+		// 		value: 5,
+		// 		category: 'Four',
+		// 	},
+		// 	{
+		// 		value: 4,
+		// 		category: 'Five',
+		// 	},
+		// 	{
+		// 		value: 3,
+		// 		category: 'Six',
+		// 	},
+		// ];
 
 		// Set data
-		series.data.setAll(data); // Add your data here
+		series.data.setAll(chartData); // Add your data here
 
 		// hide ticks
 		series.ticks.template.setAll({
@@ -100,10 +114,17 @@ function PieChart(props: { className: string }) {
 
 		// legend.data.setAll(series.dataItems);
 
+		const maxCategory = chartData.reduce(
+			(prev, current) => (prev.value > current.value ? prev : current),
+			{ value: 0, category: '' },
+		);
+
+		const capitalizedCategory = capitalizeFirstLetter(maxCategory.category);
+
 		// Add label for center text
 		const centerTextLabel = chart.seriesContainer.children.push(
 			am5.Label.new(root, {
-				text: '[bold]$452[/]\nSeptember',
+				text: `$[bold]${maxCategory.value}[/]\n${capitalizedCategory}`,
 				centerX: am5.percent(50),
 				textAlign: 'center',
 				centerY: am5.percent(50),
@@ -115,10 +136,11 @@ function PieChart(props: { className: string }) {
 
 		// Play initial series animation
 		series.appear(1000, 100);
+		console.log('PIE CHART DATA: ', chartData);
 
 		// Cleanup
 		return () => root.dispose();
-	}, []);
+	}, [chartData]);
 
 	return (
 		<div

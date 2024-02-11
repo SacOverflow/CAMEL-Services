@@ -1,5 +1,10 @@
+'use client';
+
 //Import CSS file for Monthly Spending styles
 import './MonthlySpending.css';
+import React, { useEffect, useState } from 'react';
+import { fetchMonthlySpendingData } from '@/lib/actions/dashboard';
+
 //Interface categorizing data by its type
 interface SpendingData {
 	category: string;
@@ -13,15 +18,25 @@ function formatNumber(num: number): string {
 }
 //Functional Component to display monthly spending data
 const MonthlySpending = () => {
+	const [data, setData] = useState<SpendingData[]>([]);
 	//Example data of spending data array
-	const data: SpendingData[] = [
-		{ category: 'Electrical', amount: 760, total: 2000, trend: 'up' },
-		{ category: 'Rental', amount: 760, total: 2000, trend: 'up' },
-		{ category: 'Plumbing', amount: 760, total: 2000, trend: 'down' },
-		{ category: 'Construction', amount: 760, total: 2000, trend: 'up' },
-		{ category: 'HVAC', amount: 760, total: 2000, trend: 'down' },
-		{ category: 'Materials', amount: 760, total: 2000, trend: 'up' },
-	];
+	// const data: SpendingData[] = [
+	// 	{ category: 'Electrical', amount: 760, total: 2000, trend: 'up' },
+	// 	{ category: 'Rental', amount: 760, total: 2000, trend: 'up' },
+	// 	{ category: 'Plumbing', amount: 760, total: 2000, trend: 'down' },
+	// 	{ category: 'Construction', amount: 760, total: 2000, trend: 'up' },
+	// 	{ category: 'HVAC', amount: 760, total: 2000, trend: 'down' },
+	// 	{ category: 'Materials', amount: 760, total: 2000, trend: 'up' },
+	// ];
+	useEffect(() => {
+		// Function to fetch data and update state
+		const loadData = async () => {
+			const fetchedData = await fetchMonthlySpendingData();
+			setData(fetchedData);
+		};
+
+		loadData();
+	}, []);
 
 	return (
 		<div className="monthly-spending-container">

@@ -1,22 +1,65 @@
+'use client';
 //Import css file for custom styles
+import { useEffect, useState } from 'react';
 import './TotalEarning.css';
+import { getOrganizationProjectEarnings } from '@/lib/actions/dashboard';
 //Categorize data by its type def for props in TotalEarning to accept
-interface TotalEarningCard {
-	currentEarning: number;
-	previousEarning: number;
-}
 
 //Example of static data, initalizing data inside component
-const TotalEarning = () => {
-	const currentEarning = 12875;
-	const previousEarning = 10000;
+const TotalEarning = ({ org_id }: { org_id: string }) => {
+	const [totalEarnings, setTotalEarnings] = useState({
+		currentEarning: 0,
+		previousEarning: 0,
+		difference: '0',
+		isPositive: false,
+	});
 
-	// Calculates difference in monthly earnings, turns it into a percent, and checks if it is postive
-	const earnDifference =
-		((currentEarning - previousEarning) / previousEarning) * 100;
-	//Fixes to nearest whole percent
-	const formatDifference = earnDifference.toFixed(0);
-	const isPositive = earnDifference >= 0;
+	useEffect(() => {
+		// retrieve the sum of projects and expenses
+		const fetchEarnings = async () => {
+			// fetch data from API
+			const resp = await getOrganizationProjectEarnings(org_id);
+
+			// if .response not 200 some error occured
+			if (resp.response !== 200) {
+				return;
+			}
+
+			// set state
+			setTotalEarnings({
+				currentEarning: resp.currentEarning,
+				previousEarning: resp.previousEarning,
+				difference: calculatePercentageDifference(
+					resp.currentEarning,
+					resp.previousEarning,
+				) as string,
+				isPositive: resp.isPositive ? resp.isPositive : false,
+			});
+		};
+
+		// call fetchEarnings
+		fetchEarnings();
+	}, [org_id]);
+
+	const calculatePercentageDifference = (
+		currentEarning: number,
+		previousEarning: number,
+	) => {
+		// check for division by zero
+		if (previousEarning === 0) {
+			// set isPositive to null
+			setTotalEarnings({ ...totalEarnings, isPositive: null as any });
+
+			if (currentEarning === 0) {
+				return '0';
+			}
+
+			return '100';
+		}
+		const difference =
+			((currentEarning - previousEarning) / previousEarning) * 100;
+		return difference;
+	};
 
 	return (
 		<div className="total-earning-container">
@@ -25,20 +68,31 @@ const TotalEarning = () => {
 			</div>
 			<div className="earning-format">
 				<div className="earning-value">
-					${currentEarning.toLocaleString()}
+					${totalEarnings.currentEarning.toLocaleString()}
 				</div>
 				<div
 					className={`earning-percentage ${
-						isPositive
+						totalEarnings.isPositive === null
+							? 'earning-percentage-neutral'
+							: totalEarnings.isPositive
 							? 'earning-percentage-positive'
 							: 'earning-percentage-negative'
 					}`}
 				>
-					{isPositive ? '▲' : '▼'} {formatDifference}%
+					{/* {totalEarnings.isPositive ? '▲' : '▼'}{' '} */}
+					{
+						totalEarnings.isPositive === null
+							? '○ ' // if isPositive is null; no arrow neutral value
+							: totalEarnings.isPositive
+							? '▲ ' // if isPositive is true; up arrow
+							: '▼ ' // if isPositive is false; down arrow
+					}
+					{totalEarnings.difference}%
 				</div>
 			</div>
 			<div className="earning-comparison">
-				Compared to ${previousEarning.toLocaleString()} last year
+				Compared to ${totalEarnings.previousEarning.toLocaleString()}{' '}
+				last year
 			</div>
 		</div>
 	);
