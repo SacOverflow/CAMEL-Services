@@ -1,0 +1,78 @@
+@tailwind base;
+
+@layer base {
+    .all-tasks {
+        @apply flex flex-col;
+        @apply gap-2;
+    }
+
+    .project-task {
+        @apply flex flex-col items-center justify-start;
+        @apply rounded-xl;
+        @apply w-[30rem] max-w-[30rem];
+
+        .status {
+            @apply w-full;
+            @apply text-start capitalize;
+            font-size: clamp(0.8rem, 1vw, 1rem);
+
+            @apply p-2;
+            @apply rounded-t-xl;
+
+            @apply bg-primary-green-200;
+
+            &.inprogress {
+                @apply bg-blue-900/50;
+            }
+
+            &.todo,
+            &.actionneeded,
+            &.cancelled {
+                @apply bg-amber-900/50;
+            }
+        }
+
+        .task-content {
+            @apply w-full;
+            @apply flex flex-col gap-2 items-start justify-start;
+            @apply rounded-b-xl;
+
+            @apply bg-primary-green-300;
+            @apply p-2;
+
+            &.inprogress {
+                @apply bg-blue-950/50;
+            }
+
+            &.todo,
+            &.actionneeded,
+            &.cancelled {
+                @apply bg-amber-950/50;
+            }
+
+            .title,
+            .date,
+            .members {
+                @apply w-full;
+                @apply flex items-center justify-start gap-2;
+
+                font-size: clamp(1rem, 1vw, 1.2rem);
+
+                .icon {
+                    @apply w-6 h-6;
+                    /* @apply mr-2; */
+                    @apply stroke-white;
+                }
+
+                .text {
+                    @apply text-white text-start;
+                    @apply font-light;
+                    @apply capitalize;
+
+                    @apply text-ellipsis overflow-hidden;
+                    @apply max-h-16;
+                }
+            }
+        }
+    }
+}

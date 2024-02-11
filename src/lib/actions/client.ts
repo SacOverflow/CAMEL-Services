@@ -1,5 +1,5 @@
 'use client';
-import { IUsers } from '@/types/database.interface';
+import { ITasks, IUsers } from '@/types/database.interface';
 import { createSupbaseClient } from '../supabase/client';
 
 export const getCookie = (name: string): string => {
@@ -132,4 +132,100 @@ export async function removeProjectMember(proj_id: string, user_id: string) {
 	}
 
 	return true;
+}
+
+export async function updateTask(task:ITasks) {
+
+	const supabase = await createSupbaseClient();
+	
+	const { data, error } = await supabase
+  .from('tasktmp')
+  .update([
+    {...task}
+  ])
+  .select()
+  if(error){
+	alert(error.message)
+	return false
+  } else {
+	return true
+  }
+}
+
+
+export async function getMembersinTask(task:ITasks) {
+
+	const supabase = await createSupbaseClient();
+	
+	const { data, error } = await supabase
+  .from('tasks_member')
+  .select('*').eq('id',task.id)
+
+
+
+  if(error){
+	alert(error.message)
+	return false
+  } else {
+	return true
+  }
+}
+
+
+export async function addMembertoTask(task:ITasks,member_id:number) {
+
+	const supabase = await createSupbaseClient();
+	
+	const { data, error } = await supabase
+  .from('tasks_member')
+  .select('*').eq('id',task.id)
+
+
+
+  if(error){
+	alert(error.message)
+	return false
+  } else {
+	return true
+  }
+}
+
+
+
+export async function removeMemberFromTask(task:ITasks,member_id:number) {
+
+	const supabase = await createSupbaseClient();	
+	
+    const { error } = await supabase
+.from('tasks_member')
+.delete()
+.eq('member_id', member_id).eq('id',task.id)
+		
+
+
+
+  if(error){
+	alert(error.message)
+	return false
+  } else {
+	return true
+  }
+}
+
+
+export async function getTasks(proj_id:string) {
+
+	const supabase = await createSupbaseClient();	
+	
+    const {data, error } = await supabase
+.from('tasks')
+.select('*')
+.eq('proj_id', proj_id)
+
+  if(error){
+	alert(error.message)
+	return false
+  } else {
+	return data
+  }
 }

@@ -13,7 +13,7 @@ import ProjectActivity from '@/components/Dashboard/project_activity/project_act
 import ProjectMemberPagination from '@/components/projects/ProjectMemberCard/ProjectMemberPagination';
 import { SearchBar } from '@/components/projects/ProjectMemberCard/AddMemberInteraction';
 import ProjectAttachments from '@/components/projects/ProjectAttachments';
-
+import TasksSection, { ProjectsTasks } from '@/components/projects/ProjectTasks';
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -73,6 +73,7 @@ export default async function SingleProjectPage({
 			<div className="project-address">{address}</div>
 
 			{/* Hashem's components for Project tasks */}
+		
 			<div className="project-tasks">
 				<div className="title">
 					<svg
@@ -88,7 +89,10 @@ export default async function SingleProjectPage({
 						/>
 					</svg>
 					<span>Project Tasks</span>
+
+
 				</div>
+			{/*<TasksSection project_id={project_id} ></TasksSection>*/}
 			</div>
 
 			<div className="project-members">
