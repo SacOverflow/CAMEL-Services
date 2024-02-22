@@ -15,10 +15,11 @@ import DashboardGreeting from '@/app/(dashboard)/dashboard/DashboardGreeting';
 import {
 	getOrganizationInformation,
 	getOrganizationMemberRole,
+	getOrganizationProjectActivities,
 	getUserInformation,
 } from '@/lib/actions';
 import { cookies } from 'next/headers';
-import { IOrganization } from '@/types/database.interface';
+import { IOrganization, IProject_Activities } from '@/types/database.interface';
 import { redirect } from 'next/navigation';
 
 const DashboardPage = async () => {
@@ -53,6 +54,9 @@ const DashboardPage = async () => {
 		filterType: 'week',
 		className: 'sales-trend-container',
 	};
+
+	// get activity timestamps organization wide, sorted by when was created.
+	const orgTimeStamps = await getOrganizationProjectActivities(org);
 
 	return (
 		<>
@@ -91,7 +95,9 @@ const DashboardPage = async () => {
 
 					{/* Project activity log content */}
 					<div className="project-activity">
-						<ProjectActivity />
+						<ProjectActivity
+							activites={orgTimeStamps as IProject_Activities[]}
+						/>
 					</div>
 				</div>
 			</div>

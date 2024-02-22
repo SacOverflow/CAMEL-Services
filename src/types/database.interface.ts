@@ -18,6 +18,18 @@ export interface Iorganization_member {
 	created_at: string | Date;
 }
 
+export interface IProject_Activities {
+	id: string;
+	task_id: string;
+	created_at: Date;
+	user_id: string;
+	project_id: string;
+	status: Status;
+	notes: string;
+	timestamp: Date;
+	duration: number;
+}
+
 export enum Status {
 	Complete = 'complete',
 	InProgress = 'in progress',

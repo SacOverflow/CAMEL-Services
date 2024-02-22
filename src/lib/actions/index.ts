@@ -1,4 +1,8 @@
-import { IProjects } from '@/types/database.interface';
+import {
+	IProject_Activities,
+	IProjects,
+	IUsers,
+} from '@/types/database.interface';
 import { createSupbaseServerClientReadOnly } from '../supabase/server';
 
 export async function readUserSession() {
@@ -205,6 +209,13 @@ export async function getProjectMembers(org_id: string, proj_id: string) {
 	return usersDataWithRole;
 }
 
+/**
+ * Remove a member from a project
+ *
+ * @param proj_id The project id associated with the member
+ * @param user_id The user id to be removed from the project
+ * @returns boolean value indicating success or failure
+ */
 export async function removeProjectMember(proj_id: string, user_id: string) {
 	const supabase = await createSupbaseServerClientReadOnly();
 
@@ -221,4 +232,124 @@ export async function removeProjectMember(proj_id: string, user_id: string) {
 	}
 
 	return true;
+}
+
+/**
+ * Get all tasks associated with a specific project id
+ *
+ * @param proj_id The project id to get all tasks from
+ * @returns Array of tasks associated with the project
+ */
+export async function getAllTasks(proj_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	const { data: tasks, error } = await supabase
+		.from('tasks')
+		.select('*')
+		.eq('project_id', proj_id)
+		.order('created_at', { ascending: false });
+
+	if (error) {
+		console.error('Error getting tasks', error);
+		return [];
+	}
+
+	return tasks;
+}
+
+/**
+ * Get the information of a specific user or member with the user id
+ * provided; Null object if no user is found
+ *
+ * @param user_id The user id to get information from
+ * @returns IUser object with user information
+ */
+export async function getMemberInformation(user_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	// get database information
+	const { data: resp, error } = await supabase
+		.from('user')
+		.select('id, username, email, name, image')
+		.eq('id', user_id)
+		.single();
+
+	if (error) {
+		console.error('Error getting user information', error);
+		return {} as IUsers;
+	}
+
+	return resp;
+}
+
+/**
+ * Get all activities associated with a specific project id and user id
+ *
+ * @param member_id The user id to get information from
+ * @param project_id The project id to get information from
+ * @returns Array of project activities
+ */
+export async function getMembersProjectActivities(
+	member_id: string,
+	project_id: string,
+): Promise<IProject_Activities[]> {
+	const supabase = await createSupbaseServerClientReadOnly();
+	// get database information
+	const { data, error } = await supabase
+		.from('activity_view')
+		.select('*')
+		// filter by user id
+		.eq('user_id', member_id)
+		// filter by project id
+		.eq('project_id', project_id)
+		.order('created_at', { ascending: false });
+
+	if (error) {
+		console.error('Error getting project activities', error);
+		return [];
+	}
+
+	return data as IProject_Activities[];
+}
+
+/**
+ * Get all activities associated with a specific organization id; using view
+ *
+ * @param org_id The organization id to get information from
+ * @returns Array of organization activities
+ */
+export async function getOrganizationProjectActivities(org_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	// get database information
+	const { data, error } = await supabase
+		.from('activity_view')
+		.select('*')
+		.eq('organization_id', org_id)
+		.order('created_at', { ascending: false });
+
+	return data;
+}
+
+/**
+ * Get all activities associated with a specific project id
+ *
+ * @param org_id The organization id to get information from
+ * @param project_id The project id to get information from
+ * @returns Array of project activities
+ */
+export async function getProjectActivities(
+	org_id: string,
+	project_id: string,
+): Promise<IProject_Activities[]> {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	// get database information
+	const { data, error } = await supabase
+		.from('activity_view')
+		.select('*')
+		.eq('project_id', project_id)
+		.order('created_at', { ascending: false });
+
+	return data as IProject_Activities[];
 }

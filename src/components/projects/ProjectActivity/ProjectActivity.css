@@ -1,0 +1,139 @@
+@tailwind base;
+
+@layer base {
+	.project-activity-modal {
+		@apply fixed inset-0 z-50;
+		@apply flex items-center justify-center;
+		@apply bg-black bg-opacity-50;
+	}
+	.project-activity-container {
+		/* layout */
+		@apply flex flex-col gap-2;
+		/* styling */
+		@apply max-w-md rounded-xl bg-white;
+		/* spacing */
+		@apply p-4;
+		@apply mx-auto;
+
+		.header {
+			/* styling */
+			@apply border-b-2 border-primary-green-400;
+			/* typography */
+			@apply text-3xl font-bold;
+		}
+		.input-form {
+			/* layout */
+			@apply flex flex-col gap-3;
+			/* styling */
+			@apply w-full;
+
+			.input-field {
+				/* layout */
+				@apply flex flex-col flex-grow gap-1;
+				@apply items-start justify-center;
+
+				label {
+					@apply text-lg font-bold;
+				}
+
+				#notes,
+				#date,
+				#start-time,
+				#duration {
+					/* styling */
+					@apply rounded-2xl w-full shadow-xl;
+					@apply border border-white bg-gray-100;
+					/* spacing */
+					@apply p-2;
+				}
+				#date,
+				#start-time,
+				#duration {
+					/* styling */
+					@apply text-start;
+					/* typography */
+					font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+				}
+			}
+
+			.time-inputs-container {
+				@apply flex flex-row gap-2;
+			}
+		}
+	}
+	.status-labels {
+		/* layout */
+		@apply flex flex-wrap gap-2;
+		/* styling */
+		/* @apply overflow-auto; */
+
+		.status-button {
+			@apply px-4 py-2;
+			@apply rounded-3xl;
+			@apply text-center;
+			font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+			@apply border-2;
+
+			@apply transition-colors duration-300 ease-in-out;
+
+			&.Completed,
+			&.completed {
+				/* styling */
+				@apply bg-green-500;
+
+				&.active,
+				&:hover {
+					/* styling */
+					@apply bg-green-700 border-green-700;
+					@apply text-white;
+				}
+			}
+
+			&.needs-approval,
+			&.Needs-Approval {
+				/* styling */
+				@apply bg-blue-500;
+
+				&.active,
+				&:hover {
+					/* styling */
+					@apply bg-blue-700 border-blue-500;
+					@apply text-white;
+				}
+			}
+
+			&.action-needed,
+			&.Action-Needed {
+				/* styling */
+				@apply bg-red-500;
+
+				&.active,
+				&:hover {
+					/* styling */
+					@apply bg-red-700 border-red-500;
+					@apply text-white;
+				}
+			}
+
+			&.in-progress,
+			&.In-Progress {
+				/* styling */
+				@apply bg-yellow-500;
+
+				&.active,
+				&:hover {
+					/* styling */
+					@apply bg-yellow-700 border-yellow-500;
+					@apply text-white;
+				}
+			}
+		}
+	}
+
+	.add-activity-ts {
+		/* styling */
+		@apply rounded-full bg-primary-green-300;
+		/* spacing */
+		@apply p-2;
+	}
+}

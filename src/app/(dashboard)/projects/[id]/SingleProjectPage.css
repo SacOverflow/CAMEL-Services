@@ -28,6 +28,10 @@
 
 		/* log activities */
 		.project-activity {
+			.header {
+				@apply flex justify-between items-center;
+				@apply bg-inherit pb-2;
+			}
 			.activity-card {
 				@apply max-w-none;
 			}

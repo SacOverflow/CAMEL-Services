@@ -1,5 +1,9 @@
 'use client';
-import { IReceipts, IUsers } from '@/types/database.interface';
+import {
+	IReceipts,
+	IUsers,
+	IProject_Activities,
+} from '@/types/database.interface';
 import { createSupbaseClient } from '../supabase/client';
 
 export const getCookie = (name: string): string => {
@@ -197,3 +201,146 @@ export async function removeProjectMember(proj_id: string, user_id: string) {
 
 	return true;
 }
+
+export async function deleteProjectActivity(activity_id: string) {
+	const supabase = await createSupbaseClient();
+
+	// remove user from projects_member table
+	const { error } = await supabase
+		.from('project_activities')
+		.delete()
+		.eq('id', activity_id);
+
+	if (error) {
+		console.error('Error removing project activity', error);
+		return false;
+	}
+
+	return true;
+}
+
+export const editProjectActivity = async (
+	activity: IProject_Activities,
+	project_id: string,
+): Promise<IProject_Activities> => {
+	const supabase = await createSupbaseClient();
+	// Function to format timestamp as UTC string
+	const formatTimestampUTC = (date: Date) => {
+		// check if date is valid
+		if (typeof date === 'string') {
+			date = new Date(date);
+		}
+		if (isNaN(date.getTime())) {
+			console.log('error: ', 'date is invalid');
+		}
+
+		// Get UTC date components; format to store in ISO
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1; // Month is zero-based, so add 1
+		const day = date.getDate();
+		const hours = date.getHours();
+		const minutes = date.getMinutes();
+		const seconds = date.getSeconds();
+
+		// Format as YYYY-MM-DD HH:MM:SS
+		return `${year}-${month.toString().padStart(2, '0')}-${day
+			.toString()
+			.padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes
+			.toString()
+			.padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+	};
+
+	const insertData: any = {
+		task_id: activity?.task_id !== '' ? activity.task_id : null,
+		// NOTE: HANDLE LATER when allow inputs ni forms
+		// project_id: activity?.project_id ? activity.project_id : null,
+		// user_id: activity?.user_id ? activity.user_id : null,
+		status: activity.status,
+		notes: activity.notes,
+		timestamp: formatTimestampUTC(activity.timestamp),
+		duration: activity.duration,
+	};
+
+	// validate the object
+	if (!insertData.task_id) {
+		delete insertData.task_id;
+	} else if (!insertData.timestamp) {
+		delete insertData.timestamp;
+		return {} as IProject_Activities;
+	}
+
+	const { data, error, status } = await supabase
+		.from('project_activities')
+		.update(insertData)
+		.eq('id', `${activity.id}`)
+		.eq('project_id', `${project_id}`)
+		.select();
+
+	if (error) {
+		console.error('Error updating project activity:', error);
+		return {} as IProject_Activities;
+	}
+
+	return data[0] as IProject_Activities;
+};
+
+export const createProjectActivity = async (
+	activity: IProject_Activities,
+	project_id: string,
+): Promise<IProject_Activities> => {
+	const supabase = await createSupbaseClient();
+
+	// format timestamp
+	const formatTimestampISO = (date: Date) => {
+		// check if date is valid
+		if (isNaN(date.getTime())) {
+			return '';
+		}
+		const mm = date.getMonth() + 1; // getMonth() is zero-based
+		const dd = date.getDate();
+		const yyyy = date.getFullYear();
+		const dateStr = `${yyyy}-${mm.toString().padStart(2, '0')}-${dd
+			.toString()
+			.padStart(2, '0')}`;
+
+		const hh = date.getHours().toString().padStart(2, '0');
+		const min = date.getMinutes().toString().padStart(2, '0');
+		const ss = date.getSeconds().toString().padStart(2, '0');
+		const timeStr = `${hh}:${min}:${ss}`;
+		const timestamp = `${dateStr} ${timeStr}`;
+
+		return timestamp;
+	};
+
+	const insertActivityInfo = {
+		task_id: activity.task_id ? activity.task_id : null,
+		project_id: project_id,
+		user_id: activity.user_id ? activity.user_id : null,
+		status: activity.status,
+		notes: activity.notes,
+		timestamp: formatTimestampISO(activity.timestamp),
+		duration: activity.duration,
+	};
+
+	if (!insertActivityInfo.user_id) {
+		console.log('error: ', 'user_id is required');
+		return {} as IProject_Activities;
+	}
+
+	const { data, error } = await supabase
+		.from('project_activities')
+		.insert([insertActivityInfo])
+		.select();
+
+	if (error) {
+		console.error('Error creating project activity:', error);
+		return {} as IProject_Activities;
+	}
+
+	if (data?.length) {
+		// created activity
+		return data[0] as IProject_Activities;
+	}
+
+	return {} as IProject_Activities;
+};
