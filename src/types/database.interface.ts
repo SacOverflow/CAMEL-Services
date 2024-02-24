@@ -82,3 +82,18 @@ export interface ITestimonial {
 	userName: string;
 	user_profile_link: string;
 }
+
+export interface IReceipts {
+	id: string;
+	proj_id: string;
+	org_id: string;
+	img_id: string;
+	store: string;
+	category: string;
+	updated_by: string;
+	updated_at: Date;
+	created_by: string;
+	created_at: Date;
+	price_total: number;
+	note?: string;
+}

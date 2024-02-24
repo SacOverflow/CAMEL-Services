@@ -1,5 +1,5 @@
 'use client';
-import { IUsers } from '@/types/database.interface';
+import { IReceipts, IUsers } from '@/types/database.interface';
 import { createSupbaseClient } from '../supabase/client';
 
 export const getCookie = (name: string): string => {
@@ -116,6 +116,70 @@ export const inviteProjectMember = async (
 	return resp;
 };
 
+export const insertReceipts = async (receipts: any) => {
+	// 1. Create supabase client in order to interact with SUPABASE service
+	const supabase = await createSupbaseClient();
+	//alert(JSON.stringify(receipts));
+	const insertData = {
+		category: receipts?.category || null,
+		created_at: receipts?.created_at,
+		created_by: receipts?.created_by,
+		img_id: 'tmp',
+		org_id: receipts?.org_id,
+		price_total: receipts?.price_total || 0,
+		proj_id: receipts?.proj_id,
+		store: receipts?.store || null,
+		note: receipts?.note,
+	};
+
+	// 2. Create statement with client
+	// insert into db with parsed content
+	const { data, error } = await supabase
+		.from('receipts')
+		.insert([insertData]);
+
+	// 3. Check error and response
+	if (error) {
+		//alert(JSON.stringify(error));
+		return false;
+	}
+
+	// 4. Return response dependent on results
+	return true;
+};
+export const updateReceipts = async (receipts: IReceipts) => {
+	// 1. Create supabase client in order to interact with SUPABASE service
+	const supabase = await createSupbaseClient();
+	//alert(JSON.stringify(receipts));
+	const insertData = {
+		id: receipts?.id,
+		category: receipts?.category || null,
+		created_at: receipts?.created_at,
+		created_by: receipts?.created_by,
+		img_id: 'tmp',
+		org_id: receipts?.org_id,
+		price_total: receipts?.price_total || 0,
+		proj_id: receipts?.proj_id,
+		store: receipts?.store || null,
+		note: receipts?.note,
+	};
+
+	// 2. Create statement with client
+	// insert into db with parsed content
+	const { data, error } = await supabase
+		.from('receipts')
+		.update([insertData])
+		.eq('id', receipts.id);
+
+	// 3. Check error and response
+	if (error) {
+		//alert(JSON.stringify(error));
+		return false;
+	}
+
+	// 4. Return response dependent on results
+	return true;
+};
 export async function removeProjectMember(proj_id: string, user_id: string) {
 	const supabase = await createSupbaseClient();
 
