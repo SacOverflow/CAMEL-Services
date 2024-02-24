@@ -189,7 +189,7 @@ export async function getProjectMembers(org_id: string, proj_id: string) {
 	// append the user role to usersData
 	// TODO: add interface types & store in types file
 	const usersDataWithRole = await Promise.all(
-		usersData.map(async (user: any) => {
+		usersData?.map(async (user: any) => {
 			const { data, error } = await supabase
 				.from('organization_member')
 				.select('role')
@@ -352,4 +352,48 @@ export async function getProjectActivities(
 		.order('created_at', { ascending: false });
 
 	return data as IProject_Activities[];
+}
+export async function getMemberTasks(member_id: string, proj_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	// get database information
+	const { data: tasks_id, error } = await supabase
+		.from('tasks_member')
+		.select('task_id')
+		.eq('project_id', proj_id)
+		.eq('user_id', member_id);
+	error
+		? console.error(
+				'getMemberTasks phase 1 failed line 271, index.ts :\n',
+				error,
+		  )
+		: console.info('getMemberTakss part 1 worked', tasks_id);
+
+	if (error) {
+		return [];
+	} else {
+		// console.log('tasks_id: ', tasks_id);
+		// console.info(tasks_id[0].task_id);
+		const { data: resp, error: respError } = await supabase
+			.from('tasks')
+			.select('*')
+			.in(
+				'id',
+				tasks_id.map(obj => obj.task_id),
+			);
+
+		respError
+			? console.error(
+					'getMemberTasks failed phase 2, index.ts, detils:\n',
+					respError,
+			  )
+			: console.info('getMemberTakss part 2 worked');
+
+		// TODO: Handle error
+		return resp;
+	}
 }

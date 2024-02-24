@@ -1,0 +1,54 @@
+@tailwind base;
+
+@layer base {
+	.members-project-page {
+		@apply flex flex-col w-full gap-12;
+
+		.profile-bg-layer {
+			/* layout */
+			@apply flex flex-col items-center;
+			/* styling */
+			@apply relative;
+			@apply bg-primary-green-200 w-full min-h-[200px] h-1/5;
+			/* spacing */
+			@apply pt-4;
+
+			.organization-title,
+			.project-title {
+				/* typography */
+				@apply text-lg text-primary-green-700;
+
+				b {
+					/* typography */
+					@apply underline;
+				}
+			}
+
+			.user-img {
+				@apply rounded-full w-16 h-16 md:w-40 md:h-40;
+				@apply absolute bottom-4 md:bottom-8 left-[50%];
+				@apply transform -translate-x-1/2 translate-y-1/2;
+			}
+		}
+
+		.profile-content {
+			/* layout */
+			@apply top-auto max-w-full;
+			/* spacing */
+			@apply p-4;
+
+			.details {
+				/* layout */
+				@apply flex flex-col items-center justify-center gap-2;
+
+				.name {
+					@apply text-2xl;
+				}
+			}
+		}
+	}
+	.member-projects-activity {
+		@apply max-w-none !important;
+		@apply mt-10;
+	}
+}
