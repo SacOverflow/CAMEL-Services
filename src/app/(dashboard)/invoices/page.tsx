@@ -1,11 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import ItemsTable from './itemsList';
-import { env } from 'process';
-import Image from 'next/image';
+import React, { useState } from 'react';
 import { createSupbaseClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/router';
 interface IReceipts {
 	id: string;
 	proj_id: string;
