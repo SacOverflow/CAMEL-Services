@@ -219,3 +219,20 @@ export async function removeProjectMember(proj_id: string, user_id: string) {
 
 	return true;
 }
+
+export async function getAllTasks(proj_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	const { data: tasks, error } = await supabase
+		.from('tasks')
+		.select('*')
+		.eq('project_id', proj_id)
+		.order('created_at', { ascending: false });
+
+	if (error) {
+		console.error('Error getting tasks', error);
+		return [];
+	}
+
+	return tasks;
+}

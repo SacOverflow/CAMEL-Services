@@ -106,20 +106,16 @@
 		/* @apply  border border-green-500; */
 		/* styling */
 		@apply absolute top-full;
-		/* @apply z-50;  */
-		@apply border border-red-500;
 
 		.task-member-search-badge {
 			/* layout */
 			@apply flex gap-2 justify-between items-center;
-			@apply border border-purple-500;
 			/* styling */
 			@apply rounded-md bg-primary-green-50 shadow-sm;
 			@apply w-[10em] max-w-[10em];
-			@apply z-50 !important;
+			@apply z-50;
 			/* spacing */
 			@apply p-2;
-			@apply border border-green-500;
 
 			/* effects */
 			@apply transition-all duration-300 ease-in-out;

@@ -1,5 +1,6 @@
 import {
 	checkProjectMember,
+	getAllTasks,
 	getOrganizationMemberRole,
 	getProjectMembers,
 } from '@/lib/actions';
@@ -13,7 +14,8 @@ import ProjectActivity from '@/components/Dashboard/project_activity/project_act
 import ProjectMemberPagination from '@/components/projects/ProjectMemberCard/ProjectMemberPagination';
 import { SearchBar } from '@/components/projects/ProjectMemberCard/AddMemberInteraction';
 import ProjectAttachments from '@/components/projects/ProjectAttachments';
-import TasksSection, { ProjectsTasks } from '@/components/projects/ProjectTasks';
+import { TasksSectionContainer } from '@/components/projects/ProjectTasks/server';
+import { SearchBar as AddNewTaskButton } from '@/components/projects/ProjectTasks/AddNewTask/index';
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -67,13 +69,16 @@ export default async function SingleProjectPage({
 
 	// if not redirect to the projects page
 
+	/* get all projects */
+	const projectTasks = await getAllTasks(project_id);
+
 	return (
 		<div className={`project-details ${PoppinsSemiBold.className}`}>
 			<div className="project-title">{title}</div>
 			<div className="project-address">{address}</div>
 
 			{/* Hashem's components for Project tasks */}
-		
+
 			<div className="project-tasks">
 				<div className="title">
 					<svg
@@ -89,10 +94,14 @@ export default async function SingleProjectPage({
 						/>
 					</svg>
 					<span>Project Tasks</span>
-
-
+					{role === 'admin' ? <AddNewTaskButton /> : null}
 				</div>
-			{/*<TasksSection project_id={project_id} ></TasksSection>*/}
+				<TasksSectionContainer
+					project_id={params.id}
+					tasks={projectTasks}
+					// role acts as check for delete ability; maybe use created_by
+					role={role}
+				/>
 			</div>
 
 			<div className="project-members">
