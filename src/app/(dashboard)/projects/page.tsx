@@ -6,6 +6,7 @@ import {
 	getOrganizationMemberRole,
 	getUserInformation,
 } from '@/lib/actions';
+import { IProjects, Roles } from '@/types/database.interface';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -22,10 +23,10 @@ const page = async () => {
 		redirect('/organization');
 	}
 	const roleResponse = await getOrganizationMemberRole(org);
-	const role: string = roleResponse?.role || '';
+	const role: Roles = roleResponse?.role || '';
 
 	// if role supervisor or admin retrieve all projects
-	const projects = await getAllProjects(org, userInfo?.id);
+	const projects: IProjects[] = await getAllProjects(org, userInfo?.id);
 
 	return (
 		<div className="w-full">
@@ -46,7 +47,8 @@ const page = async () => {
 						<div className="flex-grow overflow-y-auto text-default-text h-full">
 							<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-4">
 								{/* create new project if they have perms */}
-								{role === 'supervisor' || role === 'admin' ? (
+								{role === Roles.SUPERVISOR ||
+								role === Roles.ADMIN ? (
 									<AddCard org_id={org} />
 								) : null}
 								{/* all associated or filtered projects */}
@@ -54,7 +56,8 @@ const page = async () => {
 									projects.map(project => (
 										<ProjectCard
 											key={project.id}
-											{...project}
+											project={project}
+											role={role}
 										/>
 									))
 								) : (

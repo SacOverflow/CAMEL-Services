@@ -62,7 +62,10 @@ export async function getOrganizationMemberRole(org_id: string) {
 	return resp;
 }
 
-export async function getAllProjects(org_id: string, user_id?: string) {
+export async function getAllProjects(
+	org_id: string,
+	user_id?: string,
+): Promise<IProjects[]> {
 	const supabase = await createSupbaseServerClientReadOnly();
 
 	const { data: projects, error: err } = await supabase
@@ -200,4 +203,22 @@ export async function getProjectMembers(org_id: string, proj_id: string) {
 	);
 
 	return usersDataWithRole;
+}
+
+export async function removeProjectMember(proj_id: string, user_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	// remove user from projects_member table
+	const { data: resp, error } = await supabase
+		.from('projects_member')
+		.delete()
+		.eq('project_id', proj_id)
+		.eq('user_id', user_id);
+
+	if (error) {
+		console.error('Error removing project member', error);
+		return false;
+	}
+
+	return true;
 }

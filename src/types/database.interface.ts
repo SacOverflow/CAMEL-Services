@@ -40,6 +40,7 @@ export interface IProjects {
 	completed_date: Date;
 	created_at: Date;
 	current_spent: number;
+	created_by: string;
 }
 
 export interface IProjects_member {

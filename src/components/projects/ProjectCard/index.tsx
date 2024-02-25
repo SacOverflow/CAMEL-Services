@@ -1,12 +1,27 @@
-import { IProjects, Status } from '@/types/database.interface';
+'use client';
+
+import { IProjects, Roles, Status } from '@/types/database.interface';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { faWarehouse } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faWarehouse } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
+import { EditProjectModal } from '../EditProjectModal';
 import './status.css';
 
-export const ProjectCard = ({ ...project }: IProjects) => {
+export const ProjectCard = async ({
+	project,
+	role = Roles.MEMBER,
+}: {
+	project: IProjects;
+	role?: Roles;
+}) => {
+	const [editEnabled, setEditEnabled] = useState<IProjects | null>();
+
+	const handleEditCloseModal = () => {
+		setEditEnabled(null);
+	};
+
 	// method to retrieve timestamp in Month day, Year format
 	const formatTimeStamp = (timestamp: Date) => {
 		const date = new Date(timestamp);
@@ -60,39 +75,61 @@ export const ProjectCard = ({ ...project }: IProjects) => {
 	};
 
 	return (
-		<div className="flex flex-col bg-gray-100 hover:bg-gray-300 rounded-md shadow-lg p-3 m-2 transition-all duration-500 ease-in-out">
-			<Link href={`/projects/${project.id}`}>
-				<div className="flex justify-between place-items-center space-x-2">
-					<div className="font-medium flex-1">
-						{formatTimeStamp(project.created_at as Date)}
-					</div>
-					<div
-						className={`status-bar ${getStatusClass(
-							project.status,
-						)} py-1 px-2 rounded-full text-gray-100 flex-1 text-center`}
-					>
-						{project.status}
-					</div>
-				</div>
-				<div className="font-bold flex justify-center text-lg">
-					{project.title}
-				</div>
+		<>
+			<div className="flex flex-col bg-gray-100 hover:bg-gray-300 rounded-md shadow-lg p-3 m-2 transition-all duration-500 ease-in-out">
+				{/* Edit project button if they have perms */}
 				<div>
-					<div className="flex justify-center text-md">
-						<FontAwesomeIcon
-							icon={faWarehouse}
-							size="4x"
-							className={`status-${
-								project.status
-							} ${getStatusColor(project.status)} mt-2 mb-2`}
-							color={getStatusColor(project.status)}
-						/>
-					</div>
-					<div className="flex flex-col place-items-center text-md">
-						<div>{project.address}</div>
-					</div>
+					{role === Roles.SUPERVISOR || role === Roles.ADMIN ? (
+						<div className="flex justify-end">
+							<button onClick={() => setEditEnabled(project)}>
+								<FontAwesomeIcon
+									icon={faPenToSquare}
+									size="2x"
+								/>
+							</button>
+						</div>
+					) : null}
 				</div>
-			</Link>
-		</div>
+
+				<Link href={`/projects/${project.id}`}>
+					<div className="flex justify-between place-items-center space-x-2">
+						<div className="font-medium flex-1">
+							{formatTimeStamp(project.created_at as Date)}
+						</div>
+						<div
+							className={`status-bar ${getStatusClass(
+								project.status,
+							)} py-1 px-2 rounded-full text-gray-100 flex-1 text-center`}
+						>
+							{project.status}
+						</div>
+					</div>
+					<div className="font-bold flex justify-center text-lg">
+						{project.title}
+					</div>
+					<div>
+						<div className="flex justify-center text-md">
+							<FontAwesomeIcon
+								icon={faWarehouse}
+								size="4x"
+								className={`status-${
+									project.status
+								} ${getStatusColor(project.status)} mt-2 mb-2`}
+								color={getStatusColor(project.status)}
+							/>
+						</div>
+						<div className="flex flex-col place-items-center text-md">
+							<div>{project.address}</div>
+						</div>
+					</div>
+				</Link>
+			</div>
+			{editEnabled && (
+				<EditProjectModal
+					onClose={handleEditCloseModal}
+					project={project}
+				/>
+			)}
+		</>
 	);
 };

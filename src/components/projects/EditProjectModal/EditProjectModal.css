@@ -1,0 +1,133 @@
+@tailwind base;
+
+@layer base {
+	.modal-overlay {
+		/* layout */
+		/* styling */
+		@apply absolute inset-0 z-40;
+		@apply bg-black bg-opacity-50;
+		@apply overflow-y-auto;
+		/* typography */
+		/* spacing */
+		@apply mx-auto;
+		@apply px-5 md:px-0;
+	}
+	.project-details-modal {
+		/* @apply fixed; */
+		/* layout */
+		@apply flex flex-col justify-center;
+		@apply max-w-xs md:max-w-2xl;
+		/* styling */
+		@apply bg-white rounded-lg shadow-lg;
+		@apply overflow-auto;
+		/* typography */
+		/* spacing */
+		@apply mx-auto;
+		@apply p-6;
+
+		.header-content {
+			/* layout */
+			@apply flex justify-between;
+
+			.close-modal-button {
+				/* styling */
+				@apply rounded-full bg-primary-green-300;
+				/* spacing */
+				@apply p-2;
+				/* effects */
+				@apply transition-all duration-300 ease-in-out;
+				&:hover {
+					/* styling */
+					@apply bg-primary-green-500;
+				}
+
+				.close-btn {
+					/* styling */
+					@apply w-6 h-6;
+				}
+			}
+		}
+		.header {
+			/* typography */
+			@apply text-2xl sm:text-4xl font-semibold;
+		}
+
+		.status-header {
+			/* typography */
+			@apply text-lg font-semibold leading-6;
+		}
+
+		.status-labels {
+			/* layout */
+			@apply flex flex-row space-x-2;
+			/* styling */
+			@apply overflow-auto whitespace-nowrap;
+
+			.status-button {
+				@apply px-4 py-2;
+				@apply rounded-3xl;
+				@apply border-2;
+
+				&.Completed,
+				&.completed {
+					/* styling */
+					@apply bg-green-500;
+				}
+
+				&.needs-approval,
+				&.Needs-Approval {
+					/* styling */
+					@apply bg-blue-500;
+				}
+
+				&.action-needed,
+				&.Action-Needed {
+					/* styling */
+					@apply bg-red-500;
+				}
+
+				&.in-progress,
+				&.In-Progress {
+					/* styling */
+					@apply bg-yellow-500;
+				}
+			}
+		}
+		.submit-new-project-button {
+			/* layout */
+			/* styling */
+			@apply w-full;
+			@apply bg-primary-green-400 hover:bg-primary-green-700;
+			@apply rounded-lg;
+			/* typography */
+			@apply font-semibold text-lg;
+			/* spacing */
+			@apply px-4 py-2;
+		}
+	}
+
+	.input-forms {
+		/* Text */
+		@apply sm:text-sm text-primary-green-500;
+
+		/* layout */
+		@apply block w-full bg-white;
+		/* styling */
+		@apply rounded-md;
+		@apply appearance-none ring-2 ring-primary-green-400;
+
+		/* layout styling */
+		@apply mt-2 px-3 h-10 shadow-sm w-full;
+
+		/* placeholder styling */
+		@apply placeholder:text-primary-green-400;
+		@apply focus:outline-none focus:ring-primary-green-700;
+	}
+
+	.input-labels {
+		/* Text */
+		@apply text-lg text-gray-800 font-semibold leading-6;
+		/* layout */
+		@apply block text-start;
+	}
+}
