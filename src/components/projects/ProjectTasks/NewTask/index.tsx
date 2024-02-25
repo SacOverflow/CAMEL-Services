@@ -256,6 +256,7 @@ export const EditTaskForm = ({
 				role={role}
 				task={editedTask}
 			/>
+			{/*	
 			<select
 				className="option-input max-w-full"
 				id="team"
@@ -272,6 +273,7 @@ export const EditTaskForm = ({
 					</option>
 				))}
 			</select>
+				*/}
 
 			<div className="bg-white shadow rounded-lg p-6">
 				<h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -345,6 +347,7 @@ export const EditTaskForm = ({
 							editedTask.project_id = project_id;
 
 							await createTask(editedTask);
+							window.location.reload();
 						}
 					}}
 				>

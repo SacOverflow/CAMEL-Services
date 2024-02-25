@@ -331,7 +331,7 @@ export async function deleteTask(task: ITasks) {
 
 export async function createTask(task: ITasks) {
 	const supabase = await createSupbaseClient();
-	//TO DO ADD DESTRUCTIORING
+
 	// parse for creating whats needed
 	const newRow: any = {
 		status: task.status,
@@ -340,10 +340,11 @@ export async function createTask(task: ITasks) {
 		project_id: task.project_id,
 	};
 
-	const { error } = await supabase.from('tasks').insert({ ...task });
+	const { error } = await supabase.from('tasks').insert({ ...newRow });
 
 	if (error) {
-		console.error('Error deleting task', error);
+		console.error('Error creating task', error);
+		console.info(task);
 		return false;
 	} else {
 		return true;

@@ -68,7 +68,7 @@ export function TasksSection({
 
 		// set the projects association members
 		const getMembs = async () => {
-			const resp = await getAllTaskMembers(allProjecTasks[0].id);
+			const resp = await getAllTaskMembers(project_id);
 
 			setTaskMembers(resp as any);
 		};
@@ -237,12 +237,23 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 		setCancelledTasks(newListOfCancelledTasks);
 	}, [tasks]);
 
+	if (!tasks.length) {
+		return (
+			<div className="flex flex-col items-center justify-center h-80">
+				<h2 className="text-xl font-bold">No tasks yet</h2>
+			</div>
+		);
+	}
+
 	return (
-		// <div className="flex gap-2">
 		<div className={`flex flex-row gap-2 max-w-screen justify-between`}>
 			<div className="flex-row m-4">
 				<h2 className={`text-xl font-bold my-2`}>Completed Tasks</h2>
-				<div className={`flex flex-col gap-2 overflow-auto h-80`}>
+				<div
+					className={`flex flex-col gap-2 overflow-auto ${
+						tasks.length ? 'h-80' : ''
+					}`}
+				>
 					{completedTasks.map((task, index) => (
 						<ProjectTask
 							key={index}
@@ -254,7 +265,11 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 			</div>
 			<div className="flex-row m-4">
 				<h2 className={`text-xl font-bold my-2`}>In Progress Tasks</h2>
-				<div className={`flex flex-col gap-2 overflow-auto h-80`}>
+				<div
+					className={`flex flex-col gap-2 overflow-auto ${
+						tasks.length ? 'h-80' : ''
+					}`}
+				>
 					{inProgressTasks.map((task, index) => (
 						<ProjectTask
 							key={index}
@@ -266,7 +281,11 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 			</div>
 			<div className="flex-row m-4">
 				<h2 className={`text-xl font-bold my-2`}>Cancelled Tasks</h2>
-				<div className={`flex flex-col gap-2 overflow-auto h-80`}>
+				<div
+					className={`flex flex-col gap-2 overflow-auto ${
+						tasks.length ? 'h-80' : ''
+					}`}
+				>
 					{cancelledTasks.map((task, index) => (
 						<ProjectTask
 							key={index}
