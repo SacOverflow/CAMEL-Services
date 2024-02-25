@@ -134,21 +134,6 @@ export async function removeProjectMember(proj_id: string, user_id: string) {
 	return true;
 }
 
-export async function updateTask(task: ITasks) {
-	const supabase = await createSupbaseClient();
-
-	const { data, error } = await supabase
-		.from('tasktmp')
-		.update([{ ...task }])
-		.select();
-	if (error) {
-		console.error(error.message);
-		return false;
-	} else {
-		return true;
-	}
-}
-
 export async function getMembersinTask(task: ITasks) {
 	const supabase = await createSupbaseClient();
 
@@ -191,7 +176,7 @@ export async function removeMemberFromTask(task: ITasks, member_id: string) {
 		.eq('task_id', task.id);
 
 	if (error) {
-		alert(JSON.stringify(error));
+		console.error(JSON.stringify(error));
 		return false;
 	} else {
 		return true;
@@ -385,7 +370,6 @@ export async function getProjectMembersTasks(projectId: String) {
 
 		return users;
 	} catch (error) {
-		//alert('"Error fetching project members:", error')
 		console.error('Error fetching project members:', error);
 	}
 
