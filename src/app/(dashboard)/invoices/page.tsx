@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ItemsTable from './itemsList';
 import { env } from 'process';
 import Image from 'next/image';
 import { createSupbaseClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/router';
 interface IReceipts {
 	id: string;
 	proj_id: string;
@@ -30,9 +31,14 @@ const ReceiptPage = () => {
 	const [items, setItems] = useState([]);
 	const [image, setImage] = useState<any>([]);
 	const [imageURL, setImageURL] = useState(DEFAULT_IMAGE);
-	//FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically
+	const [errorRe, setErrorMessage] = useState<{
+		error: Boolean;
+		errorMessage: string;
+		errorCode: string | number;
+	}>({ error: false, errorMessage: 'No error for now', errorCode: 100 });
+	//FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically -Hashem Jaber
 
-	const [reciept, setReciept] = useState<IReceipts | null | any>({
+	const [reciept, setReciept] = useState<IReceipts | any>({
 		proj_id: 'a7188d51-4ea8-492e-9277-7989551a3b97',
 		org_id: 'a210d3f7-bcc8-4e8b-9d61-2d4228bff047',
 		img_id: 'some-img-id',
@@ -82,11 +88,11 @@ const ReceiptPage = () => {
 		form.append('extractTime', 'false');
 		form.append('extractLineItems', 'true');
 
-		const options = {
+		const options: any = {
 			method: 'POST',
 			headers: {
 				accept: 'application/json',
-				apikey: 'f0d78cd0be8511eeb72409b0b60cbbed',
+				apikey: process.env.NEXT_PUBLIC_TAGGUN_KEY,
 			},
 			body: form,
 		};
@@ -117,14 +123,13 @@ const ReceiptPage = () => {
 				// Extract items info
 				const itemsInfo = extractItemsInfo(response);
 				const tmps: any = [];
-				// Assuming you want to print out the extracted information
 
 				itemsInfo.forEach((item: any) => {
 					try {
-						console.log(
+						/*	console.log(
 							`Item: ${item.Item}, Quantity: ${item.Quantity}, Unit Price: ${item.UnitPrice}, Total Price: ${item.TotalPrice}`,
 						);
-
+*/
 						tmps.push({
 							item: item.Item,
 							Quantity: item.Quantity,
@@ -133,17 +138,19 @@ const ReceiptPage = () => {
 						});
 						setItems(tmps);
 					} catch (e: any) {
-						alert('failed due to\n:' + e);
+						console.error('failed due to\n:' + e);
 					}
 				});
 
 				setReceiptData(response);
 				setLoading(false);
-				alert(JSON.stringify(response));
+				console.info(JSON.stringify(response));
 			})
-			.catch(err => {
+			.catch((err: any) => {
 				console.error(err);
-				setError('An error occurred while processing the receipt.');
+				setError(
+					'An error occurred while processing the receipt., error details: ',
+				);
 				setLoading(false);
 			});
 	};
@@ -164,6 +171,14 @@ const ReceiptPage = () => {
 			error,
 		} = await supabase.auth.getUser();
 
+		error
+			? setErrorMessage({
+					error: true,
+					errorMessage:
+						'failed to extract user info, are you sure your signed in?',
+					errorCode: 400,
+			  })
+			: () => {};
 		let newURL = null;
 
 		if (imageURL !== DEFAULT_IMAGE) {
@@ -178,7 +193,12 @@ const ReceiptPage = () => {
 
 			if (error) {
 				console.error(error);
-				alert(error);
+				setErrorMessage({
+					error: true,
+					errorMessage:
+						'failed to upload imaage of reciept, please try again',
+					errorCode: 400,
+				});
 				return;
 			}
 
@@ -204,16 +224,36 @@ const ReceiptPage = () => {
 				},
 			]);
 
-		entryError ? alert(JSON.stringify(entryError)) : console.log('');
 		entryError
-			? console.error('error creating receipt ' + entryError)
-			: console.info('Creating reciept worked');
+			? setErrorMessage({
+					error: true,
+					errorMessage: entryError?.message,
+					errorCode: entryError?.code,
+			  })
+			: setErrorMessage({
+					error: false,
+					errorMessage: 'no errors to report',
+					errorCode: 200,
+			  });
+		entryError
+			? setError('Reciept creation failed due to unknown ')
+			: setErrorMessage({
+					error: false,
+					errorMessage: 'no errors to report',
+					errorCode: 200,
+			  });
 
 		if (
 			entryError?.message ===
 				'duplicate key value violates unique constraint "organization_name_key"' ||
 			entryError?.code === '23505'
 		) {
+			setErrorMessage({
+				error: true,
+				errorMessage:
+					'failed to upload reciept, please try again, error detail: duplicate key value violates unique constrainty ',
+				errorCode: 23505,
+			});
 			return;
 		}
 		/*if (clickHandler) {
@@ -406,6 +446,16 @@ const ReceiptPage = () => {
 							Submit
 						</button>
 					</div>
+					{errorRe.errorCode === 200 && (
+						<span>Receipt uplaoded succesfully 🎉🥳 ! </span>
+					)}
+					{errorRe.error && (
+						<span>
+							Oops something went wrong: errorCode:{' '}
+							{errorRe.errorCode} {'\n'} error Message:{' '}
+							{errorRe.errorMessage}{' '}
+						</span>
+					)}
 				</div>
 			</div>
 			{receiptData && (
