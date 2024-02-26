@@ -4,10 +4,10 @@ import './DashboardPage.css';
 // COMPONENT IMPORTS
 import { default as CategoryPieChart } from '@/components/Dashboard/overall_spending_barchart/overall_spending_barchart';
 import ProjectActivity from '@/components/Dashboard/project_activity/project_activity';
-import MonthlySpending from '@/components/Dashboard/MonthlySpend';
+import MonthlySpending from '@/components/Dashboard/Monthly_Spending/MonthlySpend';
 import SalesTrendWidget from '@/components/Dashboard/SalesTrendWidget/SalesTrendWidget';
 import { default as RevenueChart } from '@/components/Dashboard/revenue_linechart/linechart';
-import { default as TotalEarningWidget } from '@/components/Dashboard/TotalEarning';
+import { default as TotalEarningWidget } from '@/components/Dashboard/Total_Earning/TotalEarning';
 import ArcGaugeChart from '@/components/Dashboard/ArcGaugeChart/ArcGaugeChart';
 import DashboardGreeting from '@/app/(dashboard)/dashboard/DashboardGreeting';
 

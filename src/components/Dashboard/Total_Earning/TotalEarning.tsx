@@ -14,6 +14,8 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 		isPositive: false,
 	});
 
+	const [hasData, setHasData] = useState(false); // New state to track data presence
+
 	useEffect(() => {
 		// retrieve the sum of projects and expenses
 		const fetchEarnings = async () => {
@@ -22,6 +24,7 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 
 			// if .response not 200 some error occured
 			if (resp.response !== 200) {
+				setHasData(false);
 				return;
 			}
 
@@ -35,6 +38,7 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 				) as string,
 				isPositive: resp.isPositive ? resp.isPositive : false,
 			});
+			setHasData(true);
 		};
 
 		// call fetchEarnings
@@ -63,37 +67,44 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 
 	return (
 		<div className="total-earning-container">
-			<div className="earning-header">
-				<div className="earning-title">Total earning</div>
-			</div>
-			<div className="earning-format">
-				<div className="earning-value">
-					${totalEarnings.currentEarning.toLocaleString()}
-				</div>
-				<div
-					className={`earning-percentage ${
-						totalEarnings.isPositive === null
-							? 'earning-percentage-neutral'
-							: totalEarnings.isPositive
-							? 'earning-percentage-positive'
-							: 'earning-percentage-negative'
-					}`}
-				>
-					{/* {totalEarnings.isPositive ? '▲' : '▼'}{' '} */}
-					{
-						totalEarnings.isPositive === null
-							? '○ ' // if isPositive is null; no arrow neutral value
-							: totalEarnings.isPositive
-							? '▲ ' // if isPositive is true; up arrow
-							: '▼ ' // if isPositive is false; down arrow
-					}
-					{totalEarnings.difference}%
-				</div>
-			</div>
-			<div className="earning-comparison">
-				Compared to ${totalEarnings.previousEarning.toLocaleString()}{' '}
-				last year
-			</div>
+			{hasData ? (
+				<>
+					<div className="earning-header">
+						<div className="earning-title">Total earning</div>
+					</div>
+					<div className="earning-format">
+						<div className="earning-value">
+							${totalEarnings.currentEarning.toLocaleString()}
+						</div>
+						<div
+							className={`earning-percentage ${
+								totalEarnings.isPositive === null
+									? 'earning-percentage-neutral'
+									: totalEarnings.isPositive
+									? 'earning-percentage-positive'
+									: 'earning-percentage-negative'
+							}`}
+						>
+							{/* {totalEarnings.isPositive ? '▲' : '▼'}{' '} */}
+							{
+								totalEarnings.isPositive === null
+									? '○ ' // if isPositive is null; no arrow neutral value
+									: totalEarnings.isPositive
+									? '▲ ' // if isPositive is true; up arrow
+									: '▼ ' // if isPositive is false; down arrow
+							}
+							{totalEarnings.difference}%
+						</div>
+					</div>
+					<div className="earning-comparison">
+						Compared to $
+						{totalEarnings.previousEarning.toLocaleString()} last
+						year
+					</div>
+				</>
+			) : (
+				<div className="no-data-message">No data available</div>
+			)}
 		</div>
 	);
 };

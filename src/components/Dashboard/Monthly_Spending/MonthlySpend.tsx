@@ -41,35 +41,41 @@ const MonthlySpending = () => {
 	return (
 		<div className="monthly-spending-container">
 			{/* Container for the list of data */}
-			<div className="spending-container">
-				{/* Unordered list to map out data, displays each spending category and amount, formatted into grid with commas */}
-				<ul>
-					{data.map((item, index) => (
-						<li
-							key={index}
-							className="spending-list-item"
-						>
-							<span className="category">{item.category}</span>
-							<span className="amount">
-								{formatNumber(item.amount)}
-							</span>
-							<span className="total">
-								{formatNumber(item.total)}
-							</span>
-							{/* Displays the trend, whether the icon is up or down */}
-							<span
-								className={
-									item.trend === 'up'
-										? 'trend-up'
-										: 'trend-down'
-								}
+			{data.length > 0 ? (
+				<div className="spending-container">
+					{/* Unordered list to map out data, displays each spending category and amount, formatted into grid with commas */}
+					<ul>
+						{data.map((item, index) => (
+							<li
+								key={index}
+								className="spending-list-item"
 							>
-								{item.trend === 'up' ? '▲' : '▼'}
-							</span>
-						</li>
-					))}
-				</ul>
-			</div>
+								<span className="category">
+									{item.category}
+								</span>
+								<span className="amount">
+									{formatNumber(item.amount)}
+								</span>
+								<span className="total">
+									{formatNumber(item.total)}
+								</span>
+								{/* Displays the trend, whether the icon is up or down */}
+								<span
+									className={
+										item.trend === 'up'
+											? 'trend-up'
+											: 'trend-down'
+									}
+								>
+									{item.trend === 'up' ? '▲' : '▼'}
+								</span>
+							</li>
+						))}
+					</ul>
+				</div>
+			) : (
+				<div className="no-data-message">No data available</div>
+			)}
 		</div>
 	);
 };
