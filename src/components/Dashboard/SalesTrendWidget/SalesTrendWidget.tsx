@@ -11,11 +11,13 @@ import './SalesTrendWidget.css';
 import { getSalesOverviewData, getSpendingCategories } from '@/utils/dataUtils';
 
 const SalesTrendWidget = async ({
-	filterType,
+	filterType = 'year',
 	className,
+	org,
 }: {
-	filterType: 'year' | 'month' | 'week' | 'day' | string;
+	filterType?: 'year' | 'month' | 'week' | 'day' | string; // TO BE IMPLEMENTED
 	className?: string;
+	org: string;
 }) => {
 	// get the mockaroo data
 	const SalesOverview = await getSalesOverviewData();

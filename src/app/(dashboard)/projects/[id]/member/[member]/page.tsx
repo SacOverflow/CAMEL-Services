@@ -7,7 +7,6 @@ import {
 	getOrganizationInformation,
 	getOrganizationMemberRole,
 	getProjectInformation,
-	getAllTasks,
 	getMemberTasks,
 	getMembersProjectActivities,
 } from '@/lib/actions';
@@ -70,7 +69,6 @@ export default async function MemberProjects({
 
 	// get current project name
 	const project: IProjects = await getProjectInformation(org, projectId);
-	console.log(project);
 
 	// get organization information
 	const orgInfo: IOrganization = await getOrganizationInformation(org);

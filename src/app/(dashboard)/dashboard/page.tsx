@@ -51,8 +51,8 @@ const DashboardPage = async () => {
 	);
 
 	const salesTrendData = {
-		filterType: 'week',
 		className: 'sales-trend-container',
+		org: org,
 	};
 
 	// get activity timestamps organization wide, sorted by when was created.
@@ -119,7 +119,9 @@ const DashboardPage = async () => {
 
 				{/* Project activity log content */}
 				<div className="project-activity">
-					<ProjectActivity />
+					<ProjectActivity
+						activites={orgTimeStamps as IProject_Activities[]}
+					/>
 				</div>
 			</div>
 		</>

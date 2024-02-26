@@ -9,8 +9,6 @@
 	.project-task {
 		@apply flex flex-col items-center justify-start;
 		@apply rounded-xl;
-		/* @apply w-[30rem] max-w-[30rem]; */
-		/* @apply h-[10rem] max-h-[15rem]; */
 
 		.status {
 			@apply w-full;
@@ -106,8 +104,6 @@
 		/* @apply  border border-green-500; */
 		/* styling */
 		@apply absolute top-full;
-		/* @apply z-50;  */
-		@apply border border-red-500;
 
 		.task-member-search-badge {
 			/* layout */
@@ -120,6 +116,8 @@
 			/* spacing */
 			@apply p-2;
 			@apply border border-green-500;
+
+			@apply cursor-pointer;
 
 			/* effects */
 			@apply transition-all duration-300 ease-in-out;
@@ -135,6 +133,142 @@
 			.add-icon {
 				@apply text-primary-green-700;
 			}
+		}
+	}
+
+	.task-member-badge {
+		/* layout */
+		@apply flex items-center justify-center;
+		@apply gap-2;
+		/* styling */
+		@apply rounded-3xl bg-primary-green-50 relative;
+		/* spacing */
+		@apply p-2;
+		@apply transition-all duration-300 ease-in-out;
+
+		.name {
+			@apply text-white text-xs text-start truncate;
+		}
+
+		.remove-icon {
+			/* styling */
+			@apply hidden absolute top-0 right-2;
+			@apply bg-gray-500 transform translate-y-1/2;
+			@apply w-[1.1rem] h-[1.1rem];
+			@apply rounded-full bg-center;
+			/* typography */
+			@apply text-white text-center;
+			/* spacing */
+			@apply px-[.15rem] py-[.1rem];
+			/* effects */
+			@apply cursor-pointer;
+			@apply transition-all duration-300 ease-in-out;
+		}
+
+		&:hover {
+			/* styling */
+			@apply bg-primary-green-100;
+			.remove-icon {
+				@apply block;
+			}
+		}
+	}
+
+	/* member badge on task search input */
+	.current-task-members {
+		@apply flex gap-1 self-start;
+
+		.current-task-member-card {
+			@apply m-auto relative;
+			.remove-icon {
+				@apply hidden;
+				@apply absolute top-0 right-1;
+				@apply rounded-full p-[2px] bg-gray-300;
+
+				svg {
+					@apply w-3 h-3;
+					@apply stroke-black;
+				}
+			}
+
+			/* replacement for image */
+			.view-member-img {
+				@apply w-10 h-10;
+				@apply stroke-primary-green-200;
+			}
+
+			.view-member-icon {
+				@apply absolute bottom-0 right-0;
+				@apply hidden;
+			}
+
+			&:hover {
+				/* .name, */
+				.remove-icon,
+				.view-member-icon {
+					@apply block;
+				}
+
+				.name {
+					@apply overflow-visible opacity-100;
+				}
+			}
+
+			.name {
+				/* Thank you: https://codepen.io/elhombretecla/pen/KWXJRv */
+				@apply bg-primary-green-200;
+				@apply rounded-sm shadow-lg;
+				@apply box-border absolute;
+				@apply opacity-0;
+				@apply text-white text-xs;
+				@apply p-[1em];
+				@apply transition-all duration-300 ease-in-out;
+				line-height: 1.2;
+				letter-spacing: 1px;
+				max-width: 200px;
+				min-width: 145px;
+				&::after {
+					@apply bg-primary-green-200;
+					@apply h-3 w-3 absolute;
+					content: '';
+					transform: rotate(45deg);
+				}
+
+				&.top {
+					bottom: calc(75% + 1.5em);
+					left: 50%;
+					transform: translateX(-50%);
+					@apply left-1/2 transform -translate-x-1/2;
+				}
+				&.bottom {
+					bottom: calc(-75% - 1.8em);
+
+					@apply left-1/2 transform -translate-x-1/2;
+				}
+			}
+		}
+	}
+
+	/* create / edit tasks */
+	.task-members-modal {
+		@apply absolute top-1/2 transform -translate-y-1/2 left-1/2 -translate-x-1/2 z-50;
+		@apply rounded-md shadow-md w-80 h-96 overflow-y-scroll;
+		@apply bg-gray-50;
+		@apply p-4;
+
+		.task-members-modal-header {
+			@apply flex justify-between items-center;
+
+			.close-modal-btn {
+				@apply flex justify-center items-center;
+				@apply w-6 h-6;
+				@apply bg-red-500 text-white rounded-full;
+			}
+		}
+
+		.task-members-modal-body {
+			@apply flex flex-col gap-2;
+			@apply mt-4;
 		}
 	}
 }

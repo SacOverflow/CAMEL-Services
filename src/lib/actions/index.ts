@@ -2,6 +2,7 @@ import {
 	IProject_Activities,
 	IProjects,
 	IUsers,
+	Roles,
 } from '@/types/database.interface';
 import { createSupbaseServerClientReadOnly } from '../supabase/server';
 
@@ -92,15 +93,11 @@ export async function checkProjectMember(
 ): Promise<boolean> {
 	const supabase = await createSupbaseServerClientReadOnly();
 
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-
 	// check if the user is the adminstrator of the organization
 	const { role } = (await getOrganizationMemberRole(org_id)) || {};
 
 	// if this role is an admin of the current org, they have access to this project
-	if (role === 'admin') {
+	if (role === Roles.ADMIN || role === Roles.SUPERVISOR) {
 		const { data: resp, error } = await supabase
 			.from('projects')
 			.select('*')
@@ -120,10 +117,10 @@ export async function checkProjectMember(
 	// if here, then this user is not admin of org, so check association with project and org
 	// check if this user has assocation with this project
 	const { data: resp1, error: error1 } = await supabase
-		.from('projects_member')
-		.select('user_id')
-		.eq('project_id', project_id)
-		.eq('user_id', user?.id)
+		.from('projects')
+		.select('*')
+		.eq('id', project_id)
+		.eq('org_id', org_id)
 		.single();
 
 	if (error1) {
@@ -137,7 +134,7 @@ export async function checkProjectMember(
 	}
 
 	// if this user isnt caught with no assocation above return true
-	return true;
+	return resp1;
 }
 
 export async function getProjectInformation(org_id: string, proj_id: string) {

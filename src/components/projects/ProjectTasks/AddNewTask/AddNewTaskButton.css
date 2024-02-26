@@ -1,7 +1,7 @@
 @tailwind base;
 
 @layer base {
-	.task-modal {
+	.task-modal-add {
 		/* layout */
 		@apply flex flex-col gap-2 items-center justify-center;
 		/* styling */

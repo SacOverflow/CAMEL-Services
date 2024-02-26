@@ -1,16 +1,14 @@
 'use client';
 
-import { ITasks, IUsers, Status } from '@/types/database.interface';
+import { ITasks, IUsers, Roles, Status } from '@/types/database.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TaskContext } from './ContextProvider';
 import { ProjectTask } from './TaskCard';
-import CreateTaskForm from '../ProjectTasks/AddNewTask/AddNewTask';
 import ErrorMessage from '@/components/SharedComponents/ErrorModal';
 // css imports
 import './ProjectTask.css';
 import { EditTaskForm } from './NewTask';
 import {
-	addMembertoTask,
 	addTaskMember,
 	deleteTask,
 	getAllNonTaskMembers,
@@ -18,8 +16,6 @@ import {
 	removeMemberFromTask,
 } from '@/lib/actions/client';
 import Image from 'next/image';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { createSupbaseClient } from '@/lib/supabase/client';
 
 // return array of 3 ITasks array filtered
 export function organizeTasks(tasks: ITasks[]) {
@@ -246,7 +242,8 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 	}
 
 	return (
-		<div className={`flex flex-row gap-2 max-w-screen justify-between`}>
+		// handle here so no overflow
+		<div className={`flex flex-row gap-2 justify-between max-w-full`}>
 			<div className="flex-row m-4">
 				<h2 className={`text-xl font-bold my-2`}>Completed Tasks</h2>
 				<div
@@ -410,56 +407,255 @@ export function TaskMemberInput({
 	};
 
 	const handleBlur = () => {
-		setSearchResults([]);
+		// add some timeout to allow for click events
+		setTimeout(() => {
+			setSearchResults([]);
+		}, 200);
 	};
 
 	const handleAddMember = (member: IUsers) => {
-		console.log('I like Mexico');
 		setMembers([...members, member]);
 		setCurrInput('');
 	};
 
+	const handleRemoveMember = (member: IUsers) => {
+		setMembers(members.filter(mem => mem.id !== member.id));
+	};
+
+	const MEMBERS_LIMIT = 4;
+	const [membersModal, setMembersModal] = useState(false);
+
+	const toggleMembersModal = () => {
+		setMembersModal(!membersModal);
+	};
+	const closeMembersModal = () => {
+		setMembersModal(false);
+	};
+
 	return (
-		<div className="task-input-field relative">
-			<label
-				className="task-labels"
-				htmlFor="members"
+		<>
+			<div className="task-input-field relative">
+				<label
+					className="task-labels"
+					htmlFor="members"
+				>
+					Members:
+				</label>
+				<input
+					className="flex-grow mr-2"
+					id="members"
+					type="text"
+					name="members"
+					value={currInput}
+					onChange={handleSearch}
+					autoComplete="off"
+					onBlur={handleBlur}
+					disabled={role?.toLocaleLowerCase() === Roles.MEMBER}
+					placeholder={
+						role?.toLocaleLowerCase() === Roles.MEMBER
+							? 'N/A'
+							: 'Add task members...'
+					}
+				/>
+
+				{/* search box reuslts that allow clicking on user */}
+				<div className="task-member-search-container">
+					{searchResults.map((member, index) => (
+						<TaskMemberSearchCard
+							key={index}
+							task={task}
+							member={member}
+							handler={() => {
+								handleAddMember(member);
+							}}
+						/>
+					))}
+				</div>
+			</div>
+			<div className="current-task-members">
+				{/* show {N} recent members */}
+				{members
+					?.slice(0, MEMBERS_LIMIT)
+					?.sort()
+					?.map((member, index) => (
+						<TaskMemberCard
+							task={task}
+							role={role}
+							key={index}
+							member={member}
+							removeMember={handleRemoveMember}
+						/>
+					))}
+
+				{/* aditional modal for other members */}
+				{members.length > MEMBERS_LIMIT && (
+					<>
+						<TaskMemberCard
+							task={task}
+							role={role}
+							member={members[1]}
+							type="view-member"
+							toggleModal={toggleMembersModal}
+						/>
+
+						{membersModal && (
+							<TaskMembersModal
+								members={members}
+								viewerRole={role}
+								task={task}
+								closeModal={closeMembersModal}
+							/>
+						)}
+					</>
+				)}
+			</div>
+		</>
+	);
+}
+
+// Small circle for showing members
+function TaskMemberCard({
+	member,
+	role,
+	task,
+	type = 'edit-member',
+	toggleModal,
+	removeMember,
+}: {
+	member: IUsers;
+	role?: string;
+	task: ITasks;
+	type?: 'view-member' | 'edit-member';
+	toggleModal?: any;
+	removeMember?: any;
+}) {
+	const DelePriv = () => {
+		return (
+			role?.toLocaleLowerCase() === Roles.ADMIN ||
+			role?.toLocaleLowerCase() === Roles.SUPERVISOR
+		);
+	};
+
+	const handleRemoveUser = async (e: any) => {
+		e.preventDefault();
+		e.stopPropagation();
+		const resp = await removeMemberFromTask(task, member.id);
+
+		if (!resp) {
+			// FIXME: error
+			console.error('error removing member');
+			return;
+		}
+		if (removeMember) {
+			removeMember(member);
+		}
+	};
+
+	const adminPriviledge = DelePriv();
+
+	// popup modal option
+	if (type === 'view-member') {
+		return (
+			<button
+				className="current-task-member-card"
+				onClick={e => {
+					e.stopPropagation();
+					e.preventDefault();
+					// open modal
+					toggleModal();
+				}}
 			>
-				Members:
-			</label>
-			<input
-				className="flex-grow mr-2"
-				id="members"
-				type="text"
-				name="members"
-				value={currInput}
-				onChange={handleSearch}
-				autoComplete="off"
-				// onBlur={handleBlur}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth={1.5}
+					stroke="currentColor"
+					className="view-member-img"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+					/>
+				</svg>
+
+				<span className="view-member-icon">...</span>
+			</button>
+		);
+	}
+
+	// member card with pfp and remove icon
+	return (
+		<div className="current-task-member-card">
+			<Image
+				src={member.image || '/images/default-profile.png'}
+				alt="profile picture"
+				width={40}
+				height={40}
+				className="rounded-full"
 			/>
 
-			{/* search box reuslts */}
-			<div className="task-member-search-container">
-				{searchResults.map((member, index) => (
-					<TaskMemberSearchCard
-						key={index}
-						task={task}
-						member={member}
-						handler={() => {
-							handleAddMember(member);
-						}}
-					/>
-				))}
+			<span className="name bottom">{member.name}</span>
+			{adminPriviledge && (
+				<button
+					className="remove-icon"
+					onClick={handleRemoveUser}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						strokeWidth={1.5}
+						stroke="currentColor"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M6 18 18 6M6 6l12 12"
+						/>
+					</svg>
+				</button>
+			)}
+		</div>
+	);
+}
+
+// Modal for displaying additional members
+function TaskMembersModal({
+	members,
+	viewerRole,
+	task,
+	closeModal,
+}: {
+	members: IUsers[];
+	viewerRole?: string;
+	task: ITasks;
+	closeModal?: any;
+}) {
+	return (
+		<div className="task-members-modal">
+			<div className="task-members-modal-header">
+				<h2>Members</h2>
+				<button
+					className="close-modal-btn"
+					onClick={e => {
+						e.stopPropagation();
+						e.preventDefault();
+						closeModal();
+					}}
+				>
+					X
+				</button>
 			</div>
 
-			{/* member badges already associated*/}
-			<div className="task-member-input-badge absolute left-3/4 bottom-1 whitespace-nowrap flex gap-2 overflow-x-scroll max-h-[12em] max-w-[6em] md:max-w-[8em] ">
-				{members.sort().map((member, index) => (
+			<div className="task-members-modal-body">
+				{members.map((member, index) => (
 					<TaskMemberInputBadge
-						task={task}
-						role={role}
 						key={index}
 						member={member}
+						role={viewerRole}
+						task={task}
 					/>
 				))}
 			</div>
@@ -478,16 +674,15 @@ function TaskMemberInputBadge({
 	task: ITasks;
 }) {
 	const DelePriv = () => {
-		console.info('Role of user is :', role);
 		return (
-			role?.toLocaleLowerCase() === 'admin' ||
-			role?.toLocaleLowerCase() === 'supervisor'
+			role?.toLocaleLowerCase() === Roles.ADMIN ||
+			role?.toLocaleLowerCase() === Roles.SUPERVISOR
 		);
 	};
 
 	const adminPriviledge = DelePriv();
 	return (
-		<div className="task-member-badge flex items-center justify-center gap-2 rounded-3xl bg-primary-green-50 p-2 relative  ">
+		<div className="task-member-badge">
 			<Image
 				src={member.image || '/images/default-profile.png'}
 				alt="profile picture"
@@ -496,19 +691,31 @@ function TaskMemberInputBadge({
 				className="rounded-full"
 			/>
 
-			<span className="text-white text-xs text-start truncate">
+			<span className="name">
 				{member.name}
 				{adminPriviledge && (
 					<div
 						onClick={() => {
 							removeMemberFromTask(task, member.id).then(res => {
-								console.info('user removed from task');
+								// promise chains :( ouch)
 								window.location.reload();
 							});
 						}}
-						className="absolute top-0 right-0 bg-red-300 text-white text-center transform translate-y-1/2  rounded-lg bg-center"
+						className={`remove-icon`}
 					>
-						X
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M6 18 18 6M6 6l12 12"
+							/>
+						</svg>
 					</div>
 				)}
 			</span>
@@ -528,6 +735,7 @@ function TaskMemberSearchCard({
 }) {
 	const addMemberToTask = async (e: any) => {
 		e.stopPropagation();
+		e.preventDefault();
 		console.log('clicked member addition...');
 		const resp = await addTaskMember(task.project_id, task.id, member.id);
 
@@ -536,13 +744,14 @@ function TaskMemberSearchCard({
 			// display some msgs
 			return;
 		}
+		handler();
 
-		window.location.reload();
+		// window.location.reload();
 	};
 
 	return (
 		<button
-			className="task-member-search-badge z-50 cursor-zoom-in "
+			className="task-member-search-badge"
 			onClick={addMemberToTask}
 		>
 			<Image

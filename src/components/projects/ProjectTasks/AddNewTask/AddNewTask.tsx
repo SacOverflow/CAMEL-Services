@@ -1,9 +1,7 @@
 'use client';
 
 //import { createSupbaseServerClientReadOnly } from '@/lib/supabase/server';
-import React, { useState } from 'react';
-
-('./index');
+import { useState } from 'react';
 
 type Task = {
 	id: string;
@@ -46,7 +44,7 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 		<div className="">
 			<form
 				onSubmit={() => {}}
-				className=" task-modal "
+				className=" task-modal-add"
 			>
 				{/* Task Name */}
 				<div className="mb-4">

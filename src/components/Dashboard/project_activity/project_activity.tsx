@@ -351,9 +351,9 @@ const ProjectActivity = ({
 					className ? ` ${className}` : ''
 				}`}
 			>
-				<div className="overflow-x-auto">
-					<table className="min-w-full table-auto rounded-lg">
-						<thead className="bg-gray-200 rounded-t-lg">
+				<div className="overflow-x-auto max-h-[25rem]">
+					<table className="min-w-full table-auto rounded-lg relative">
+						<thead className="bg-gray-200 rounded-t-lg sticky top-0 z-10">
 							<tr>
 								<th className="px-4 py-2 text-left rounded-tl-lg">
 									Status
@@ -363,7 +363,7 @@ const ProjectActivity = ({
 									Last Updated
 								</th>
 								<th className="px-4 py-2 text-left">Notes</th>
-								<th className="px-4 py-2 text-left rounded-tr-lg">
+								<th className="px-4 py-2 text-left">
 									Duration
 								</th>
 								<th className="px-4 py-2 text-left rounded-tr-lg">
@@ -371,7 +371,7 @@ const ProjectActivity = ({
 								</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody className="overflow-y-auto">
 							{Object.keys(timestamps).length ? (
 								timestamps[currentMonth as any].map(
 									(activity: any, index: any) => (

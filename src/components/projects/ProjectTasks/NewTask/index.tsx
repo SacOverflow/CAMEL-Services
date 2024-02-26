@@ -6,13 +6,10 @@ import { ITasks, Status } from '@/types/database.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TaskContext } from '../ContextProvider';
 import { TaskMemberInput } from '../client';
-import { create } from 'domain';
 import {
 	createTask,
 	getProjectMembersTasks,
 	getAllTaskMembers,
-	addTaskMember,
-	removeMemberFromTask,
 } from '@/lib/actions/client';
 
 export const EditTaskForm = ({
@@ -105,7 +102,7 @@ export const EditTaskForm = ({
 		selectedTask
 			? getAllTaskMembers(editedTask.id).then(members => {
 					getProjectMembersTasks(project_id).then((tmp: any) => {
-						console.log('Task Members:', taskMembers); // Debug: Check taskMembers content and type
+						console.log('Task Members:', taskMembers); // TODO: REMOVE: Debug: Check taskMembers content and type
 
 						if (Array.isArray(taskMembers)) {
 							// Ensure taskMembers is an array
@@ -140,9 +137,12 @@ export const EditTaskForm = ({
 		event.preventDefault();
 		// Consolidate your create/update logic here
 		if (selectedTask) {
-			await updateTask(editedTask);
-
-			setSelectedTask(null);
+			// if update is successful, clear the selected task
+			const resp = await updateTask(editedTask);
+			if (resp) {
+				setSelectedTask(null);
+			}
+			// setSelectedTask(null);
 		} else {
 			editedTask.project_id = project_id;
 			await createTask(editedTask);
@@ -154,33 +154,60 @@ export const EditTaskForm = ({
 		event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = event.target;
-		if (name === 'completedBy') {
+		if (name === 'completed_date') {
+			// date
+			const [year, mm, dd] = value.split('-').map(Number);
+			const dateObj = new Date(year, mm - 1, dd);
+
 			setEditedTask(prevTask => ({
 				...prevTask,
-				[name]: value ? new Date(value) : null,
+				['due_date']: dateObj,
 			}));
-		} else if (name === 'team') {
-			setTeamMember(value);
-			const targetUser: number | any = members.find(
-				member => member.name === value,
-			)?.id;
-			selectedTask
-				? addTaskMember(project_id, editedTask.id, targetUser).then(
-						res => {
-							res
-								? console.info('success')
-								: console.info('fail');
-						},
-				  )
-				: () => {};
+		}
+		// else if (name === 'team') {
+		// 	setTeamMember(value);
+		// 	const targetUser: number | any = members.find(
+		// 		member => member.name === value,
+		// 	)?.id;
+		// 	selectedTask
+		// 		? addTaskMember(project_id, editedTask.id, targetUser).then(
+		// 				res => {
+		// 					res
+		// 						? console.info('success')
+		// 						: console.info('fail');
+		// 				},
+		// 		  )
+		// 		: () => {};
 
-			setMembers(members.filter(member => member.name !== value));
+		// 	setMembers(members.filter(member => member.name !== value));
+		// }
+		else if (name === 'status') {
+			// status use enums
+			const enumStatus = {
+				completed: Status.Complete,
+				inprogress: Status.InProgress,
+				cancelled: Status.ActionNeeded,
+			};
+			setEditedTask(prevTask => ({
+				...prevTask,
+				status: enumStatus[value as keyof typeof enumStatus],
+			}));
 		} else {
 			setEditedTask(prevTask => ({
 				...prevTask,
 				[name]: value,
 			}));
 		}
+	};
+
+	const getDateInput = (date: Date) => {
+		date = new Date(date);
+		if (isNaN(date.getTime())) {
+			const today = new Date();
+			return today.toISOString().split('T')[0];
+		}
+		const dateStr = date.toISOString().split('T')[0];
+		return dateStr;
 	};
 
 	return (
@@ -232,7 +259,7 @@ export const EditTaskForm = ({
 			<div className="task-input-field">
 				<label
 					className="task-labels"
-					htmlFor="completedBy"
+					htmlFor="completed_date"
 				>
 					Completed By:
 				</label>
@@ -241,17 +268,12 @@ export const EditTaskForm = ({
 					id="completed_date"
 					type="date"
 					name="completed_date"
-					value={
-						editedTask.completed_date instanceof Date
-							? editedTask.completed_date
-									.toISOString()
-									.split('T')[0]
-							: ''
-					}
+					value={getDateInput(editedTask.due_date)}
 					onChange={handleChange}
 				/>
 			</div>
 
+			{/* Searching input for user to add new members to tasks  */}
 			<TaskMemberInput
 				role={role}
 				task={editedTask}
@@ -275,7 +297,7 @@ export const EditTaskForm = ({
 			</select>
 				*/}
 
-			<div className="bg-white shadow rounded-lg p-6">
+			{/* <div className="bg-white shadow rounded-lg p-6">
 				<h2 className="text-lg font-semibold text-gray-800 mb-4">
 					Task Members
 				</h2>
@@ -323,7 +345,7 @@ export const EditTaskForm = ({
 						</>
 					))}
 				</div>
-			</div>
+			</div> */}
 
 			<div className="task-btns">
 				<button
@@ -340,8 +362,11 @@ export const EditTaskForm = ({
 					className="save-btn"
 					onClick={async () => {
 						if (selectedTask) {
-							updateTask(editedTask);
-							setSelectedTask(null);
+							const resp = await updateTask(editedTask);
+							if (resp) {
+								// if update is successful, clear the selected task
+								setSelectedTask(null);
+							}
 						} else {
 							dismiss();
 							editedTask.project_id = project_id;

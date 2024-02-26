@@ -35,7 +35,7 @@
 	@apply text-red-600;
 }
 .earning-percentage-neutral {
-	@apply text-gray-300;
+	@apply text-gray-400/90;
 }
 
 .earning-comparison {

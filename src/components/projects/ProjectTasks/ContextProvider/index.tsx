@@ -16,7 +16,7 @@ interface TaskContextContent {
 	setTaskMembers: (members: taskMembers[]) => void;
 	addTask: (task: ITasks) => void;
 	removeTask: (task: ITasks) => void;
-	updateTask: (task: ITasks | any) => void;
+	updateTask: (task: ITasks | any) => Promise<boolean>;
 	// addMember: any;
 	// removeMember: any;
 	selectedTask: ITasks | null;
@@ -41,7 +41,10 @@ export const TaskContext = createContext<TaskContextContent>({
 	setTaskMembers: () => {},
 	addTask: () => {},
 	removeTask: () => {},
-	updateTask: () => {},
+	updateTask: () => {
+		// some promise & function of some sort
+		return new Promise(() => {});
+	},
 	// addMember: () => {},
 	// removeMember: () => {},
 	selectedTask: null,
@@ -66,7 +69,6 @@ export const TaskContextProvider = ({
 	};
 
 	const updateTask = async (task: ITasks) => {
-		
 		const supabase = await createSupbaseClient();
 
 		const { data, error } = await supabase
@@ -74,19 +76,19 @@ export const TaskContextProvider = ({
 			.update({
 				title: task.title,
 				due_date: task.due_date,
-				status: task.status.toLocaleLowerCase(),
+				status: task.status,
 				completed_date: task.completed_date,
 			})
 			.eq('id', task.id);
 
 		if (error) {
 			console.error('Error updating task:', error);
+			return false;
 		}
-
-		
 
 		// update current tasks state
 		setTasks(tasks.map(t => (t.id === task.id ? task : t)));
+		return true;
 	};
 
 	return (

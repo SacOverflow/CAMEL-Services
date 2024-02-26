@@ -9,8 +9,6 @@
 	.project-task {
 		@apply flex flex-col items-center justify-start;
 		@apply rounded-xl;
-		/* @apply w-[30rem] max-w-[30rem]; */
-		/* @apply h-[10rem] max-h-[15rem]; */
 
 		.status {
 			@apply w-full;
@@ -103,7 +101,6 @@
 	.task-member-search-container {
 		/* layout */
 		@apply flex flex-col gap-1;
-		/* @apply  border border-green-500; */
 		/* styling */
 		@apply absolute top-full;
 

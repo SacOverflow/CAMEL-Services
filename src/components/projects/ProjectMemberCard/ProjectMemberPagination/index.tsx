@@ -107,7 +107,7 @@ export const PaginationHandler = ({
 
 			{/* page numbers */}
 			<div className="current-page">
-				{currentPage} {` / `}
+				{currentPage > totalPages ? totalPages : currentPage} {` / `}
 				{totalPages}
 			</div>
 

@@ -21,6 +21,25 @@
 		}
 	}
 
+	.add-member-task-bar {
+		/* layout */
+		@apply relative flex items-center justify-center;
+		/* styling */
+		@apply bg-primary-green-300;
+		@apply h-7 w-8;
+		@apply rounded-2xl;
+		/* spacing */
+		@apply px-2;
+
+		.add-icon {
+			/* styling */
+			@apply w-6 h-6;
+			@apply fill-none stroke-white !important;
+			/* effects */
+			@apply cursor-pointer;
+		}
+	}
+
 	/* Styles for the search bar container */
 	.search-member-bar {
 		/* layout */

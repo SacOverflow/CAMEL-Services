@@ -78,7 +78,8 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 						</div>
 						<div
 							className={`earning-percentage ${
-								totalEarnings.isPositive === null
+								totalEarnings.isPositive === null ||
+								totalEarnings.difference === '0'
 									? 'earning-percentage-neutral'
 									: totalEarnings.isPositive
 									? 'earning-percentage-positive'
@@ -87,7 +88,8 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 						>
 							{/* {totalEarnings.isPositive ? '▲' : '▼'}{' '} */}
 							{
-								totalEarnings.isPositive === null
+								totalEarnings.isPositive === null ||
+								totalEarnings.difference === '0'
 									? '○ ' // if isPositive is null; no arrow neutral value
 									: totalEarnings.isPositive
 									? '▲ ' // if isPositive is true; up arrow

@@ -1,6 +1,6 @@
 'use client';
 
-import { ITasks, Status } from '@/types/database.interface';
+import { ITasks, Roles, Status } from '@/types/database.interface';
 import { Poppins } from 'next/font/google';
 import { DeleteTask, SelectTask } from '../client';
 import { useEffect, useState } from 'react';
@@ -56,6 +56,10 @@ export function ProjectTask({ task, role }: { task: ITasks; role: string }) {
 		}
 	};
 
+	const getDateString = (date: Date) => {
+		return new Date(date).toISOString().split('T')[0];
+	};
+
 	return (
 		<div className={`project-task ${PoppinsSemiBold.className}`}>
 			<div
@@ -67,7 +71,7 @@ export function ProjectTask({ task, role }: { task: ITasks; role: string }) {
 
 				<div className="btn-container flex gap-2 items-center justify-center">
 					<SelectTask task={task} />
-					{(role === 'admin' || role === 'supervisor') && (
+					{(role === Roles.ADMIN || role === Roles.SUPERVISOR) && (
 						<DeleteTask task={task} />
 					)}
 				</div>
@@ -112,7 +116,8 @@ export function ProjectTask({ task, role }: { task: ITasks; role: string }) {
 					</svg>
 
 					<span className="text">
-						{new Date(due_date).toLocaleDateString()}
+						{/* {new Date(due_date).toLocaleDateString()} */}
+						{getDateString(due_date)}
 					</span>
 				</div>
 
