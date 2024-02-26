@@ -86,7 +86,7 @@ export const getProjectMembers = async (
 				return {} as IUsers;
 			}
 
-			return data?.length ? data[0] : ({} as IUsers); // Assuming {} is acceptable as IUsers
+			return data?.length ? data[0] : ({} as IUsers);
 		}),
 	);
 
@@ -622,3 +622,129 @@ export async function addTaskMember(
 	console.error(JSON.stringify(error));
 	return error ? false : true;
 }
+
+const readReceipt_h = async (receiptId?: string) => {
+	const supabase = await createSupbaseClient();
+	let query = supabase.from('receipts').select('*');
+
+	if (receiptId) {
+		query = query.eq('id', receiptId);
+	}
+
+	const { data, error } = await query;
+
+	if (error) {
+		console.error('Failed to fetch receipt:', error);
+		return { error: true, message: error.message };
+	}
+
+	return { error: false, data };
+};
+
+const updateReceipt_h = async (
+	receiptId: string,
+	updates: Record<string, any>,
+) => {
+	const supabase = await createSupbaseClient();
+	const { data, error } = await supabase
+		.from('receipts')
+		.update(updates)
+		.match({ id: receiptId });
+
+	if (error) {
+		console.error('Failed to update receipt:', error);
+		return { error: true, message: error.message };
+	}
+
+	return { error: false, data };
+};
+
+const deleteReceipt_h = async (receiptId: string) => {
+	const supabase = await createSupbaseClient();
+
+	const { data, error } = await supabase
+		.from('receipts')
+		.delete()
+		.match({ id: receiptId });
+
+	if (error) {
+		console.error('Failed to delete receipt:', error);
+		return { error: true, message: error.message };
+	}
+
+	return { error: false, data };
+};
+
+// Function to create a new receipt
+const createReceipt_h = async (
+	receiptData: any,
+	imageFile: File | null,
+	DEFAULT_IMAGE: string,
+) => {
+	// Initialize Supabase client
+	const supabase = await createSupbaseClient();
+
+	// Attempt to get the current user from Supabase authentication
+	const { data: userData, error: userError } = await supabase.auth.getUser();
+
+	// Handle user authentication error
+	if (userError) {
+		console.error(
+			"Failed to extract user info, please make sure you're signed in.",
+		);
+		return; // Exit the function if there's an error
+	}
+
+	// Initialize the URL for the receipt image
+	let imageURL = DEFAULT_IMAGE;
+
+	// Proceed with image upload if a new image file is provided and it's not the default image
+	if (imageFile && imageURL !== DEFAULT_IMAGE) {
+		// Create a unique hash for the image file
+		const imageHash = Math.random().toString(36).substring(2);
+		const imagePath = `public/${imageHash}`;
+
+		// Upload the image to Supabase storage
+		const { data, error: uploadError } = await supabase.storage
+			.from('profile-avatars')
+			.upload(imagePath, imageFile, {
+				cacheControl: '3600', // Example cache control setting
+			});
+
+		// Handle image upload error
+		if (uploadError) {
+			console.error(
+				'Failed to upload image of receipt, please try again.',
+			);
+			return; // Exit the function if there's an error
+		}
+		const {
+			data: { publicUrl },
+		} = supabase.storage
+			.from('profile-avatars')
+			.getPublicUrl(data?.path as string);
+		// On successful upload, set the new image URL
+		imageURL = publicUrl;
+	}
+
+	// Prepare the receipt data with the user ID and image URL
+	const receiptPayload = {
+		...receiptData,
+		created_by: userData.user?.id, // Use the ID of the authenticated user
+		image: imageURL, // Use the uploaded image URL or the default
+	};
+
+	// Insert the new receipt data into the 'receipts' table
+	const { error: insertError } = await supabase
+		.from('receipts')
+		.insert([receiptPayload]);
+
+	// Handle error on inserting receipt data
+	if (insertError) {
+		console.error('Receipt creation failed:', insertError.message);
+		return; // Exit the function if there's an error
+	}
+
+	// Successfully created the receipt
+	console.log('Receipt created successfully.');
+};
