@@ -3,14 +3,13 @@
 import { useEffect, useState } from 'react';
 // CSS import
 import './AddMemberInteraction.css';
-import {
-	getCookie,
-	getOrganizationMembers,
-	getProjectMembers,
-	inviteProjectMember,
-} from '@/lib/actions/client';
+import { getCookie, inviteProjectMember } from '@/lib/actions/client';
 import { IUsers } from '@/types/database.interface';
 import Image from 'next/image';
+import {
+	getOrganizationMembers,
+	getProjectMembers,
+} from '@/lib/actions/get.client';
 
 export function SearchBar() {
 	const [isActive, setIsActive] = useState(false);

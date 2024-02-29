@@ -11,6 +11,8 @@ import {
 import { Lexend_Giga } from 'next/font/google';
 import { redirect } from 'next/navigation';
 import { readUser } from '@/lib/actions';
+import { Suspense } from 'react';
+import Loader from '../loading';
 const lexendGiga = Lexend_Giga({ subsets: ['latin'] });
 
 export default async function DashboardLayoutPage({ children }: Props) {
@@ -31,7 +33,8 @@ export default async function DashboardLayoutPage({ children }: Props) {
 				<LanguageAuthHeader />
 				{/* Image with Product Logo */}
 				<BrandHeroSection />
-				{children}
+				<Suspense fallback={<Loader />}>{children}</Suspense>
+				{/* {children} */}
 			</div>
 
 			{/* <!-- green content to right of login --> */}
