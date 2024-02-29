@@ -394,3 +394,54 @@ export async function getMemberTasks(member_id: string, proj_id: string) {
 		return resp;
 	}
 }
+
+export const getAllNonProjectMembers = async (
+	org_id: string,
+	project_id: string,
+) => {
+	let resp: IUsers[] = [];
+	const client = await createSupbaseServerClientReadOnly();
+	const { data, error: err } = await client.rpc(
+		'get_users_not_in_project_and_in_organization',
+		{
+			org: org_id,
+			project: project_id,
+		},
+	);
+
+	if (err) {
+		console.log(err);
+		return resp;
+	}
+
+	// Filter out any empty or error states
+	resp =
+		(data?.filter((user: any) => Object.keys(user).length > 0) as any) ||
+		([] as IUsers[]);
+
+	return resp;
+};
+export const getAllNonOrganizationMembers = async (
+	organization_id: string,
+): Promise<IUsers[]> => {
+	let resp: IUsers[] = [];
+	const client = await createSupbaseServerClientReadOnly();
+	const { data, error: err } = await client.rpc(
+		'get_users_not_in_organization',
+		{
+			organization: organization_id,
+		},
+	);
+
+	// err return empty array
+	if (err) {
+		console.log(err);
+		return resp;
+	}
+
+	// Filter out any empty or error states
+	resp =
+		(data?.filter((user: any) => Object.keys(user).length > 0) as any) ||
+		([] as IUsers[]);
+	return resp;
+};
