@@ -6,6 +6,10 @@ import { usePathname } from 'next/navigation';
 // CSS imports
 import './SideNavbar.css';
 import { createBrowserClient } from '@supabase/ssr';
+import { useEffect, useState } from 'react';
+import { getCookie } from '@/lib/actions/client';
+import { Roles } from '@/types/database.interface';
+import { getOrganizationMemberRole } from '@/lib/actions/get.client';
 
 // first half of nav items
 const NavigationItems = [
@@ -169,6 +173,8 @@ const SideNavbar = ({
 }) => {
 	const pathname = usePathname();
 
+	const [navItems, setNavItems] = useState(NavigationItems);
+
 	// NOTE: Advise on this, if want to do this, or use server side ??
 	const SignOut = async () => {
 		const supabase = await createBrowserClient(
@@ -181,15 +187,36 @@ const SideNavbar = ({
 
 	const appendShown = show ? '' : 'disabled';
 
-	// TODO: implement modal overlay so if user clicks outside of sidebar, it closes
-	const ModalOverlay = () => {
-		<div
-			className={`model-overlay`}
-			onClick={() => {
-				setter((oldVal: boolean) => !oldVal);
-			}}
-		/>;
-	};
+	// use effect to remove certain parts of side navbar dependent on role within current org
+	useEffect(() => {
+		// fetch the currently selected organzation
+		const org = getCookie('org');
+		if (!org) {
+			return;
+		}
+		// using org, fetch the role of the user within the org; remove the dashboard if they are not an admin
+		const getUserRole = async () => {
+			const roleResponse = await getOrganizationMemberRole(org);
+			const role: string = roleResponse?.role || '';
+			if (!role) {
+				return;
+			}
+
+			// if role is member dont show the dashboard option
+			if (role.toLowerCase() === Roles.MEMBER) {
+				// remove the dashboard option
+				const newNavItems = NavigationItems.filter(
+					item => item.name.toLowerCase() !== 'dashboard',
+				);
+				// update the state
+				setNavItems(newNavItems);
+			} else {
+				setNavItems(NavigationItems);
+			}
+		};
+
+		getUserRole();
+	});
 
 	return (
 		<>
@@ -197,7 +224,7 @@ const SideNavbar = ({
 				{/* navigation controls */}
 				<div className="navigation-controls-container">
 					{/* navigation items */}
-					{NavigationItems.map((item, index) => {
+					{navItems.map((item, index) => {
 						return (
 							<Link
 								className={`sidenav-item ${

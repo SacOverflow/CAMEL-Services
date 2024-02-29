@@ -1,10 +1,11 @@
 'use client';
 import SideNavbar from '@/components/SharedComponents/SideNavbar';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
 // import css
 import './base.css';
 import { Props } from '@/types/componentTypes';
+import Loader from '../loading';
 
 const Layout = ({ children }: Props) => {
 	// for opening and closing sidebar
@@ -40,7 +41,7 @@ const Layout = ({ children }: Props) => {
 				show={showSidebar}
 				setter={setShowSidebar}
 			/>
-			{children}
+			<Suspense fallback={<Loader />}>{children}</Suspense>
 		</main>
 	);
 };
