@@ -4,8 +4,8 @@ import { useState } from 'react';
 import InputComponent from '@/components/SharedComponents/InputComponent';
 
 import { useRouter } from 'next/navigation';
-import { createSupbaseClient } from '@/lib/supabase/client';
 import PopUp from './PopUp';
+import { signupNewUser } from '@/lib/actions/auth.client';
 
 function SignUpForm() {
 	const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -18,57 +18,86 @@ function SignUpForm() {
 
 	const [popup, setPopup] = useState(false);
 	const [popupMsg, setPopupMsg] = useState('');
+
+	const PASSWORD_LENGTH = 6;
+	const PASSWORD_REGEX_STRING = `^(?=.*[a-zA-Z])(?=.*\\d).{${PASSWORD_LENGTH},}$`;
+	const EMAIL_REGEX_STRING = '^[\\w\\-.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$';
+	const PASSWORD_REGEX = new RegExp(PASSWORD_REGEX_STRING);
 	const router = useRouter();
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 
-		if (!passwordMatch) {
+		if (!passwordMatch || !PASSWORD_REGEX.test(password)) {
 			return;
 		}
-		// FIXME: Ahahahahaha
-		const resp: any = await signupNewUser();
+
+		// check if email valid using regex
+		const EMAIL_REGEX = new RegExp(EMAIL_REGEX_STRING);
+
+		const emailValid = EMAIL_REGEX.test(emailOrUsername);
+		if (!emailValid) {
+			setPopupMsg('Invalid email address');
+			setPopup(true);
+
+			setTimeout(() => {
+				setPopupMsg('');
+				setPopup(false);
+			}, 5000);
+
+			return;
+		}
+
+		const name = `${firstName} ${lastName}`;
+		const resp: any = await signupNewUser(
+			emailOrUsername,
+			password,
+			name,
+			userName,
+		);
 
 		if (resp?.error) {
-			// TODO:  if error message is 'User already registered.' then popup msg populate, redirect to signin as well...
+			// username already found
+			if (
+				resp?.error.message
+					.toLowerCase()
+					.includes('duplicate key value violates unique constraint')
+			) {
+				// user name or email already registered
+				setPopupMsg('Username is already taken.');
+
+				setTimeout(() => {
+					setPopupMsg('');
+					setPopup(false);
+				}, 5000);
+			} else if (
+				resp?.error.message
+					.toLowerCase()
+					.includes('user already registered')
+			) {
+				setPopupMsg('Email is already taken.');
+
+				setTimeout(() => {
+					setPopupMsg('');
+					setPopup(false);
+				}, 5000);
+			}
 			// encountered error
-			console.log('err caught: ', resp);
 			setPopupMsg(resp.error?.message || 'Something went wrong.');
 			setPopup(true);
-			// router.refresh();
+
+			setTimeout(() => {
+				setPopupMsg('');
+				setPopup(false);
+			}, 5000);
+
 			return;
 		}
 
+		// else if no error caught above redirect with new session
 		// redirect to signin page
 		router.push('/dashboard');
 		router.refresh();
-	};
-
-	const signupNewUser = async () => {
-		// create a browser client accessing cookie
-		const supabase = await createSupbaseClient();
-
-		// signup user with email, pass and meta data
-		const { data, error } = await supabase.auth.signUp({
-			email: emailOrUsername,
-			password: password,
-			options: {
-				data: {
-					// NOTE: How the Metadata fields are correlated later
-					name: `${firstName} ${lastName}`,
-					username: userName,
-				},
-			},
-		});
-
-		if (error) {
-			return { error };
-		}
-
-		// double check me
-		const { user, session } = data;
-
-		return data;
 	};
 
 	return (
@@ -82,15 +111,13 @@ function SignUpForm() {
 				msg={`${popupMsg}`}
 			/>
 			<form
-				action=""
-				method="post"
 				id="signup-form"
 				onSubmit={handleSubmit}
 			>
 				<InputComponent
 					label="firstName"
 					labelText="First Name"
-					type=""
+					type="text"
 					id="firstName"
 					pattern="^[a-zA-ZÀ-ÿ]+$"
 					placeholder="First Name"
@@ -101,7 +128,7 @@ function SignUpForm() {
 				<InputComponent
 					label="lastName"
 					labelText="Last Name"
-					type=""
+					type="text"
 					id="lastName"
 					pattern="^[a-zA-ZÀ-ÿ]+$"
 					placeholder="Last Name"
@@ -114,7 +141,7 @@ function SignUpForm() {
 					labelText="Email address"
 					type="email"
 					id="email"
-					// pattern="^(?=.{3,50}$)([a-zA-Z0-9_\.]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}|[a-zA-Z][a-zA-Z0-9_\.]{2,19})$"
+					pattern={EMAIL_REGEX_STRING}
 					placeholder="Enter Email"
 					value={emailOrUsername}
 					onChange={e => setEmailOrUsername(e.target.value)}
@@ -123,7 +150,7 @@ function SignUpForm() {
 				<InputComponent
 					label="Username"
 					labelText="Username"
-					type=""
+					type="text"
 					id=""
 					pattern="^[a-zA-Z0-9_]+$"
 					placeholder="Enter Username"
@@ -137,17 +164,21 @@ function SignUpForm() {
 					type="password"
 					id="password"
 					placeholder="Enter Password"
+					pattern={PASSWORD_REGEX_STRING}
 					value={password}
-					onChange={e => setPassword(e.target.value)}
+					onChange={e => {
+						setPassword(e.target.value);
+						setPasswordMatch(e.target.value === confirmPassword);
+					}}
 					required={true}
 				/>
-
 				<InputComponent
 					label="password"
 					labelText="Confirm Password"
 					type="password"
 					id="confirmPassword"
 					placeholder="Enter Password Again"
+					pattern={PASSWORD_REGEX_STRING}
 					value={confirmPassword}
 					onChange={e => {
 						setConfirmPassword(e.target.value);
