@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import InputComponent from '@/components/SharedComponents/InputComponent';
 import Link from 'next/link';
-import { createBrowserClient } from '@supabase/ssr';
 import PopUp from '@/components/SignUp/PopUp';
 import { useRouter } from 'next/navigation';
+import { signInUser } from '@/lib/actions/auth.client';
 
 // supabase import
 
@@ -20,21 +20,17 @@ function LoginForm() {
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
-		const supabase = await createBrowserClient(
-			process.env.NEXT_PUBLIC_SUPABASE_URL!,
-			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-		);
+		const response = await signInUser(emailOrUsername, password);
 
-		const { data, error } = await supabase.auth.signInWithPassword({
-			email: emailOrUsername,
-			password: password,
-		});
-
-		await supabase.auth.refreshSession();
-
-		if (error) {
-			setPopupMsg(error.message);
+		if (response?.error) {
+			setPopupMsg(response?.error?.message);
 			setPopup(true);
+
+			// close popup after 5 seconds
+			setTimeout(() => {
+				setPopupMsg('');
+				setPopup(false);
+			}, 5000);
 			return;
 		}
 
@@ -62,9 +58,8 @@ function LoginForm() {
 				<InputComponent
 					label="email"
 					labelText="Email address / Username"
-					type="email"
+					type="text"
 					id="email"
-					// pattern="^(?=.{3,50}$)([a-zA-Z0-9_\.]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}|[a-zA-Z][a-zA-Z0-9_\.]{2,19})$"
 					placeholder="Enter Email / Username"
 					value={emailOrUsername}
 					onChange={e => setEmailOrUsername(e.target.value)}
