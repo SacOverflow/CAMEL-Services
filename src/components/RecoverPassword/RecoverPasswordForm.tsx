@@ -1,9 +1,11 @@
 'use client';
 
+// CSS imports
+import './RecoverPasswordForm.css';
+
 import { useState } from 'react';
 import InputComponent from '@/components/SharedComponents/InputComponent';
-import { createSupbaseClient } from '@/lib/supabase/client';
-import './RecoverPasswordForm.css';
+import { resetPasswordForEmail } from '@/lib/actions/auth.client';
 
 function RecoverPasswordForm() {
 	const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -15,14 +17,7 @@ function RecoverPasswordForm() {
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 
-		const supabase = await createSupbaseClient();
-
-		const { data, error } = await supabase.auth.resetPasswordForEmail(
-			emailOrUsername,
-			{
-				redirectTo: `${window.location.origin}`,
-			},
-		);
+		const { data, error } = await resetPasswordForEmail(emailOrUsername);
 
 		setSubmitted(true);
 		if (error) {
