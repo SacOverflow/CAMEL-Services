@@ -10,28 +10,73 @@
 		/* spacing */
 		@apply px-4 py-2;
 		@apply m-2;
+
 		/* completed tasks */
-		&.status-Completed {
-			/* styling */
+		&.status-Complete,
+		&[class~='status.complete'],
+		&[class~='status-complete'] {
 			@apply bg-green-800 hover:bg-green-900;
+
+			&.active {
+				@apply bg-green-900;
+				@apply text-primary-green-50;
+				@apply underline;
+			}
 		}
 
 		/* in progress tasks */
-		&.status-In-Progress {
+		&.status-In-Progress,
+		&[class*='status in progress'],
+		&[class*='status in-progress'],
+		&[class*='status In Progress'],
+		&[class*='status-in progress'] {
 			/* styling */
 			@apply bg-yellow-400 hover:bg-yellow-500;
+
+			&.active {
+				@apply bg-yellow-500;
+				@apply text-primary-green-50;
+				@apply underline;
+			}
 		}
 
 		/* tasks that need approval*/
-		&.status-Needs-Approval {
+		&.status-Needs-Approval,
+		&[class*='status needs approval'],
+		&[class*='status needs-approval'],
+		&[class*='status Needs Approval'],
+		&[class*='status-needs approval'] {
 			/* styling */
 			@apply bg-blue-500 hover:bg-blue-600;
+
+			&.active {
+				@apply bg-blue-600;
+				@apply text-primary-green-50;
+				@apply underline;
+			}
 		}
 
 		/* tasks that action is needed */
-		&.status-Action-Needed {
+		&.status-Action-Needed,
+		&[class*='status action needed'],
+		&[class*='status action-needed'],
+		&[class*='status Action Needed'],
+		&[class*='status-action needed'] {
 			/* styling */
 			@apply bg-red-700 hover:bg-red-800;
+			&.active {
+				@apply bg-red-800;
+				@apply text-primary-green-50;
+				@apply underline;
+			}
 		}
+
+		/* apply styling to show current selection */
+		/* &[class*="status-completed active"],{
+			&.active {
+				@apply bg-green-900;
+				@apply border border-red-500 !important;
+			}
+		} */
 	}
 }
