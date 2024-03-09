@@ -3,7 +3,7 @@ import {
 	IReceipts,
 	IUsers,
 	IProject_Activities,
-	ITasks
+	ITasks,
 } from '@/types/database.interface';
 
 import { createSupbaseClient } from '../supabase/client';
@@ -347,8 +347,7 @@ export const createProjectActivity = async (
 	return {} as IProject_Activities;
 };
 
-export async function updateTask(task:ITasks) {
-
+export async function updateTask(task: ITasks) {
 	const supabase = await createSupbaseClient();
 
 	const { data, error } = await supabase
@@ -747,4 +746,144 @@ const createReceipt_h = async (
 
 	// Successfully created the receipt
 	console.log('Receipt created successfully.');
+};
+
+/*
+Get All receipts based on project ID
+returns a sorted reciept lists based on newest to oldest date of creation.
+project id required*/
+const getAllReceiptsByProject = async (project_id: string) => {
+	const supabase = await createSupbaseClient();
+	//If project Id is provided then query supabase api
+	if (project_id) {
+		const { data: receipts, error } = await supabase
+			// from table name 'receipts' TODO: Maybe provide a object called SupaBaseTableNames ?, just an idea  ~Hashem Jaber
+			.from('receipts')
+			.select('*')
+			.eq('proj_id', project_id)
+			//assending false means it orders/sorts it based on newest to oldest
+			.order('created_at', { ascending: false });
+		if (error) {
+			console.error('Failed to fetch receipt:', error);
+			//If error in supabase api fetching then object of error and error message is returned
+			return { error: true, message: error.message };
+		}
+		return { error: false, receipts };
+	} else {
+		//If Project Id not provided then return with error message
+		return { error: true, message: 'no project Id provided' };
+	}
+};
+
+/*
+Create new organization
+returns a sorted reciept lists based on newest to oldest date of creation.
+org id required*/
+
+const createNewOrganization = async (
+	created_by: string,
+	name: string,
+	image: string,
+) => {
+	const supabase = await createSupbaseClient();
+
+	const { data, error } = await supabase
+		.from('organization')
+		.insert([{ name: name, image: image, created_by: created_by }])
+		.select();
+
+	//assending false means it orders/sorts it based on newest to oldest
+	//.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to create organization:', error);
+		//If error in supabase api fetching then object of error and error message is returned
+		return { error: true, message: error.message };
+	}
+	return { error: false, data, response: 200 };
+};
+
+/*
+Get all organizations that a user is an admin from
+returns a list of organizations that a user is in
+user_ id required*/
+
+const getAllUsersOrgs = async (user_id: string) => {
+	const supabase = await createSupbaseClient();
+
+	const { data, error } = await supabase
+		.from('organization_member')
+		.select('org_id')
+		.eq('member_id', user_id);
+
+	//assending false means it orders/sorts it based on newest to oldest
+	//.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to create organization:', error);
+		//If error in supabase api fetching then object of error and error message is returned
+		return { error: true, message: error.message };
+	}
+	const { data: organizations, error: error_get_org_list } = await supabase
+		.from('organization')
+		.select('*')
+		.in('id', data);
+
+	if (error_get_org_list) {
+		console.error('Failed to create organization:', error);
+		//If error in supabase api fetching then object of error and error message is returned
+		return { error: true, message: error_get_org_list.message };
+	}
+
+	return { error: false, data: organizations, response: 200 };
+};
+
+/*
+Update organization
+returns the updated organization based on newest to oldest date of creation.
+org id required, name and image not required*/
+
+const updateOrganization = async (
+	org_id: string,
+	name: string,
+	image: string,
+) => {
+	const supabase = await createSupbaseClient();
+
+	const { data, error } = await supabase
+		.from('organization')
+		.update([{ name: name, image: image, created_by: org_id }])
+		.eq('org_id', org_id)
+		.select();
+
+	//assending false means it orders/sorts it based on newest to oldest
+	//.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to create organization:', error);
+		//If error in supabase api fetching then object of error and error message is returned
+		return { error: true, message: error.message };
+	}
+	return { error: false, data, response: 200 };
+};
+
+/*
+Delete organization
+deletes an organization based on the passed id, and but check before if
+org id, memeber_id required*/
+
+const deleteOrganization = async (org_id: string, member_id: string) => {
+	const supabase = await createSupbaseClient();
+
+	const { data, error } = await supabase
+		.from('organization_member')
+		.select('org_id')
+		.eq('member_id', member_id);
+
+	//assending false means it orders/sorts it based on newest to oldest
+	//.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to create organization:', error);
+		//If error in supabase api fetching then object of error and error message is returned
+		return { error: true, message: error.message };
+	}
+
+	return { error: false, data, response: 200 };
 };
