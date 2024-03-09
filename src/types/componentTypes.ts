@@ -45,3 +45,9 @@ export interface ITicketCardProps {
 export interface Props {
 	children: string | JSX.Element | JSX.Element[];
 }
+
+export interface IOrgEdit {
+	id: string;
+	name: string;
+	image: string;
+}
