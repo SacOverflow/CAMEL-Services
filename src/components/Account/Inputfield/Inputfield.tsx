@@ -8,39 +8,25 @@ interface AccountInputFieldProps {
 	label: string;
 	placeholder: string;
 	type: 'text' | 'email' | 'password';
-	// onSubmit: (value: string) => void;
+	value: any;
+	setValue: (value: any) => void;
 }
 
 // const supabase = await createSupbaseClient();
 
-const InputField = ({ label, placeholder, type }: AccountInputFieldProps) => {
-	const [value, setValue] = useState('');
-	const [userName, setUserName] = useState('');
-	const [firstName, setFirstName] = useState('');
-	const [lastName, setLastName] = useState('');
-	const [email, setEmail] = useState('');
+const InputField = ({
+	label,
+	placeholder,
+	type,
+	value: valTmp,
+	setValue: setVal,
+}: AccountInputFieldProps) => {
+	const [value, setValue] = useState(valTmp);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(e.target.value);
+		setVal(e.target.value);
 	};
-	// useEffect(() => {
-	// 	const handleUserUpdate = async (newUser: any) => {
-	// 		try {
-	// 			const { data, error } = await supabase.auth.updateUser({
-	// 				username: newUsername,
-	// 			});
-
-	// 			if (error) {
-	// 				throw error;
-	// 			}
-
-	// 			if (data) {
-	// 				alert('Username has been updated successfully!');
-	// 			}
-	// 		} catch (error) {
-	// 			alert(`Error updating user: ${error.message}`);
-	// 		}
-	// 	};
-	// });
 
 	return (
 		<div className="infocolumns">

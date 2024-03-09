@@ -1,16 +1,11 @@
 'use client';
 
-// CSS imports
-import './UpdatePasswordForm.css';
-
 import { useState, useEffect } from 'react';
 import InputComponent from '@/components/SharedComponents/InputComponent';
 import { createSupbaseClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { updatePassword } from '@/lib/actions/auth.client';
-
-const PASSWORD_LENGTH = 6;
-const PASSWORD_REGEX_STRING = `^(?=.*[a-zA-Z])(?=.*\d).{${PASSWORD_LENGTH},}$`;
+import './UpdatePasswordForm.css';
+import { PASSWORD_REGEX } from '@/types/auth.constants';
 
 function UpdatePasswordForm() {
 	const [password, setPassword] = useState('');
@@ -61,7 +56,19 @@ function UpdatePasswordForm() {
 	//Handles update password through updateUser method form Supabase
 	const handlePasswordUpdate = async (newPassword: string) => {
 		try {
-			const { data, error } = await updatePassword(newPassword);
+			if (!PASSWORD_REGEX.test(newPassword)) {
+				setSubmitted(true);
+				setPopupMessage('Password must be 6 or more characters long.');
+				setTimeout(() => {
+					setSubmitted(false);
+					setPopupMessage('');
+				}, 3000);
+				return;
+			}
+			const supabase = await createSupbaseClient();
+			const { data, error } = await supabase.auth.updateUser({
+				password: newPassword,
+			});
 
 			setSubmitted(true);
 
@@ -115,7 +122,6 @@ function UpdatePasswordForm() {
 				type="password"
 				id="password"
 				placeholder="Enter Password"
-				pattern={PASSWORD_REGEX_STRING}
 				value={password}
 				onChange={e => setPassword(e.target.value)}
 				required={true}
@@ -126,7 +132,6 @@ function UpdatePasswordForm() {
 				type="password"
 				id="confirmPassword"
 				placeholder="Enter Password Again"
-				pattern={PASSWORD_REGEX_STRING}
 				value={confirmPassword}
 				onChange={e => {
 					setConfirmPassword(e.target.value);

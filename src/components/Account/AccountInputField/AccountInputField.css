@@ -24,7 +24,7 @@
 }
 
 .role {
-	@apply text-sm text-gray-400;
+	@apply text-sm text-gray-400 capitalize;
 }
 
 .infocolumns {
@@ -37,4 +37,8 @@
 
 .labelsformat {
 	@apply block mb-2 ml-2 my-2 font-medium text-gray-400;
+}
+
+.return-container {
+	@apply flex items-center justify-start p-2;
 }
