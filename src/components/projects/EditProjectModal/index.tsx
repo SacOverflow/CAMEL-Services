@@ -98,7 +98,6 @@ export const EditProjectModal = ({
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		// Submit to DB once API is ready
 		const supabase = await createSupbaseClient();
-		console.log('status: ', formData.projectStatus);
 
 		const {
 			data: { user },
