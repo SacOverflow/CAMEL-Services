@@ -15,6 +15,7 @@ export const ReturnComp = () => {
 				fill="none"
 				viewBox="0 0 24 24"
 				strokeWidth={1.5}
+				className="w-10 h-10 stroke-primary-green-200"
 			>
 				<path
 					strokeLinecap="round"
