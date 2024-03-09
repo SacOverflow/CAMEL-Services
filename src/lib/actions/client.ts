@@ -8,6 +8,13 @@ import {
 
 import { createSupbaseClient } from '../supabase/client';
 
+interface ReceiptResponse {
+	error: boolean;
+	message?: string;
+	data?: IReceipts[]; // Use your interface here
+	receipts?: IReceipts[]; // Also adjust this if needed
+}
+
 export const getCookie = (name: string): string => {
 	const value = `; ${window.document.cookie}`;
 	const parts = value.split(`; ${name}=`);
@@ -669,31 +676,24 @@ const createReceipt_h = async (
 	console.log('Receipt created successfully.');
 };
 
-/*
-Get All receipts based on project ID
-returns a sorted reciept lists based on newest to oldest date of creation.
-project id required*/
-const getAllReceiptsByProject = async (project_id: string) => {
+export const getAllReceiptsByProject = async (
+	project_id: string,
+): Promise<ReceiptResponse> => {
 	const supabase = await createSupbaseClient();
-	//If project Id is provided then query supabase api
-	if (project_id) {
-		const { data: receipts, error } = await supabase
-			// from table name 'receipts' TODO: Maybe provide a object called SupaBaseTableNames ?, just an idea  ~Hashem Jaber
-			.from('receipts')
-			.select('*')
-			.eq('proj_id', project_id)
-			//assending false means it orders/sorts it based on newest to oldest
-			.order('created_at', { ascending: false });
-		if (error) {
-			console.error('Failed to fetch receipt:', error);
-			//If error in supabase api fetching then object of error and error message is returned
-			return { error: true, message: error.message };
-		}
-		return { error: false, receipts };
-	} else {
-		//If Project Id not provided then return with error message
+	if (!project_id) {
 		return { error: true, message: 'no project Id provided' };
 	}
+	const { data: receipts, error } = await supabase
+		.from('receipts')
+		.select('*')
+		.eq('proj_id', project_id)
+		.order('created_at', { ascending: false });
+
+	if (error) {
+		console.error('Failed to fetch receipts:', error);
+		return { error: true, message: 'Failed to fetch receipts' };
+	}
+	return { error: false, data: receipts };
 };
 
 /*
@@ -807,4 +807,77 @@ const deleteOrganization = async (org_id: string, member_id: string) => {
 	}
 
 	return { error: false, data, response: 200 };
+};
+/*
+Get All receipts based on organization ID
+returns a sorted reciept lists based on newest to oldest date of creation.
+org id required*/
+export const getAllReceiptsByOrganization = async (org_id: string) => {
+	const supabase = await createSupbaseClient();
+	if (!org_id) {
+		return { error: true, message: 'no organization Id provided' };
+	}
+	const { data: receipts, error } = await supabase
+		.from('receipts')
+		.select('*')
+		.eq('org_id', org_id)
+		.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to fetch receipts:', error);
+		return { error: true, message: 'Failed to fetch receipts' };
+	}
+	return { error: false, data: receipts };
+};
+
+export const getAllReceiptsByUserAndProject = async (
+	user_id: string,
+	project_id: string,
+): Promise<ReceiptResponse> => {
+	const supabase = await createSupbaseClient();
+	if (!user_id || !project_id) {
+		return {
+			error: true,
+			message: !user_id
+				? 'no user Id provided'
+				: 'no project Id provided',
+		};
+	}
+
+	const { data: receipts, error } = await supabase
+		.from('receipts')
+		.select('*')
+		.eq('created_by', user_id)
+		.eq('proj_id', project_id)
+		.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to fetch receipts:', error);
+		return { error: true, message: 'Failed to fetch receipts' };
+	}
+	return { error: false, data: receipts };
+};
+
+export const getAllReceiptsByUserAndOrganization = async (
+	user_id: string,
+	org_id: string,
+): Promise<ReceiptResponse> => {
+	const supabase = await createSupbaseClient();
+	if (!user_id || !org_id) {
+		return {
+			error: true,
+			message: !user_id
+				? 'no user Id provided'
+				: 'no organization Id provided',
+		};
+	}
+	const { data: receipts, error } = await supabase
+		.from('receipts')
+		.select('*')
+		.eq('created_by', user_id)
+		.eq('org_id', org_id)
+		.order('created_at', { ascending: false });
+	if (error) {
+		console.error('Failed to fetch receipts:', error);
+		return { error: true, message: 'Failed to fetch receipts' };
+	}
+	return { error: false, data: receipts };
 };
