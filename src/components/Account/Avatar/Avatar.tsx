@@ -28,7 +28,7 @@ const Avatar = ({ name, image }: AvatarProps) => {
 		const fileTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
 		if (!fileTypes.includes(fileType)) {
-			// TODO: add span text maybe
+			// case should be handled by input field
 			console.error('Invalid file type');
 			return;
 		}
@@ -90,7 +90,6 @@ const Avatar = ({ name, image }: AvatarProps) => {
 	};
 
 	return (
-		// TODO: Reference backend for username or name intials for profile initials
 		<>
 			{pfpImage ? (
 				<div className="pfp-container">

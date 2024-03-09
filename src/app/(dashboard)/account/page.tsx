@@ -1,6 +1,6 @@
 import { AccountInputField } from '@/components/Account/AccountInputField/AccountInputField';
 import { getOrganizationMemberRole, getUserInformation } from '@/lib/actions';
-import { IUsers_table } from '@/types/database.interface';
+import { IUsers } from '@/types/database.interface';
 import { cookies } from 'next/headers';
 
 const AccountPage = async () => {
@@ -20,7 +20,7 @@ const AccountPage = async () => {
 		<>
 			<AccountInputField
 				userrole={role}
-				user={userInfo as IUsers_table}
+				user={userInfo as IUsers}
 			/>
 		</>
 	);

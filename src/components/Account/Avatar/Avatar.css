@@ -12,44 +12,44 @@
 		/* spacing */
 		@apply mx-2 my-2;
 	}
-}
 
-.pfp-container {
-	/* layout */
-	@apply relative;
-	/* styling */
-	@apply w-14 h-14 rounded-full overflow-hidden;
-	transform: translateZ(0);
-
-	.pfp-image {
-		/* styling */
-		@apply w-full h-full rounded-full;
-	}
-
-	.overlay {
+	.pfp-container {
 		/* layout */
-		@apply flex justify-center items-center;
+		@apply relative;
 		/* styling */
-		@apply absolute inset-0 opacity-0 transition-opacity;
-		@apply duration-300;
-		@apply text-white bg-black bg-opacity-50;
-	}
+		@apply w-14 h-14 rounded-full overflow-hidden;
+		transform: translateZ(0);
 
-	&:hover .overlay {
-		@apply opacity-100;
-	}
+		.pfp-image {
+			/* styling */
+			@apply w-full h-full rounded-full;
+		}
 
-	.pfp-image-input {
-		/* layout */
-		/* styling */
-		@apply absolute inset-0;
-		@apply w-full h-full rounded-full opacity-0;
-		@apply cursor-pointer;
-		@apply z-20;
-	}
+		.overlay {
+			/* layout */
+			@apply flex justify-center items-center;
+			/* styling */
+			@apply absolute inset-0 opacity-0 transition-opacity;
+			@apply duration-300;
+			@apply text-white bg-black bg-opacity-50;
+		}
 
-	&:hover {
-		@apply opacity-100;
+		&:hover .overlay {
+			@apply opacity-100;
+		}
+
+		.pfp-image-input {
+			/* layout */
+			/* styling */
+			@apply absolute inset-0;
+			@apply w-full h-full rounded-full opacity-0;
+			@apply cursor-pointer;
+			@apply z-20;
+		}
+
+		&:hover {
+			@apply opacity-100;
+		}
 	}
 }
 
