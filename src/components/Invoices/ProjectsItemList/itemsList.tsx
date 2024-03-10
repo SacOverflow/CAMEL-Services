@@ -2,17 +2,6 @@
 'use client';
 import React, { useState } from 'react';
 
-const initialItems = [
-	{
-		id: 1,
-		Item: 'Lorem ipsum',
-		Quantity: 1,
-		UnitPrice: '$2.50',
-		TotalPrice: '$2.50',
-	},
-	// Add more items here as per your data
-];
-
 function EditableRow({
 	item,
 	onSave,
