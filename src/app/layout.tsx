@@ -3,6 +3,8 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar/Navbar';
 import { readUser } from '@/lib/actions';
+import {Footer} from '@/components/SharedComponents/Footer';
+
 
 import { Suspense } from 'react';
 import Loader from './loading';
@@ -30,6 +32,7 @@ export default async function RootLayout({
 			<body className={poppins.className}>
 				<Navbar session={user || undefined} />
 				<Suspense fallback={<Loader />}>{children}</Suspense>
+				<Footer/>
 			</body>
 		</html>
 	);
