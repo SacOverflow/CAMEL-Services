@@ -108,4 +108,5 @@ export interface IReceipts {
     created_at: Date;
     price_total: number;
     note?: string;
+	image?:string
 }

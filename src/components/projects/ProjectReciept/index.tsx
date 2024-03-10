@@ -1,7 +1,5 @@
 'use client';
-
 import { IReceipts } from '@/types/database.interface';
-
 import 'src/components/projects/ProjectActivity/ProjectActivity.css';
 import React, { useState } from 'react';
 import { createSupbaseClient } from '@/lib/supabase/client';
@@ -29,9 +27,9 @@ const [errorRe, setErrorMessage] = useState<{
         store: 'store',
         category: 'category',
         updated_by: null,
-        updated_at: new Date(),
+        updated_at: null,
         created_by: user_id,
-        created_at: new Date(),
+        created_at: null,
         price_total: 100.0,
         note: '',
     });
@@ -187,7 +185,7 @@ error
                         'failed to upload imaage of reciept, please try again',
                     errorCode: 400,
                 });
-                return;
+                return false;
             }
 
             // get image url

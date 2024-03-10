@@ -22,7 +22,7 @@ import { IUsers, Roles } from '@/types/database.interface';
 import { AddProjectReciept } from '@/components/projects/ProjectReciept';
 import { TasksSectionContainer } from '@/components/projects/ProjectTasks/server';
 import { SearchBar as AddNewTaskButton } from '@/components/projects/ProjectTasks/AddNewTask/index';
-import RecieptList from '../../invoices/recieptList';
+import RecieptList from '@/components/projects/ProjectReciept/recieptList'
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],

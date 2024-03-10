@@ -2,21 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createSupbaseClient } from '@/lib/supabase/client';
-interface IReceipts {
-    id: string;
-    proj_id: string;
-    org_id: string;
-    img_id: string;
-    store: string;
-    category: string;
-    updated_by: string;
-    updated_at: Date;
-    created_by: string;
-    created_at: Date;
-    price_total: number;
-    note?: string;
-    image?:string
-}
+import { IReceipts } from '@/types/database.interface';
 
 const getAllReciptsForProject=async (project_id:string)=>{
 const supaBase=await createSupbaseClient();
