@@ -1,0 +1,20 @@
+@tailwind base;
+
+/* Footer container */
+@layer base {
+	.footercontainer {
+		@apply w-screen bg-primary-green-300 bottom-0 relative mx-auto p-5 text-white;
+	}
+
+	.stickyfooter {
+		@apply flex flex-col min-h-screen;
+	}
+
+	.foottitle {
+		@apply text-xl font-bold text-teal-800;
+	}
+
+	.simpleflex {
+		@apply flex flex-col items-start;
+	}
+}
