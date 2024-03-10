@@ -19,8 +19,10 @@ import ProjectAttachments from '@/components/projects/ProjectAttachments';
 import { AddProjectActivity } from '@/components/projects/ProjectActivity';
 import { IUsers, Roles } from '@/types/database.interface';
 
+import { AddProjectReciept } from '@/components/projects/ProjectReciept';
 import { TasksSectionContainer } from '@/components/projects/ProjectTasks/server';
 import { SearchBar as AddNewTaskButton } from '@/components/projects/ProjectTasks/AddNewTask/index';
+import RecieptList from '../../invoices/recieptList';
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -146,6 +148,26 @@ export default async function SingleProjectPage({
 					admin={role === Roles.ADMIN ? true : false}
 				/>
 			</div>
+			<div className="project-members">
+				
+					<div className="flex justify-between items-center w-full">
+					<div className="title flex">
+						<img width="50" height="50" src="https://img.icons8.com/ios/50/check--v1.png" alt="check--v1"/>
+						<span>Project Reciepts</span>
+						</div>
+						<AddProjectReciept
+								project_id={project_id}
+								org_id={org}
+								user_id={currUser?.id}
+								
+							/>
+		
+					</div>
+					<RecieptList proj_id={project_id}></RecieptList>
+				
+				</div>
+		
+        		
 
 			<div className="project-activity">
 				<div className="header">
@@ -163,6 +185,7 @@ export default async function SingleProjectPage({
 							/>
 						</svg>
 						<span>Project Activity</span>
+					
 					</div>
 					<AddProjectActivity project_id={project_id} />
 				</div>

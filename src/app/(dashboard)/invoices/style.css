@@ -1,0 +1,7 @@
+.image-container {  /* Add a class to your image container div */
+    display: flex;     
+    flex-direction: row;  
+    overflow-x: auto;  /* Enable horizontal scrolling */
+    max-width: 500px;  /* Set your desired maximum width */
+  }
+  

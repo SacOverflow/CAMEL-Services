@@ -1,51 +1,36 @@
 'use client';
 
+import { IReceipts } from '@/types/database.interface';
+
+import 'src/components/projects/ProjectActivity/ProjectActivity.css';
 import React, { useState } from 'react';
-
 import { createSupbaseClient } from '@/lib/supabase/client';
-import RecieptList from './recieptList'
 
-interface IReceipts {
-    id: string;
-    proj_id: string;
-    org_id: string;
-    img_id: string;
-    store: string;
-    category: string;
-    updated_by: string;
-    updated_at: Date;
-    created_by: string;
-    created_at: Date;
-    price_total: number;
-  note?: string;
-}
-
-const ReceiptPage = ({project_id,org_id,user_id}:{project_id:string,org_id:string, user_id:string}) => {
-    const DEFAULT_IMAGE =
-    'https://apqmqmysgnkmkyesdrnn.supabase.co/storage/v1/object/public/profile-avatars/wyncoservices.png';
+const ReceiptPage = ({project_id,org_id,user_id,closeModal,readMode}:{project_id:string,org_id:string, user_id:string,closeModal:()=> void,readMode: boolean;}) => {
+    const DEFAULT_IMAGE ='';
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
-    const [receiptData, setReceiptData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [items, setItems] = useState([]);
     const [image, setImage] = useState<any>([]);
     const [imageURL, setImageURL] = useState(DEFAULT_IMAGE);
+    const [createFlag, setCreateFlag] = useState(false);
 const [errorRe, setErrorMessage] = useState<{
         error: Boolean;
         errorMessage: string;
         errorCode: string | number;
     }>({ error: false, errorMessage: 'No error for now', errorCode: 100 });
-    //FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically -Hashem Jaber
+    //FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically -Hashem Jaber -DONE
 
     const [reciept, setReciept] = useState<IReceipts | any>({
-        proj_id: 'a7188d51-4ea8-492e-9277-7989551a3b97',
-        org_id: 'a210d3f7-bcc8-4e8b-9d61-2d4228bff047',
+        proj_id: project_id,
+        org_id: org_id,
         img_id: 'some-img-id',
         store: 'store',
         category: 'category',
         updated_by: null,
         updated_at: new Date(),
-        created_by: 'cd1d7916-a61a-40fa-9691-c29e42c8988a',
+        created_by: user_id,
         created_at: new Date(),
         price_total: 100.0,
         note: '',
@@ -56,17 +41,11 @@ const [errorRe, setErrorMessage] = useState<{
     ) => {
         const { name, value } = event.target;
 
-        // Create a new object for the state update
         setReciept((prevReciept: any) => ({
-            ...prevReciept, // Spread the previous state
-            [name]: name === 'price_total' ? parseFloat(value) : value, // Ensure numbers are handled correctly
+            ...prevReciept, 
+            [name]: name === 'price_total' ? parseFloat(value) : value, 
         }));
     };
-
-
-
-
-
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -171,7 +150,6 @@ const [errorRe, setErrorMessage] = useState<{
         await createReciept(e);
     };
     const createReciept = async (e: any) => {
-		alert('invoked createReciept')
         // create org using user auth
         const supabase = await createSupbaseClient();
 
@@ -273,6 +251,8 @@ entryError
     };
 
     return (
+        <div className="project-activity-modal">
+			<div className="project-activity-container">
         <div style={{
             flex:'row'
         }}>
@@ -335,7 +315,7 @@ type="submit"
                             borderRadius: '4px',
                         }}
                         placeholder="Store"
-value={reciept?.store}
+value={reciept?.store} 
                         name="store"
                         onChange={handleChange}
                     
@@ -349,11 +329,12 @@ value={reciept?.store}
                     >
                         <input
                             style={{
-                                flex: 1,
+                                
                                 padding: '10px',
                                 border: '1px solid #ccc',
                                 borderRadius: '4px',
                             }}
+                            className='mx-w-2'
                             onChange={handleChange}
                             name='price_total'
                             placeholder="Price/Total"
@@ -362,16 +343,7 @@ value={reciept?.store}
                         
                             value={reciept?.price_total}
                         />
-                        <select
-                            style={{
-                                padding: '10px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                            }}
-                        >
-                            <option value="USD">USD</option>
-                            {/* Add other currencies as needed */}
-                        </select>
+                    
                     </div>
                     <input
                         style={{
@@ -422,7 +394,7 @@ value={reciept?.store}
                         onChange={handleChange}
                     />
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button
+                        <button onClick={closeModal} 
                             style={{
                                 flex: 1,
                                 padding: '10px',
@@ -432,32 +404,33 @@ value={reciept?.store}
                                 borderRadius: '4px',
                             }}
                         >
-                            Cancel
+                           { errorRe.errorCode === 200 ? 'Close' : 'Cancel'}
                         </button>
-                        <button
-                            style={{
-                                flex: 1,
-                                padding: '10px',
-                                backgroundColor: '#5A8472',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                            }}
-                            onClick={() => {
-                                //  alert(JSON.stringify(reciept));
-                                createReciept('').then((res:any)=>{
-									/*
-									insertReceipts(reciept).then((res: any) => {
-										res ? alert('worked') : alert('failed');
-									});*/
-									res ? alert('worked') : alert('failed');
+                        <button 
+  style={{
+    flex: 1,
+    padding: '10px',
+    backgroundColor: '#5A8472',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+  }}
+  onClick={() => {
+    setCreateFlag(true);
+    createReciept('').then((res: any) => {
+      // You might want to handle your response here or set some other state based on the result.
+      setCreateFlag(false);
+    }).catch((error) => {
+      // Don't forget to handle errors and potentially reset the flag here as well.
+      console.error(error);
+      setCreateFlag(false);
+    });
+  }}
+  disabled={createFlag} 
+>
+  {createFlag ? 'Loading...' : 'Submit'} 
+</button>
 
-								})
-                               
-                            }}
-                        >
-                            Submit
-                        </button>
                     </div>
 {errorRe.errorCode === 200 && (
                         <span>Receipt uplaoded succesfully 🎉🥳 ! </span>
@@ -471,18 +444,60 @@ value={reciept?.store}
                     )}
                 </div>
             </div>
-            {receiptData && (
-                <div className="mt-4">
-                    <h3 className="text-xl font-bold">Receipt Data:</h3>
-                    <pre>{JSON.stringify(receiptData, null, 2)}</pre>
-                </div>
+           
 
-            )}
-{/*<RecieptList  proj_id={''} ></RecieptList>*/}
+        </div>
+
+        </div>
         </div>
         
     );
 
 };
 
-export default ReceiptPage;
+
+export const AddProjectReciept = ({ project_id, user_id, org_id }: { project_id: string, user_id:string, org_id:string}) => {
+	const [showModal, setShowModal] = useState(false);
+
+	const openModal = () => {
+		setShowModal(true);
+	};
+
+	const closeModal = () => {
+		setShowModal(false);
+        window.location.reload();
+	};
+
+	return (
+		<>
+			<button
+				className="add-activity-ts"
+				onClick={() => setShowModal(!showModal)}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth={1.5}
+					stroke="currentColor"
+					className="w-4 h-4 stroke-white"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="M12 4.5v15m7.5-7.5h-15"
+					/>
+				</svg>
+			</button>
+			{showModal ? (
+				<ReceiptPage
+                    org_id={org_id}
+                    user_id={user_id}
+					project_id={project_id}
+					closeModal={closeModal}
+					readMode={false}
+				/>
+			) : null}
+		</>
+	);
+};
