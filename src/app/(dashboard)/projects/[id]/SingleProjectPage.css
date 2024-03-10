@@ -20,6 +20,10 @@
 		.project-title {
 			@apply text-2xl font-bold;
 		}
+		
+		.project-header {
+			@apply flex justify-between items-center;
+		}
 
 		.project-members {
 			@apply flex flex-col gap-2;

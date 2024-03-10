@@ -21,6 +21,9 @@ import { IUsers, Roles } from '@/types/database.interface';
 
 import { TasksSectionContainer } from '@/components/projects/ProjectTasks/server';
 import { SearchBar as AddNewTaskButton } from '@/components/projects/ProjectTasks/AddNewTask/index';
+import * as XLSX from 'xlsx';
+import DownloadExcelButton from '@/components/projects/excel_download_component/DownloadExcelButton.client';
+
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -83,7 +86,13 @@ export default async function SingleProjectPage({
 
 	return (
 		<div className={`project-details ${PoppinsSemiBold.className}`}>
-			<div className="project-title">{title}</div>
+			{/* <div className="project-title">
+    		{title}
+		</div> */}
+			<div className="project-header">
+				<h1 className="project-title">{title}</h1>
+				<DownloadExcelButton project_id={params.id} />
+			</div>
 			<div className="project-address">{address}</div>
 
 			{/* Hashem's components for Project tasks */}
