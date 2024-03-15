@@ -698,26 +698,6 @@ const createReceipt_h = async (
 	console.log('Receipt created successfully.');
 };
 
-export const getAllReceiptsByProject = async (
-	project_id: string,
-): Promise<ReceiptResponse> => {
-	const supabase = await createSupbaseClient();
-	if (!project_id) {
-		return { error: true, message: 'no project Id provided' };
-	}
-	const { data: receipts, error } = await supabase
-		.from('receipts')
-		.select('*')
-		.eq('proj_id', project_id)
-		.order('created_at', { ascending: false });
-
-	if (error) {
-		console.error('Failed to fetch receipts:', error);
-		return { error: true, message: 'Failed to fetch receipts' };
-	}
-	return { error: false, data: receipts };
-};
-
 /*
 Create new organization
 returns a sorted reciept lists based on newest to oldest date of creation.
@@ -830,76 +810,223 @@ const deleteOrganization = async (org_id: string, member_id: string) => {
 
 	return { error: false, data, response: 200 };
 };
+
+/*
+Get All receipts based on project ID
+returns a sorted reciept lists based on newest to oldest date of creation.
+project id required*/
+const getAllReceiptsByProject = async (project_id: string) => {
+	const supabase = await createSupbaseClient();
+	//If project Id is provided then query supabase api
+	if (project_id) {
+		const { data: receipts, error } = await supabase
+			// from table name 'receipts' TODO: Maybe provide a object called SupaBaseTableNames ?, just an idea  ~Hashem Jaber
+			.from('receipts')
+			.select('*')
+			.eq('proj_id', project_id)
+			//assending false means it orders/sorts it based on newest to oldest
+			.order('created_at', { ascending: false });
+		if (error) {
+			console.error('Failed to fetch receipt:', error);
+			//If error in supabase api fetching then object of error and error message is returned
+			return { error: true, message: error.message };
+		}
+		return { error: false, receipts };
+	} else {
+		//If Project Id not provided then return with error message
+		return { error: true, message: 'no project Id provided' };
+	}
+};
+
 /*
 Get All receipts based on organization ID
 returns a sorted reciept lists based on newest to oldest date of creation.
 org id required*/
-export const getAllReceiptsByOrganization = async (org_id: string) => {
+const getAllReceiptsByOrganization = async (org_id: string) => {
 	const supabase = await createSupbaseClient();
-	if (!org_id) {
+
+	//If org_id Id is provided then query supabase api
+	if (org_id) {
+		const { data: receipts, error } = await supabase
+			// from table name 'receipts' TODO: Maybe provide a object called SupaBaseTableNames ?, just an idea  ~Hashem Jaber
+			.from('receipts')
+			.select('*')
+			.eq('org_id', org_id)
+			//assending false means it orders/sorts it based on newest to oldest
+			.order('created_at', { ascending: false });
+		if (error) {
+			console.error('Failed to fetch receipt:', error);
+			//If error in supabase api fetching then object of error and error message is returned
+			return { error: true, message: error.message };
+		}
+		return { error: false, receipts };
+	} else {
+		//If Project Id not provided then return with error message
 		return { error: true, message: 'no organization Id provided' };
 	}
-	const { data: receipts, error } = await supabase
-		.from('receipts')
-		.select('*')
-		.eq('org_id', org_id)
-		.order('created_at', { ascending: false });
-	if (error) {
-		console.error('Failed to fetch receipts:', error);
-		return { error: true, message: 'Failed to fetch receipts' };
-	}
-	return { error: false, data: receipts };
 };
 
-export const getAllReceiptsByUserAndProject = async (
+/*
+Get All receipts based on user ID and project ID 
+returns a sorted reciept lists based on newest to oldest date of creation.
+user_id and project_id required*/
+const getAllReceiptsByUserAndProject = async (
 	user_id: string,
 	project_id: string,
-): Promise<ReceiptResponse> => {
+) => {
 	const supabase = await createSupbaseClient();
-	if (!user_id || !project_id) {
-		return {
-			error: true,
-			message: !user_id
-				? 'no user Id provided'
-				: 'no project Id provided',
-		};
-	}
 
-	const { data: receipts, error } = await supabase
-		.from('receipts')
-		.select('*')
-		.eq('created_by', user_id)
-		.eq('proj_id', project_id)
-		.order('created_at', { ascending: false });
-	if (error) {
-		console.error('Failed to fetch receipts:', error);
-		return { error: true, message: 'Failed to fetch receipts' };
+	//If user_id and project_id  is provided then query supabase api
+	if (user_id && project_id) {
+		const { data: receipts, error } = await supabase
+			// from table name 'receipts' TODO: Maybe provide a object called SupaBaseTableNames ?, just an idea  ~Hashem Jaber
+			.from('receipts')
+			.select('*')
+			.eq('user_id', user_id)
+			.eq('proj_id', project_id)
+			//assending false means it orders/sorts it based on newest to oldest
+			.order('created_at', { ascending: false });
+		if (error) {
+			console.error('Failed to fetch receipt:', error);
+			//If error in supabase api fetching then object of error and error message is returned
+			return { error: true, message: error.message };
+		}
+		return { error: false, receipts };
+	} else if (!user_id) {
+		//If user_id Id not provided then return with error message
+		return { error: true, message: 'no user Id provided' };
+	} else {
+		//If Project Id not provided then return with error message
+		return { error: true, message: 'no project Id provided' };
 	}
-	return { error: false, data: receipts };
 };
 
-export const getAllReceiptsByUserAndOrganization = async (
+/*
+Get All receipts based on user ID and project ID 
+returns a sorted reciept lists based on newest to oldest date of creation.
+user_id and project_id required*/
+const getAllReceiptsByUserAndOrganization = async (
 	user_id: string,
 	org_id: string,
-): Promise<ReceiptResponse> => {
+) => {
 	const supabase = await createSupbaseClient();
-	if (!user_id || !org_id) {
-		return {
-			error: true,
-			message: !user_id
-				? 'no user Id provided'
-				: 'no organization Id provided',
-		};
+
+	//If user_id and project_id  is provided then query supabase api
+	if (user_id && org_id) {
+		const { data: receipts, error } = await supabase
+			// from table name 'receipts' TODO: Maybe provide a object called SupaBaseTableNames ?, just an idea  ~Hashem Jaber
+			.from('receipts')
+			.select('*')
+			.eq('user_id', user_id)
+			.eq('proj_id', org_id)
+			//assending false means it orders/sorts it based on newest to oldest
+			.order('created_at', { ascending: false });
+		if (error) {
+			console.error('Failed to fetch receipt:', error);
+			//If error in supabase api fetching then object of error and error message is returned
+			return { error: true, message: error.message };
+		}
+		return { error: false, receipts };
+	} else if (!user_id) {
+		//If user_id Id not provided then return with error message
+		return { error: true, message: 'no user Id provided' };
+	} else {
+		//If Project Id not provided then return with error message
+		return { error: true, message: 'no project Id provided' };
 	}
-	const { data: receipts, error } = await supabase
-		.from('receipts')
-		.select('*')
-		.eq('created_by', user_id)
-		.eq('org_id', org_id)
-		.order('created_at', { ascending: false });
-	if (error) {
-		console.error('Failed to fetch receipts:', error);
-		return { error: true, message: 'Failed to fetch receipts' };
-	}
-	return { error: false, data: receipts };
 };
+
+/**
+ *
+ * @returns varchat value indicating the language preference of the user, in case of failure then defualt language is english
+ */
+export async function getLangPrefOfUser() {
+	const supabase = await createSupbaseClient();
+	const { data: userData, error: userError } = await supabase.auth.getUser();
+	// from the table user_lang_pref select the pref lang based on the user_id
+	const { data: resp, error } = await supabase
+		.from('user_lang_pref')
+		.select('lang')
+		.eq('user_id', userData.user?.id);
+
+	if (error) {
+		console.error('getting user language faild', error);
+		return 'eng';
+	} else {
+		console.info('user pref lang is');
+		console.info(
+			resp[0]?.lang === undefined
+				? 'undefined, no such user lang pref exisist'
+				: resp[0].lang,
+		);
+	}
+	try {
+		return resp[0].lang;
+	} catch (e) {
+		console.info('no user_pref in data base, switching to english');
+		return 'english';
+	}
+}
+
+/**
+ * @param lang The language the user set to prefer
+ * @returns The language preference of the user, in case of failure then default language is English
+ */
+export async function setLanguage(lang: string) {
+	const supabase = await createSupbaseClient();
+	const { data: userData, error: userError } = await supabase.auth.getUser();
+
+	if (userError) {
+		console.error('Error fetching user data', userError);
+		return 'eng';
+	}
+
+	const userId = userData.user?.id;
+	if (!userId) {
+		console.error('No user id found');
+		return 'eng';
+	}
+
+	// Check if the user language preference already exists, since the way we related the data base from user to pref_lang was by a new table and user_id as fk -Hashem Jaber
+	const { data: existingPref, error: existingError } = await supabase
+		.from('user_lang_pref')
+		.select('lang')
+		.eq('user_id', userId)
+		.single();
+
+	if (existingError && existingError.code !== 'PGRST116') {
+		console.error(
+			'Error checking existing language preference',
+			existingError,
+		);
+		if (existingError.code === 'PGRST100') {
+			console.log('user does not exist in table user_pref');
+		}
+
+		return 'eng';
+	}
+
+	let resp;
+	let error;
+
+	if (existingPref) {
+		// Update existing preference since now we know the user_id exists in the table and so instead of insert we do Patch/Update
+		({ data: resp, error } = await supabase
+			.from('user_lang_pref')
+			.update({ lang: lang })
+			.eq('user_id', userId));
+	} else {
+		// Insert new preference since the user_id does not exist as a foreign key in the table user_lang_pref
+		({ data: resp, error } = await supabase
+			.from('user_lang_pref')
+			.insert([{ user_id: userId, lang: lang }]));
+	}
+
+	if (error) {
+		return false;
+	} else {
+		window.location.reload();
+	}
+
+	return true;
+}

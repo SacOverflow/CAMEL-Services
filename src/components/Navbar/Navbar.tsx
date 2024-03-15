@@ -7,8 +7,10 @@ import Buttons from '@/components/SharedComponents/Buttons';
 // CSS imports
 import './Navbar.css';
 import { createSupbaseClient } from '@/lib/supabase/client';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 import { useEffect, useState } from 'react';
-
+import translations from '../../app/translations/language.json';
+import getLang from '@/app/translations/translations';
 import { Menu, Transition } from '@headlessui/react';
 import SearchBar from '@/components/Navbar/Searchbar';
 import NotificationButton from './Notifications';
@@ -45,11 +47,13 @@ const profileDropdownOptions = [
  *
  * @returns a navbar component with a logo, sign up button, and login button
  */
+
 function Navbar({ session }: { session: any }) {
 	// not sure if appropriate right now how im passing in the values... since I pass in the users entire information....
 	const loggedIn = session !== undefined;
 
 	const [image, setImage] = useState('/images/hashemtmp.jpeg');
+	const [lang, setLang] = useState('eng');
 
 	// implement client-side data fetching
 	useEffect(() => {
@@ -69,7 +73,13 @@ function Navbar({ session }: { session: any }) {
 				}
 			};
 
+			const getLanguage = async () => {
+				const langPref = await getLangPrefOfUser();
+				setLang(langPref);
+			};
+
 			fetchInfo();
+			getLanguage();
 		}
 	}, []);
 
@@ -164,6 +174,20 @@ function Navbar({ session }: { session: any }) {
 
 const ProfileDropdown = ({ image }: { image: string }) => {
 	const [imageSrc, setImageSrc] = useState('/images/hashemtmp.jpeg');
+	const [lang, setLang] = useState('eng');
+	const translation: any = translations;
+
+	useEffect(() => {
+		// COMMENT: ahahaha ha, this is ummm ahahaha ha
+
+		const getLanguage = async () => {
+			const langPref = await getLangPrefOfUser();
+			setLang(langPref);
+		};
+
+		getLanguage();
+	}, []);
+
 	const SignOut = async () => {
 		const supabase = await createSupbaseClient();
 		const { error } = await supabase.auth.signOut();
@@ -248,7 +272,7 @@ const ProfileDropdown = ({ image }: { image: string }) => {
 													: 'text-gray-900'
 											} flex w-full items-center rounded-md px-2 py-2 text-sm`}
 										>
-											{option.name}
+											{getLang(option.name, lang)}
 										</Link>
 									)}
 								</Menu.Item>
