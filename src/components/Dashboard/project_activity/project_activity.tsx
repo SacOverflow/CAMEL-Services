@@ -1,5 +1,6 @@
 'use client';
-
+import { getLangPrefOfUser } from '@/lib/actions/client';
+import translations from '../../../app/translations/language.json';
 import ProjectActivityModal from '@/components/projects/ProjectActivity';
 import { deleteProjectActivity } from '@/lib/actions/client';
 import {
@@ -8,8 +9,16 @@ import {
 	Status,
 } from '@/types/database.interface';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
 
+import React, { useEffect, useState } from 'react';
+import getLang from '@/app/translations/translations';
+
+function capitalizeFirstLetterOfEachWord(str: string) {
+	return str
+		.split(' ')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
+}
 interface MonthlyActivities {
 	[key: string]: ActivityElement[];
 }
@@ -339,10 +348,18 @@ const ProjectActivity = ({
 			setCurrentMonth(firstMonth);
 		}
 	}, [activites]);
-
+	const [lang, setLang] = useState('english');
+	useEffect(() => {
+		const getLanguage = async () => {
+			const langPref = await getLangPrefOfUser();
+			setLang(langPref);
+		};
+		getLanguage();
+	}, []);
 	const handleMonthClick = (month: string) => {
 		setCurrentMonth(month);
 	};
+	const translation: any = translations;
 
 	return (
 		<>
@@ -356,18 +373,22 @@ const ProjectActivity = ({
 						<thead className="bg-gray-200 rounded-t-lg sticky top-0 z-10">
 							<tr>
 								<th className="px-4 py-2 text-left rounded-tl-lg">
-									Status
+									{getLang('Status', lang)}
 								</th>
-								<th className="px-4 py-2 text-left">Member</th>
 								<th className="px-4 py-2 text-left">
-									Last Updated
+									{getLang('Member', lang)}
 								</th>
-								<th className="px-4 py-2 text-left">Notes</th>
 								<th className="px-4 py-2 text-left">
-									Duration
+									{getLang('Last Updated', lang)}
+								</th>
+								<th className="px-4 py-2 text-left">
+									{getLang('Notes', lang)}
+								</th>
+								<th className="px-4 py-2 text-left">
+									{getLang('Duration', lang)}
 								</th>
 								<th className="px-4 py-2 text-left rounded-tr-lg">
-									Options
+									{getLang('Options', lang)}
 								</th>
 							</tr>
 						</thead>
@@ -394,6 +415,7 @@ const ProjectActivity = ({
 											<ProjectActivityTimestamp
 												activity={activity}
 												currUserId={currUser?.id}
+												lang={lang}
 											/>
 										</tr>
 									),
@@ -404,7 +426,7 @@ const ProjectActivity = ({
 										colSpan={5}
 										className="px-4 py-2 text-center"
 									>
-										No activities found
+										{getLang('No activities found', lang)}
 									</td>
 								</tr>
 							)}
@@ -433,6 +455,7 @@ const ProjectActivity = ({
 					project={selectedActivity}
 					readMode={currUser?.id !== selectedActivity.user_id}
 					closeModal={() => setViewModal(false)}
+					lang={lang}
 				/>
 			)}
 		</>
@@ -442,9 +465,11 @@ const ProjectActivity = ({
 const ProjectActivityTimestamp = ({
 	activity,
 	currUserId,
+	lang,
 }: {
 	activity: any;
 	currUserId?: string;
+	lang?: string;
 }): JSX.Element => {
 	const handleDelete = async (id: string) => {
 		const resp = await deleteProjectActivity(id);
@@ -523,7 +548,10 @@ const ProjectActivityTimestamp = ({
 				<span
 					className={`inline-block w-3 h-3 mr-2 rounded-full ${activity.color}`}
 				></span>
-				{activity.status}
+				{getLang(
+					capitalizeFirstLetterOfEachWord(activity.status),
+					lang ? lang : 'english',
+				)}
 			</td>
 			<td className="px-4 py-2">
 				<Link

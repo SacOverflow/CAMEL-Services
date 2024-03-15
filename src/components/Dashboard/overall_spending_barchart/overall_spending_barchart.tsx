@@ -8,7 +8,8 @@ import {
 	getFilteredCategoryPieChart,
 	PieChartDataElement,
 } from '@/lib/actions/dashboard';
-
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 function capitalizeFirstLetter(inputString: string): string {
 	return inputString.charAt(0).toUpperCase() + inputString.slice(1);
 }
@@ -16,7 +17,7 @@ function capitalizeFirstLetter(inputString: string): string {
 function PieChart(props: { className: string }) {
 	const { className } = props;
 	const [chartData, setChartData] = useState<PieChartDataElement[]>([]);
-
+	const [lang, setLang] = useState('english');
 	useEffect(() => {
 		// Asynchronously fetch data when the component mounts
 		const fetchData = async () => {
@@ -24,7 +25,13 @@ function PieChart(props: { className: string }) {
 			setChartData(data);
 		};
 
+		const getLanguage = async () => {
+			const lang = await getLangPrefOfUser();
+			setLang(lang);
+		};
+
 		fetchData();
+		getLanguage();
 	}, []);
 	useEffect(() => {
 		// Create root element
@@ -94,7 +101,11 @@ function PieChart(props: { className: string }) {
 		// ];
 
 		// Set data
-		series.data.setAll(chartData); // Add your data here
+		const chartDataTranslated = chartData.map(item => {
+			return { ...item, category: getLang(item.category, lang) };
+		});
+
+		series.data.setAll(chartDataTranslated); // Add your data here
 
 		// hide ticks
 		series.ticks.template.setAll({
@@ -119,7 +130,9 @@ function PieChart(props: { className: string }) {
 			{ value: 0, category: '' },
 		);
 
-		const capitalizedCategory = capitalizeFirstLetter(maxCategory.category);
+		const capitalizedCategory = capitalizeFirstLetter(
+			getLang(maxCategory.category, lang),
+		);
 
 		// Add label for center text
 		const centerTextLabel = chart.seriesContainer.children.push(

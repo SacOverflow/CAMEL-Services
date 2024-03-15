@@ -5,15 +5,18 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createOrganization, updateImage } from './client.actions';
 import './CreateOrgModal.css';
+import getLang from '@/app/translations/translations';
 
 export default function CreateOrgModal({
 	className,
 	children,
 	clickHandler,
+	lang,
 }: {
 	className?: string;
 	children?: React.ReactNode;
 	clickHandler?: () => void;
+	lang?: string;
 }) {
 	const DEFAULT_IMAGE =
 		'https://apqmqmysgnkmkyesdrnn.supabase.co/storage/v1/object/public/profile-avatars/wyncoservices.png';
@@ -63,7 +66,10 @@ export default function CreateOrgModal({
 		<>
 			<div className="organization-modal">
 				<div className="header-section">
-					<span className="title">Create Organization</span>
+					<span className="title">
+						{getLang('Create', lang ? lang : 'english')}{' '}
+						{getLang('Organization', lang ? lang : 'english')}
+					</span>
 				</div>
 
 				<form className="form-section flex flex-col gap-2">
@@ -96,13 +102,13 @@ export default function CreateOrgModal({
 							className="cancel-button"
 							onClick={clickHandler}
 						>
-							Cancel
+							{getLang('Cancel', lang ? lang : 'english')}
 						</button>
 						<button
 							className="create-button"
 							onClick={createOrganizationHandler}
 						>
-							Create
+							{getLang('Create', lang ? lang : 'english')}
 						</button>
 					</div>
 				</form>

@@ -4,15 +4,18 @@ import { IOrgEdit } from '@/types/componentTypes';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import getLang from '@/app/translations/translations';
 import './EditOrgModal.css';
 import { editOrganization, updateImage } from './client.actions';
 
 export default function EditOrgModal({
 	clickHandler,
 	organization,
+	lang
 }: {
 	clickHandler: () => void;
 	organization: IOrgEdit;
+	lang?:string; 
 }) {
 	const [formData, setFormData] = useState({
 		orgName: organization.name,
@@ -78,7 +81,7 @@ export default function EditOrgModal({
 		<>
 			<div className="organization-modal w-full">
 				<div className="header-section">
-					<span className="title">Edit Organization</span>
+					<span className="title">{getLang("Edit",lang?lang:"english")} {getLang("Organization",lang?lang:"english")}</span>
 				</div>
 
 				<form className="form-section flex flex-col gap-2">
@@ -113,13 +116,13 @@ export default function EditOrgModal({
 							className="cancel-button"
 							onClick={clickHandler}
 						>
-							Cancel
+							{getLang("Cancel",lang?lang:"english")}
 						</button>
 						<button
 							className="create-button"
 							onClick={editOrganizationHandler}
 						>
-							Submit
+							{getLang("Submit",lang?lang:"english")}
 						</button>
 					</div>
 				</form>
