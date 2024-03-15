@@ -1,0 +1,83 @@
+@tailwind base;
+
+@layer base {
+	#settings-page {
+		/* layout */
+		@apply flex flex-col;
+		@apply h-screen;
+		/* styling */
+		@apply bg-white;
+		/* spacing */
+		@apply px-6;
+
+		.header {
+			/* layout / flex */
+			@apply flex items-center justify-start gap-4;
+			/* styling */
+			/* spacing */
+			@apply py-4;
+
+			/* effects */
+			&:hover {
+				@apply transition-all duration-300 ease-in-out;
+				svg:not(.gear-icon) {
+					@apply cursor-pointer;
+					@apply transition-all duration-300 ease-in-out;
+					@apply stroke-primary-green-500;
+				}
+			}
+
+			svg {
+				/* layout / flex */
+				/* styling */
+				@apply w-10 h-10;
+				@apply stroke-primary-green-200;
+				/* spacing */
+			}
+
+			.gear-icon {
+				/* layout / flex */
+				/* styling */
+				@apply w-10 h-10;
+				@apply stroke-gray-400 fill-gray-400;
+				/* spacing */
+			}
+
+			.title {
+				/* typography */
+				@apply font-bold;
+				@apply text-primary-green-500;
+				font-size: clamp(1.5rem, 5vw, 2.5rem);
+			}
+		}
+	}
+	.language-section-body {
+		@apply flex flex-col items-center justify-center;
+	}
+	.languages {
+		@apply flex flex-row !important;
+	}
+
+	.title {
+		/* typography */
+		@apply font-bold;
+		@apply text-primary-green-500;
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+		@apply ml-6;
+	}
+	.language {
+		@apply w-8/12 flex flex-row rounded-lg;
+	}
+	.english {
+		@apply transition duration-300 transform hover:bg-gradient-to-r hover:scale-95  hover:from-blue-800 hover:via-white hover:to-red-500;
+	}
+	.mexico {
+		@apply transition duration-300 transform hover:bg-gradient-to-r hover:scale-95 hover:from-green-800 hover:via-white hover:to-red-500;
+	}
+	.viet {
+		@apply transition duration-300 transform hover:bg-gradient-to-r hover:scale-95 hover:from-red-800 hover:via-yellow-200 hover:to-red-500;
+	}
+	.languages-options-card {
+		@apply bg-slate-50 w-8/12 flex flex-col items-center rounded-lg mt-10;
+	}
+}

@@ -10,13 +10,14 @@ import { default as RevenueChart } from '@/components/Dashboard/revenue_linechar
 import { default as TotalEarningWidget } from '@/components/Dashboard/Total_Earning/TotalEarning';
 import ArcGaugeChart from '@/components/Dashboard/ArcGaugeChart/ArcGaugeChart';
 import DashboardGreeting from '@/app/(dashboard)/dashboard/DashboardGreeting';
-
+import getLang from '@/app/translations/translations';
 // SERVICE IMPORTS
 import {
 	getOrganizationInformation,
 	getOrganizationMemberRole,
 	getOrganizationProjectActivities,
 	getUserInformation,
+	getLangPrefOfUser,
 } from '@/lib/actions';
 import { cookies } from 'next/headers';
 import { IOrganization, IProject_Activities } from '@/types/database.interface';
@@ -30,6 +31,7 @@ const DashboardPage = async () => {
 	// check if the user has a valid organization stored in their cookies
 	const cookieStore = cookies();
 	const org = cookieStore.get('org')?.value as string;
+	const lang = await getLangPrefOfUser(userInfo?.id);
 
 	// if there is no cookie association with the use ror the org, redirect to the organization page
 	if (!org) {
@@ -66,7 +68,9 @@ const DashboardPage = async () => {
 				{/* Section for charts  */}
 				<div id="dashboard-charts">
 					<div className="revenues-chart col-charts">
-						<div className="charts-title">Revenue Chart</div>
+						<div className="charts-title">
+							{getLang('Revenue Chart', lang)}
+						</div>
 						<RevenueChart
 							className="spending-chart-container"
 							id="revenue-chart"
@@ -74,12 +78,14 @@ const DashboardPage = async () => {
 					</div>
 					<div className="spending-chart col-charts">
 						<div className="charts-title overall-spending">
-							Overall Spending
+							{getLang('Overall Spending', lang)}
 						</div>
 						<CategoryPieChart className="spending-chart-container" />
 					</div>
 					<div className="spending-table col-charts">
-						<div className="charts-title">Monthly Spending</div>
+						<div className="charts-title">
+							{getLang('Monthly Spending', lang)}
+						</div>
 						<MonthlySpending />
 					</div>
 				</div>
@@ -88,7 +94,10 @@ const DashboardPage = async () => {
 				<div id="dashboard-charts-recent-activity">
 					<div className="earnings-sales-container">
 						<div className="total-earnings-container">
-							<TotalEarningWidget org_id={org} />
+							<TotalEarningWidget
+								org_id={org}
+								lang={lang}
+							/>
 						</div>
 						<SalesTrendWidget {...salesTrendData} />
 					</div>
@@ -103,7 +112,7 @@ const DashboardPage = async () => {
 			</div>
 
 			<div className="mobile-container">
-				<span className="page-title">Finance</span>
+				<span className="page-title">{getLang('Finance', lang)}</span>
 
 				<div id="summary-gauge-arc">
 					<ArcGaugeChart id="arc-chart" />
@@ -111,7 +120,10 @@ const DashboardPage = async () => {
 				<br />
 
 				<div className="total-earnings-container">
-					<TotalEarningWidget org_id={org} />
+					<TotalEarningWidget
+						org_id={org}
+						lang={lang}
+					/>
 				</div>
 				<div className="spending-table">
 					<MonthlySpending />

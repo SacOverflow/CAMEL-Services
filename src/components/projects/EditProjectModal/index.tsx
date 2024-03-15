@@ -1,9 +1,10 @@
 import InputComponent from '@/components/SharedComponents/InputComponent';
 import { createSupbaseClient } from '@/lib/supabase/client';
 import { IProjects, Status } from '@/types/database.interface';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './EditProjectModal.css';
-
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 export const EditProjectModal = ({
 	onClose,
 	project,
@@ -12,7 +13,7 @@ export const EditProjectModal = ({
 	project: IProjects;
 }) => {
 	const [error, setError] = useState(false);
-
+	const [lang, setLang] = useState('english');
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
 		const day = String(date.getDate()).padStart(2, '0');
@@ -21,6 +22,14 @@ export const EditProjectModal = ({
 
 		return `${year}-${month}-${day}`;
 	};
+
+	useEffect(() => {
+		const getUserLanguage = async () => {
+			const tempLang = await getLangPrefOfUser();
+			setLang(tempLang);
+		};
+		getUserLanguage();
+	}, []);
 
 	const [formData, setFormData] = useState({
 		projectTitle: project.title,
@@ -139,7 +148,9 @@ export const EditProjectModal = ({
 		<div className="modal-overlay">
 			<div className="project-details-modal">
 				<div className="header-content">
-					<h1 className="header">Project Details</h1>
+					<h1 className="header">
+						{getLang('Project Details', lang)}
+					</h1>
 					<button
 						className="close-modal-button"
 						onClick={onClose}
@@ -169,7 +180,7 @@ export const EditProjectModal = ({
 					>
 						<InputComponent
 							label="projectTitle"
-							labelText="Title"
+							labelText={getLang('Title', lang)}
 							type="text"
 							id="projectTitle"
 							placeholder="Project Title"
@@ -180,7 +191,7 @@ export const EditProjectModal = ({
 						/>
 						<InputComponent
 							label="projectBudget"
-							labelText="Budget"
+							labelText={getLang('Budget', lang)}
 							type="number"
 							id="projectBudget"
 							placeholder="Project Budget"
@@ -190,7 +201,7 @@ export const EditProjectModal = ({
 						/>
 						<InputComponent
 							label="projectDescription"
-							labelText="Description"
+							labelText={getLang('Description', lang)}
 							type="text"
 							id="projectDescription"
 							placeholder="Project Description"
@@ -198,7 +209,9 @@ export const EditProjectModal = ({
 							onChange={handleChange}
 							required={true}
 						/>
-						<label className="status-header">Status</label>
+						<label className="status-header">
+							{getLang('Status', lang)}
+						</label>
 						<div className="status-labels">
 							<button
 								className={`status-button in-progress ${
@@ -213,7 +226,7 @@ export const EditProjectModal = ({
 									handleStatusChange('In-Progress');
 								}}
 							>
-								In-Progress
+								{getLang('In Progress', lang)}
 							</button>
 							<button
 								className={`status-button completed ${
@@ -227,7 +240,7 @@ export const EditProjectModal = ({
 									handleStatusChange('Completed');
 								}}
 							>
-								Completed
+								{getLang('Completed', lang)}
 							</button>
 							<button
 								className={`status-button needs-approval ${
@@ -242,7 +255,7 @@ export const EditProjectModal = ({
 									handleStatusChange('Needs-Approval');
 								}}
 							>
-								Needs-Approval
+								{getLang('Needs Approval', lang)}
 							</button>
 							<button
 								className={`status-button action-needed ${
@@ -258,12 +271,12 @@ export const EditProjectModal = ({
 									handleStatusChange('Action Needed');
 								}}
 							>
-								Action Needed
+								{getLang('Action Needed', lang)}
 							</button>
 						</div>
 						<InputComponent
 							label="projectLocation"
-							labelText="Location"
+							labelText={getLang('Location', lang)}
 							type="text"
 							id="projectLocation"
 							placeholder="Location"
@@ -273,7 +286,7 @@ export const EditProjectModal = ({
 						/>
 						<InputComponent
 							label="projectStartDate"
-							labelText="Start Date"
+							labelText={getLang('Start Date', lang)}
 							type="date"
 							id="projectStartDate"
 							placeholder="Start Date"
@@ -283,7 +296,7 @@ export const EditProjectModal = ({
 						/>
 						<InputComponent
 							label="projectEndDate"
-							labelText="End Date"
+							labelText={getLang('End Date', lang)}
 							type="date"
 							id="projectEndDate"
 							placeholder="End Date"
@@ -293,7 +306,7 @@ export const EditProjectModal = ({
 						/>
 						<InputComponent
 							label="projectAssignedMembers"
-							labelText="Assigned Members"
+							labelText={getLang('Assigned Members', lang)}
 							type="text"
 							id="projectAssignedMembers"
 							placeholder="Assigned Members"
@@ -312,7 +325,7 @@ export const EditProjectModal = ({
 							className="submit-new-project-button"
 							type="submit"
 						>
-							Submit
+							{getLang('Submit', lang)}
 						</button>
 					</form>
 				</div>

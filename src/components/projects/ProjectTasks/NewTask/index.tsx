@@ -10,8 +10,10 @@ import {
 	createTask,
 	getProjectMembersTasks,
 	getAllTaskMembers,
+	setLanguage,
 } from '@/lib/actions/client';
-
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 export const EditTaskForm = ({
 	role,
 	setRefresh,
@@ -98,6 +100,7 @@ export const EditTaskForm = ({
 			: '',
 	});
 
+	const [lang, setLang] = useState('english');
 	useEffect(() => {
 		selectedTask
 			? getAllTaskMembers(editedTask.id).then(members => {
@@ -124,6 +127,12 @@ export const EditTaskForm = ({
 					});
 			  })
 			: () => {};
+
+		const getLanguage = async () => {
+			const tmpLang = await getLangPrefOfUser();
+			setLang(tmpLang);
+		};
+		getLanguage();
 	}, []);
 
 	// Update form state when the selected task changes
@@ -216,7 +225,9 @@ export const EditTaskForm = ({
 			className="task-modal"
 		>
 			<h2 className="task-modal-title">
-				{selectedTask ? 'Edit Task' : 'New Task'}
+				{selectedTask
+					? getLang('Edit Task', lang)
+					: getLang('New Task', lang)}
 			</h2>
 
 			<div className="task-input-field">
@@ -241,7 +252,7 @@ export const EditTaskForm = ({
 					className="task-labels"
 					htmlFor="status"
 				>
-					Status:
+					{getLang('Status', lang)}:
 				</label>
 				<select
 					className="option-input"
@@ -250,9 +261,15 @@ export const EditTaskForm = ({
 					value={editedTask.status.toLowerCase()}
 					onChange={handleChange}
 				>
-					<option value="completed">Completed</option>
-					<option value="in progress">In Progress</option>
-					<option value="cancelled">Cancelled</option>
+					<option value="completed">
+						{getLang('Completed', lang)}
+					</option>
+					<option value="in progress">
+						{getLang('In Progress', lang)}
+					</option>
+					<option value="cancelled">
+						{getLang('Cancelled', lang)}
+					</option>
 				</select>
 			</div>
 
@@ -261,7 +278,7 @@ export const EditTaskForm = ({
 					className="task-labels"
 					htmlFor="completed_date"
 				>
-					Completed By:
+					{getLang('Completed By', lang)}:
 				</label>
 				<input
 					className=""
@@ -355,7 +372,7 @@ export const EditTaskForm = ({
 						selectedTask ? setSelectedTask(null) : dismiss()
 					}
 				>
-					Cancel
+					{getLang('Cancel', lang)}
 				</button>
 				<button
 					type="submit"
@@ -376,7 +393,9 @@ export const EditTaskForm = ({
 						}
 					}}
 				>
-					{selectedTask ? 'Save' : 'Create'}
+					{selectedTask
+						? getLang('Save', lang)
+						: getLang('Create', lang)}
 				</button>
 			</div>
 		</form>

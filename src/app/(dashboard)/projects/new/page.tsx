@@ -1,10 +1,20 @@
 'use client';
 
 import InputComponent from '@/components/SharedComponents/InputComponent';
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './page.css';
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 
 const Page = () => {
+	const [lang, setLang] = useState('english');
+	useEffect(() => {
+		const getLanguage = async () => {
+			const tmpLang = await getLangPrefOfUser();
+			setLang(tmpLang);
+		};
+		getLanguage();
+	}, []);
 	const [formData, setFormData] = useState({
 		projectTitle: '',
 		projectBudget: '',
@@ -49,7 +59,7 @@ const Page = () => {
 	return (
 		<div className="flex flex-col p-6 justify-center ">
 			<h1 className="text-2xl sm:text-4xl font-semibold">
-				Project Details
+				{getLang('Project', lang)} Details
 			</h1>
 			<div>
 				<form

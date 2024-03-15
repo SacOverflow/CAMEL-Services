@@ -7,10 +7,11 @@ import { usePathname } from 'next/navigation';
 import './SideNavbar.css';
 import { createBrowserClient } from '@supabase/ssr';
 import { useEffect, useState } from 'react';
-import { getCookie } from '@/lib/actions/client';
+import { getCookie, getLangPrefOfUser } from '@/lib/actions/client';
 import { Roles } from '@/types/database.interface';
 import { getOrganizationMemberRole } from '@/lib/actions/get.client';
-
+import translations from '@/app/translations/language.json';
+import getLang from '@/app/translations/translations';
 // first half of nav items
 const NavigationItems = [
 	{
@@ -186,6 +187,8 @@ const SideNavbar = ({
 	};
 
 	const appendShown = show ? '' : 'disabled';
+	const [lang, setLang] = useState('eng');
+	const translation: any = translations;
 
 	// use effect to remove certain parts of side navbar dependent on role within current org
 	useEffect(() => {
@@ -214,8 +217,14 @@ const SideNavbar = ({
 				setNavItems(NavigationItems);
 			}
 		};
+		//Get Lang of user dynamically, defualt is english
+		const getLanguage = async () => {
+			const langPref = await getLangPrefOfUser();
+			setLang(langPref);
+		};
 
 		getUserRole();
+		getLanguage();
 	});
 
 	return (
@@ -238,7 +247,7 @@ const SideNavbar = ({
 
 								{/* text */}
 								<span className="navitem-text">
-									{item.name}
+									{getLang(item.name, lang)}
 								</span>
 							</Link>
 						);
@@ -262,7 +271,7 @@ const SideNavbar = ({
 
 									{/* text */}
 									<span className="navitem-text">
-										{item.name}
+										{getLang(item.name, lang)}
 									</span>
 								</button>
 							);
@@ -280,7 +289,7 @@ const SideNavbar = ({
 
 								{/* text */}
 								<span className="navitem-text">
-									{item.name}
+									{getLang(item.name, lang)}
 								</span>
 							</Link>
 						);

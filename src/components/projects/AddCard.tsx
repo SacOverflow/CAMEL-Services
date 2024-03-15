@@ -1,11 +1,21 @@
 'use client';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NewProjectModal } from './NewProjectModal';
-
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 const AddCard = ({ org_id }: { org_id: string }) => {
 	const [enabled, setEnabled] = useState(false);
+	const [lang, setLang] = useState('english');
+
+	useEffect(() => {
+		const getPrefLang = async () => {
+			const tmpLang = await getLangPrefOfUser();
+			setLang(tmpLang);
+		};
+		getPrefLang();
+	}, []);
 
 	const handleCloseModal = () => {
 		setEnabled(false);
@@ -25,7 +35,7 @@ const AddCard = ({ org_id }: { org_id: string }) => {
 								size="6x"
 							/>
 							<div className="text-gray-500 font-semibold">
-								Add New Project Here...
+								{getLang('Add New Project Here', lang)}...
 							</div>
 						</div>
 					</div>
@@ -36,6 +46,7 @@ const AddCard = ({ org_id }: { org_id: string }) => {
 				<NewProjectModal
 					onClose={handleCloseModal}
 					org_id={org_id}
+					lang={lang}
 				/>
 			)}
 		</>

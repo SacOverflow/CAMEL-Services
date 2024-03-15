@@ -1,9 +1,10 @@
 import SettingsItemNav from '@/components/ProfileSettings/SettingsComponent/Nav/SettingsNav';
 import './page.css';
-import { getUserInformation } from '@/lib/actions';
+import { getUserInformation, getLangPrefOfUser } from '@/lib/actions';
 import { redirect } from 'next/navigation';
 import { ReturnComp } from '@/components/ProfileSettings/SettingsComponent/Nav/ClientComponents';
-
+import translations from '../translations/language.json';
+import getLang from '../translations/translations';
 const page = async () => {
 	// assure user is logged in
 	const user = await getUserInformation();
@@ -12,6 +13,11 @@ const page = async () => {
 	if (!user) {
 		redirect('/login');
 	}
+
+	// Temp fix but will need to define its own interface ---FIX ME HELOO WOLRD ~Hashem Jaber
+	const translation: any = translations;
+
+	const langPref = await getLangPrefOfUser(user?.id);
 
 	// icon for account
 	const userIcon = (
@@ -121,33 +127,33 @@ const page = async () => {
 					/>
 				</svg>
 
-				<h3 className="title">Settings</h3>
+				<h3 className="title">{getLang('Settings', langPref)}</h3>
 			</div>
 
 			<div id="settings">
 				<SettingsItemNav
 					icon={userIcon}
-					title="Account"
+					title={getLang('Account', langPref)}
 					href="account"
 				/>
 				<SettingsItemNav
 					icon={bellIcon}
-					title="Notifications"
+					title={getLang('Notifications', langPref)}
 					href="account/notifications"
 				/>
 				<SettingsItemNav
 					icon={eyeIcon}
-					title="appearance"
+					title={getLang('appearance', langPref)}
 					href="account/appearance"
 				/>
 				<SettingsItemNav
 					icon={languageIcon}
-					title="Language"
+					title={getLang('Language', langPref)}
 					href="account/language"
 				/>
 				<SettingsItemNav
 					icon={securityIcon}
-					title="Privacy & Security"
+					title={getLang('Privacy & Security', langPref)}
 					href="account/security"
 				/>
 			</div>

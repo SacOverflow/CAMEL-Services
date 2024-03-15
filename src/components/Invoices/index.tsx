@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { createSupbaseClient } from '@/lib/supabase/client';
 import { IReceipts } from '@/types/database.interface';
+import { getLangPrefOfUser } from '@/lib/actions/client';
+import getLang from '@/app/translations/translations';
 
 export default function ReceiptPage() {
 	const DEFAULT_IMAGE =
@@ -15,12 +17,22 @@ export default function ReceiptPage() {
 	const [items, setItems] = useState([]);
 	const [image, setImage] = useState<any>([]);
 	const [imageURL, setImageURL] = useState(DEFAULT_IMAGE);
+	const [user_lang, setUserLang] = useState('english');
 	const [errorRe, setErrorMessage] = useState<{
 		error: Boolean;
 		errorMessage: string;
 		errorCode: string | number;
 	}>({ error: false, errorMessage: 'No error for now', errorCode: 100 });
 	//FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically -Hashem Jaber
+
+	useEffect(() => {
+		const getuserLang = async () => {
+			const userLang = await getLangPrefOfUser();
+			setUserLang(userLang);
+		};
+
+		getuserLang();
+	}, []);
 
 	const [reciept, setReciept] = useState<IReceipts | any>({
 		// proj_id: 'a7188d51-4ea8-492e-9277-7989551a3b97',
@@ -208,7 +220,7 @@ export default function ReceiptPage() {
 				className="receipts-input-form flex flex-col gap-2  bg-white rounded-md my-5 p-4"
 			>
 				<h1 className="text-center font-bold text-xl">
-					Upload Receipt
+					{getLang('Upload Receipt', user_lang)}
 				</h1>
 
 				<form onSubmit={() => {}}>
@@ -281,7 +293,7 @@ export default function ReceiptPage() {
 						placeholder="MM/DD/YYYY"
 						type="date"
 					/>
-					<span>Category</span>
+					<span>{getLang('Category', user_lang)}</span>
 					<select
 						name="category"
 						// style={{
@@ -294,43 +306,47 @@ export default function ReceiptPage() {
 						className="p-4 rounded-md bg-[#5A8472] text-white"
 						onChange={handleChange}
 					>
-						<option value="">Select Category</option>
+						<option value="">
+							{getLang('Select Category', user_lang)}
+						</option>
 						<option value="HVAC Equipment & Supplies">
-							HVAC Equipment & Supplies
+							{getLang('HVAC Equipment & Supplies', user_lang)}
 						</option>
 						<option value="Electrical Supplies">
-							Electrical Supplies
+							{getLang('Electrical Supplies', user_lang)}
 						</option>
 						<option value="Construction Materials">
-							Construction Materials
+							{getLang('Construction Materials', user_lang)}
 						</option>
 						<option value="Tools & Machinery">
-							Tools & Machinery
+							{getLang('Tools & Machinery', user_lang)}
 						</option>
 						<option value="Safety Equipment">
-							Safety Equipment
+							{getLang('Safety Equipment', user_lang)}
 						</option>
 						<option value="Plumbing Supplies">
-							Plumbing Supplies
+							{getLang('Plumbing Supplies', user_lang)}
 						</option>
 						<option value="Lighting Fixtures">
-							Lighting Fixtures
+							{getLang('Lighting Fixtures', user_lang)}
 						</option>
 						<option value="Paint & Sundries">
-							Paint & Sundries
+							{getLang('Paint & Sundries', user_lang)}
 						</option>
 						<option value="Hardware & Fasteners">
-							Hardware & Fasteners
+							{getLang('Hardware & Fasteners', user_lang)}
 						</option>
-						<option value="Office Supplies">Office Supplies</option>
+						<option value="Office Supplies">
+							{getLang('Office Supplies', user_lang)}
+						</option>
 						<option value="Transportation & Fuel">
-							Transportation & Fuel
+							{getLang('Transportation & Fuel', user_lang)}
 						</option>
 						<option value="Rental Equipment">
-							Rental Equipment
+							{getLang('Rental Equipment', user_lang)}
 						</option>
 						<option value="Miscellaneous Expenses">
-							Miscellaneous Expenses
+							{getLang('Miscellaneous Expenses', user_lang)}
 						</option>
 					</select>
 					<textarea
@@ -361,7 +377,7 @@ export default function ReceiptPage() {
 							// }}
 							className="flex-1 p-4 border border-gray-300 rounded-md text-black"
 						>
-							Cancel
+							{getLang('Cancel', user_lang)}
 						</button>
 						<button
 							// style={{
@@ -385,16 +401,21 @@ export default function ReceiptPage() {
 								// }
 							}}
 						>
-							Submit
+							{getLang('Submit', user_lang)}
 						</button>
 					</div>
 					{errorRe.errorCode === 200 && (
-						<span>Receipt uplaoded succesfully 🎉🥳 ! </span>
+						<span>
+							{getLang(
+								'Receipt uploaded successfully 🎉🥳!',
+								user_lang,
+							)}{' '}
+						</span>
 					)}
 					{errorRe.error && (
 						<span>
-							Oops something went wrong: errorCode:{' '}
-							{errorRe.errorCode} {'\n'} error Message:{' '}
+							{getLang('Oops something went wrong', user_lang)} :
+							errorCode: {errorRe.errorCode} {'\n'} error Message:{' '}
 							{errorRe.errorMessage}{' '}
 						</span>
 					)}

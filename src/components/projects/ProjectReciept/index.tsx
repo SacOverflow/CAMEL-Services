@@ -3,8 +3,10 @@
 import { IReceipts } from '@/types/database.interface';
 
 import './ProjectReciepts.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createSupbaseClient } from '@/lib/supabase/client';
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 
 const ReceiptModal = ({
 	project_id,
@@ -31,6 +33,7 @@ const ReceiptModal = ({
 		errorMessage: string;
 		errorCode: string | number;
 	}>({ error: false, errorMessage: 'No error for now', errorCode: 100 });
+	const [user_lang, setUserLang] = useState('english');
 	//FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically -Hashem Jaber -DONE
 
 	const [reciept, setReciept] = useState<IReceipts | any>({
@@ -58,6 +61,14 @@ const ReceiptModal = ({
 			[name]: name === 'price_total' ? parseFloat(value) : value,
 		}));
 	};
+
+	useEffect(() => {
+		const getUserLang = async () => {
+			const userLang = await getLangPrefOfUser();
+			setUserLang(userLang);
+		};
+		getUserLang();
+	}, []);
 
 	const getDateFormat = (date: Date) => {
 		const d = new Date(date);
@@ -204,7 +215,7 @@ const ReceiptModal = ({
 				<div className="flex flex-row justify-center items-center w-full h-full">
 					<div className="bg-white p-4 rounded-md border border-gray-300 my-4 m-auto ">
 						<h1 className="text-center font-bold text-xl">
-							Upload Receipt
+							{getLang('Upload Receipt', user_lang)}
 						</h1>
 						<form onSubmit={() => {}}>
 							<div className="form-uploader">
@@ -253,51 +264,65 @@ const ReceiptModal = ({
 								onChange={handleChange}
 								type="date"
 							/>
-							<span>Category</span>
+							<span> {getLang('Category', user_lang)}</span>
 							<select
 								name="category"
 								className="p-4 rounded-md text-white bg-[#5A8472]"
 								onChange={handleChange}
 							>
-								<option value="">Select Category</option>
+								<option value="">
+									{getLang('Select Category', user_lang)}
+								</option>
 								<option value="HVAC Equipment & Supplies">
-									HVAC Equipment & Supplies
+									{getLang(
+										'HVAC Equipment & Supplies',
+										user_lang,
+									)}
 								</option>
 								<option value="Electrical Supplies">
-									Electrical Supplies
+									{getLang('Electrical Supplies', user_lang)}
 								</option>
 								<option value="Construction Materials">
-									Construction Materials
+									{getLang(
+										'Construction Materials',
+										user_lang,
+									)}
 								</option>
 								<option value="Tools & Machinery">
-									Tools & Machinery
+									{getLang('Tools & Machinery', user_lang)}
 								</option>
 								<option value="Safety Equipment">
-									Safety Equipment
+									{getLang('Safety Equipment', user_lang)}
 								</option>
 								<option value="Plumbing Supplies">
-									Plumbing Supplies
+									{getLang('Plumbing Supplies', user_lang)}
 								</option>
 								<option value="Lighting Fixtures">
-									Lighting Fixtures
+									{getLang('Lighting Fixtures', user_lang)}
 								</option>
 								<option value="Paint & Sundries">
-									Paint & Sundries
+									{getLang('Paint & Sundries', user_lang)}
 								</option>
 								<option value="Hardware & Fasteners">
-									Hardware & Fasteners
+									{getLang('Hardware & Fasteners', user_lang)}
 								</option>
 								<option value="Office Supplies">
-									Office Supplies
+									{getLang('Office Supplies', user_lang)}
 								</option>
 								<option value="Transportation & Fuel">
-									Transportation & Fuel
+									{getLang(
+										'Transportation & Fuel',
+										user_lang,
+									)}
 								</option>
 								<option value="Rental Equipment">
-									Rental Equipment
+									{getLang('Rental Equipment', user_lang)}
 								</option>
 								<option value="Miscellaneous Expenses">
-									Miscellaneous Expenses
+									{getLang(
+										'Miscellaneous Expenses',
+										user_lang,
+									)}
 								</option>
 							</select>
 							<textarea
@@ -313,8 +338,8 @@ const ReceiptModal = ({
 									className="flex-1 p-4 bg-white text-black border border-gray-300 rounded-md"
 								>
 									{errorRe.errorCode === 200
-										? 'Close'
-										: 'Cancel'}
+										? getLang('Close', user_lang)
+										: getLang('Cancel', user_lang)}
 								</button>
 								<button
 									className="flex-1 p-4 bg-[#5A8472] text-white border border-gray-300 rounded-md"
@@ -333,19 +358,27 @@ const ReceiptModal = ({
 									}}
 									disabled={createFlag}
 								>
-									{createFlag ? 'Loading...' : 'Submit'}
+									{createFlag
+										? 'Loading...'
+										: getLang('Submit', user_lang)}
 								</button>
 							</div>
 							{errorRe.errorCode === 200 && (
 								<span>
-									Receipt uploaded succesfully 🎉🥳 !{' '}
+									{getLang(
+										'Receipt uploaded successfully 🎉🥳!',
+										user_lang,
+									)}{' '}
 								</span>
 							)}
 							{errorRe.error && (
 								<span>
-									Oops something went wrong: errorCode:{' '}
-									{errorRe.errorCode} {'\n'} error Message:{' '}
-									{errorRe.errorMessage}{' '}
+									{getLang(
+										'Oops something went wrong: errorCode',
+										user_lang,
+									)}
+									: errorCode: {errorRe.errorCode} {'\n'}{' '}
+									error Message: {errorRe.errorMessage}{' '}
 								</span>
 							)}
 						</div>

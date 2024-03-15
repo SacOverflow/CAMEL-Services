@@ -17,6 +17,11 @@ export const metadata: Metadata = {
 		'A project management tool for organziaiton structure pertaining to property management.',
 };
 
+export async function generateStaticParams() {
+	return [{ lang: 'english' }, { lang: 'viet' },{ lang: 'span' }]
+  }
+
+
 export default async function RootLayout({
 	children,
 }: {
@@ -28,7 +33,7 @@ export default async function RootLayout({
 	} = await readUser();
 
 	return (
-		<html lang="en">
+		<html lang="en" >
 			<body className={poppins.className}>
 				<Navbar session={user || undefined} />
 				<Suspense fallback={<Loader />}>{children}</Suspense>

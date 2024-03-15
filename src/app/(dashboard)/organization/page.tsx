@@ -4,15 +4,18 @@ import {
 	OrgDetailsCard,
 } from '@/components/SharedComponents/DetailsCard/DetailsCard';
 import { createSupbaseServerClientReadOnly } from '@/lib/supabase/server';
+import { getLangPrefOfUser, getUserInformation } from '@/lib/actions/index';
 import { IOrganization } from '@/types/database.interface';
-
+import getLang from '@/app/translations/translations';
 export default async function Page() {
 	const allOrgs = await getOrganizationsWithRole();
+	const currUser = await getUserInformation();
+	const langPref = await getLangPrefOfUser(currUser?.id);
 
 	return (
 		<div className="w-full flex flex-col">
 			<span className="text-primary-green-600 text-4xl font-bold p-2">
-				Choose Organization
+				{getLang('Choose Organization', langPref)}
 			</span>
 			{/* <CreateOrgModal  /> */}
 			<div className="flex-grow overflow-y-auto bg-white text-default-text">
@@ -20,11 +23,12 @@ export default async function Page() {
 					<>
 						<div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 m-4 gap-4">
 							{/* NOTE: When fetching the organization associated with a user, if non center the create org card. */}
-							<CreateOrgCard />
+							<CreateOrgCard lang={langPref} />
 							{allOrgs.map(org => (
 								<OrgDetailsCard
 									key={org.id}
 									{...org}
+									lang={langPref}
 								/>
 							))}
 						</div>
@@ -32,7 +36,7 @@ export default async function Page() {
 				) : (
 					// Center the object only
 					<div className="grid grid-cols-1 m-4 gap-4 justify-items-center">
-						<CreateOrgCard />
+						<CreateOrgCard lang={langPref} />
 					</div>
 				)}
 			</div>

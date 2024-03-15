@@ -2,14 +2,13 @@ import {
 	SingleLineChart,
 	DoubleLineChart,
 } from '@/components/Dashboard/LineChart/LineCharts';
-
+import getLang from '@/app/translations/translations';
 // helper functions
 import { calculatePercentageDifference } from '@/utils/generalUtils';
-
 // CSS imports
 import './SalesTrendWidget.css';
 import { getSalesOverviewData, getSpendingCategories } from '@/utils/dataUtils';
-
+import { getUserInformation, getLangPrefOfUser } from '@/lib/actions/index';
 const SalesTrendWidget = async ({
 	filterType = 'year',
 	className,
@@ -21,6 +20,8 @@ const SalesTrendWidget = async ({
 }) => {
 	// get the mockaroo data
 	const SalesOverview = await getSalesOverviewData();
+	const user = await getUserInformation();
+	const lang = await getLangPrefOfUser(user?.id);
 	// check if totals not null keys
 	const isValidTotals =
 		SalesOverview &&
@@ -45,7 +46,10 @@ const SalesTrendWidget = async ({
 	return (
 		<>
 			<div className="trends-widget">
-				<span className="trends-widget-title">Sales Trend</span>
+				<span className="trends-widget-title">
+					{' '}
+					{getLang('Sales Trend', lang)}
+				</span>
 				<div className="trends-widget-percentage">
 					<span className="trends-widget-percentage-value">
 						{calculatePercentageDifference(
@@ -55,7 +59,9 @@ const SalesTrendWidget = async ({
 						<span className="percentage-sign">%</span>
 					</span>
 					<span className="trends-widget-percentage-text">
-						Compared to ${SalesOverview.previousTotal} last year.
+						{getLang('Compared to', lang)} $
+						{SalesOverview.previousTotal}{' '}
+						{getLang('Last year', lang)}.
 					</span>
 				</div>
 				{/* charts utilizing AM Charts */}
@@ -76,7 +82,9 @@ const SalesTrendWidget = async ({
 							className="category"
 							key={index}
 						>
-							<span className="title">{category.category}</span>
+							<span className="title">
+								{getLang(category.category, lang)}
+							</span>
 							<span className="amount">
 								${category?.total || '0'}
 							</span>

@@ -6,14 +6,17 @@ import { IOrganization } from '@/types/database.interface';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import getLang from '@/app/translations/translations';
 import './EditOrgModal.css';
 
 export default function EditOrgModal({
 	clickHandler,
 	organization,
+	lang,
 }: {
 	clickHandler: () => void;
 	organization: IOrgEdit;
+	lang?: string;
 }) {
 	const [formData, setFormData] = useState({
 		orgName: organization.name,
@@ -118,7 +121,10 @@ export default function EditOrgModal({
 		<>
 			<div className="organization-modal w-full">
 				<div className="header-section">
-					<span className="title">Edit Organization</span>
+					<span className="title">
+						{getLang('Edit', lang ? lang : 'english')}{' '}
+						{getLang('Organization', lang ? lang : 'english')}
+					</span>
 				</div>
 
 				<form className="form-section flex flex-col gap-2">

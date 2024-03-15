@@ -1,0 +1,467 @@
+{
+  "Status": {
+    "english": "Status",
+    "viet": "Trạng thái",
+    "spanish": "Estado"
+  },
+  "Member": {
+    "english": "Member",
+    "viet": "Thành viên",
+    "spanish": "Miembro"
+  },
+  "Last Updated": {
+    "english": "Last Updated",
+    "viet": "Cập nhật lần cuối",
+    "spanish": "Última actualización"
+  },
+  "Notes": {
+    "english": "Notes",
+    "viet": "Ghi chú",
+    "spanish": "Notas"
+  },
+  "Duration": {
+    "english": "Duration",
+    "viet": "Thời lượng",
+    "spanish": "Duración"
+  },
+  "Options": {
+    "english": "Options",
+    "viet": "Tùy chọn",
+    "spanish": "Opciones"
+  },
+  "Completed Tasks": {
+    "english": "Completed Tasks",
+    "viet": "Nhiệm vụ đã hoàn thành",
+    "spanish": "Tareas completadas"
+  },
+  "In Progress Tasks": {
+    "english": "In Progress Tasks",
+    "viet": "Nhiệm vụ đang tiến hành",
+    "spanish": "Tareas en progreso"
+  },
+  "In Progress": {
+    "english": "In Progress",
+    "viet": "Đang tiến hành",
+    "spanish": "En progreso"
+  },
+  "Project Activity": {
+    "english": "Project Activity",
+    "viet": "Hoạt động dự án",
+    "spanish": "Actividad del proyecto"
+  },
+  "Project Receipts": {
+    "english": "Project Receipts",
+    "viet": "Biên lai dự án",
+    "spanish": "Recibos del proyecto"
+  },
+  "Project Members": {
+    "english": "Project Members",
+    "viet": "Thành viên dự án",
+    "spanish": "Miembros del proyecto"
+  },
+  "Cancel": {
+    "english": "Cancel",
+    "viet": "Hủy bỏ",
+    "spanish": "Cancelar"
+  },
+  "Create": {
+    "english": "Create",
+    "viet": "Tạo mới",
+    "spanish": "Crear"
+  },
+  "New Task": {
+    "english": "New Task",
+    "viet": "Nhiệm vụ mới",
+    "spanish": "Nueva tarea"
+  },
+  "Task Name": {
+    "english": "Task Name",
+    "viet": "Tên nhiệm vụ",
+    "spanish": "Nombre de la tarea"
+  },
+  "Complete by": {
+    "english": "Complete by",
+    "viet": "Hoàn thành bởi",
+    "spanish": "Completar por"
+  },
+  "Members:": {
+    "english": "Members:",
+    "viet": "Thành viên:",
+    "spanish": "Miembros:"
+  },
+  "Add task members": {
+    "english": "Add task members",
+    "viet": "Thêm thành viên nhiệm vụ",
+    "spanish": "Agregar miembros de la tarea"
+  },
+  "Search": {
+    "english": "Search",
+    "viet": "Tìm kiếm",
+    "spanish": "Buscar"
+  },
+  "Project Attachments / References": {
+    "english": "Project Attachments / References",
+    "viet": "Tài liệu/Tham khảo dự án",
+    "spanish": "Adjuntos/Referencias del proyecto"
+  },
+  "Project Expenses": {
+    "english": "Project Expenses",
+    "viet": "Chi phí dự án",
+    "spanish": "Gastos del proyecto"
+  },
+  "Account": {
+    "english": "Account",
+    "viet": "Tài khoản",
+    "spanish": "Cuenta"
+  },
+  "Organization": {
+    "english": "Organization",
+    "viet": "Tổ chức",
+    "spanish": "Organización"
+  },
+  "Dashboard": {
+    "english": "Dashboard",
+    "viet": "Bảng điều khiển",
+    "spanish": "Tablero"
+  },
+  "Projects": {
+    "english": "Projects",
+    "viet": "Dự án",
+    "spanish": "Proyectos"
+  },
+  "Settings": {
+    "english": "Settings",
+    "viet": "Cài đặt",
+    "spanish": "Configuración"
+  },
+  "Sign Out": {
+    "english": "Sign Out",
+    "viet": "Đăng xuất",
+    "spanish": "Cerrar sesión"
+  },
+  "Sign in": {
+    "english": "Sign in",
+    "viet": "Đăng nhập",
+    "spanish": "Iniciar sesión"
+  },
+  "Action Needed": {
+    "english": "Action Needed",
+    "viet": "Cần hành động",
+    "spanish": "Acción requerida"
+  },
+  "Needs Approval": {
+    "english": "Needs Approval",
+    "viet": "Cần phê duyệt",
+    "spanish": "Necesita aprobación"
+  },
+  "Complete": {
+    "english": "Complete",
+    "viet": "Hoàn tất",
+    "spanish": "Completar"
+  },
+  "Submit": {
+    "english": "Submit",
+    "viet": "Gửi đi",
+    "spanish": "Enviar"
+  },
+  "Project Tasks": {
+    "english": "Project Tasks",
+    "viet": "Nhiệm vụ Dự án",
+    "spanish": "Tareas del proyecto"
+  },
+  "Choose Organization": {
+    "english": "Choose Organization",
+    "viet": "Chọn Tổ Chức",
+    "spanish": "Elegir organización"
+  },
+  "No projects found": {
+    "english": "No projects found",
+    "viet": "Không tìm thấy dự án nào",
+    "spanish": "No se encontraron proyectos"
+  },
+  "Organizations": {
+    "english": "Organizations",
+    "viet": "Tổ chức",
+    "spanish": "Organizaciones"
+  },
+  "Invoices": {
+    "english": "Invoices",
+    "viet": "Hóa đơn",
+    "spanish": "Facturas"
+  },
+  "Language": {
+    "english": "Language",
+    "viet": "Ngôn ngữ",
+    "spanish": "Idioma"
+  },
+  "Privacy & Security": {
+    "english": "Privacy & Security",
+    "viet": "Riêng tư & Bảo mật",
+    "spanish": "Privacidad y seguridad"
+  },
+  "Appearance": {
+    "english": "Appearance",
+    "viet": "Giao diện",
+    "spanish": "Apariencia"
+  },
+  "Notifications": {
+    "english": "Notifications",
+    "viet": "Thông báo",
+    "spanish": "Notificaciones"
+  },
+  "Category": {
+    "english": "Category",
+    "viet": "Thể loại",
+    "spanish": "Categoría"
+},
+"Select Category": {
+    "english": "Select Category",
+    "viet": "Chọn thể loại",
+    "spanish": "Seleccionar categoría"
+},
+"Receipt uploaded successfully 🎉🥳!": {
+    "english": "Receipt uploaded successfully 🎉🥳!",
+    "viet": "Tải biên lai thành công 🎉🥳 !",
+    "spanish": "Recibo subido con éxito 🎉🥳 !"
+},
+"Oops something went wrong: errorCode": {
+    "english": "Oops something went wrong: errorCode",
+    "viet": "Rất tiếc, đã xảy ra lỗi: mã lỗi",
+    "spanish": "Ups algo salió mal: errorCode"
+},
+"Error Message": {
+    "english": "Error Message",
+    "viet": "Thông báo lỗi",
+    "spanish": "Mensaje de error"
+},
+"Upload Receipt": {
+  "english": "Upload Receipt",
+  "viet": "Tải hóa đơn lên",
+  "spanish": "Subir recibo"
+  },
+
+  
+    "HVAC Equipment & Supplies": {
+        "english": "HVAC Equipment & Supplies",
+        "viet": "Thiết bị và vật tư HVAC",
+        "spanish": "Equipos y suministros HVAC"
+    },
+    "Electrical Supplies": {
+        "english": "Electrical Supplies",
+        "viet": "Vật tư điện",
+        "spanish": "Suministros eléctricos"
+    },
+    "Construction Materials": {
+        "english": "Construction Materials",
+        "viet": "Vật liệu xây dựng",
+        "spanish": "Materiales de construcción"
+    },
+    "Tools & Machinery": {
+        "english": "Tools & Machinery",
+        "viet": "Dụng cụ và máy móc",
+        "spanish": "Herramientas y maquinaria"
+    },
+    "Safety Equipment": {
+        "english": "Safety Equipment",
+        "viet": "Thiết bị an toàn",
+        "spanish": "Equipos de seguridad"
+    },
+    "Plumbing Supplies": {
+        "english": "Plumbing Supplies",
+        "viet": "Vật tư nước",
+        "spanish": "Suministros de plomería"
+    },
+    "Lighting Fixtures": {
+        "english": "Lighting Fixtures",
+        "viet": "Thiết bị chiếu sáng",
+        "spanish": "Accesorios de iluminación"
+    },
+    "Paint & Sundries": {
+        "english": "Paint & Sundries",
+        "viet": "Sơn và đồ dùng",
+        "spanish": "Pinturas y accesorios"
+    },
+    "Hardware & Fasteners": {
+        "english": "Hardware & Fasteners",
+        "viet": "Phần cứng và phụ kiện",
+        "spanish": "Ferretería y sujetadores"
+    },
+    "Office Supplies": {
+        "english": "Office Supplies",
+        "viet": "Văn phòng phẩm",
+        "spanish": "Suministros de oficina"
+    },
+    "Transportation & Fuel": {
+        "english": "Transportation & Fuel",
+        "viet": "Vận tải và nhiên liệu",
+        "spanish": "Transporte y combustible"
+    },
+    "Rental Equipment": {
+        "english": "Rental Equipment",
+        "viet": "Thiết bị cho thuê",
+        "spanish": "Equipos de alquiler"
+    },
+    "Miscellaneous Expenses": {
+        "english": "Miscellaneous Expenses",
+        "viet": "Chi phí khác",
+        "spanish": "Gastos varios"
+    },
+    "Sales Trend": {
+      "english": "Sales Trend",
+      "viet": "Xu hướng bán hàng",
+      "spanish": "Tendencia de ventas"
+      },
+      "Compared to": {
+      "english": "Compared to",
+      "viet": "So với",
+      "spanish": "Comparado con"
+      },
+      "Last year": {
+      "english": "Last year",
+      "viet": "Năm ngoái",
+      "spanish": "El año pasado"
+      },
+      "Completed By": {
+        "english": "Completed By",
+        "viet": "Hoàn thành bởi",
+        "spanish": "Completado por"
+        },
+        "Cancelled Tasks": {
+          "english": "Cancelled Tasks",
+          "viet": "Nhiệm vụ đã hủy",
+          "spanish": "Tareas canceladas"
+          },
+          "Completed": {
+            "english": "Completed",
+            "viet": "Hoàn tất",
+            "spanish": "Completado"
+            },
+            "Cancelled": {
+            "english": "Cancelled",
+            "viet": "Đã hủy",
+            "spanish": "Cancelado"
+            },
+            "Edit Task": {
+              "english": "Edit Task",
+              "viet": "Chỉnh sửa nhiệm vụ",
+              "spanish": "Editar tarea"
+              },
+              
+                "Save": {
+                "english": "Save",
+                "viet": "Lưu",
+                "spanish": "Guardar"
+                },
+                "Revenue Chart": {
+                  "english": "Revenue Chart",
+                  "viet": "Biểu đồ doanh thu",
+                  "spanish": "Gráfico de ingresos"
+                  },
+                  "Overall Spending": {
+                  "english": "Overall Spending",
+                  "viet": "Chi tiêu tổng cộng",
+                  "spanish": "Gasto total"
+                  },
+                  "Monthly Spending": {
+                  "english": "Monthly Spending",
+                  "viet": "Chi tiêu hàng tháng",
+                  "spanish": "Gasto mensual"
+                  },
+                  "Total Earning": {
+                  "english": "Total Earning",
+                  "viet": "Tổng thu nhập",
+                  "spanish": "Ingresos totales"
+                  },
+                  "Project Details": {
+                    "english": "Project Details",
+                    "viet": "Chi tiết dự án",
+                    "spanish": "Detalles del proyecto"
+                    },
+                    "Budget": {
+                    "english": "Budget",
+                    "viet": "Ngân sách",
+                    "spanish": "Presupuesto"
+                    },
+                    "Description": {
+                    "english": "Description",
+                    "viet": "Mô tả",
+                    "spanish": "Descripción"
+                    },
+                    "Location": {
+                    "english": "Location",
+                    "viet": "Vị trí",
+                    "spanish": "Ubicación"
+                    },
+                    "Start Date": {
+                    "english": "Start Date",
+                    "viet": "Ngày bắt đầu",
+                    "spanish": "Fecha de inicio"
+                    },
+                    "End Date": {
+                    "english": "End Date",
+                    "viet": "Ngày kết thúc",
+                    "spanish": "Fecha de finalización"
+                    },
+                    "Assigned Members": {
+                    "english": "Assigned Members",
+                    "viet": "Thành viên được giao",
+                    "spanish": "Miembros asignados"
+                    },
+                    "Title": {
+                      "english": "Title",
+                      "viet": "Tiêu đề",
+                      "spanish": "Título"
+                      },
+                      
+                        "Add New Project Here": {
+                        "english": "Add New Project Here",
+                        "viet": "Thêm Dự Án Mới Ở Đây",
+                        "spanish": "Agregar Nuevo Proyecto Aquí"
+                        },
+                        "New": {
+                          "english": "New",
+                          "viet": "Mới",
+                          "spanish": "Nuevo"
+                        },
+                        "Are you sure you want to": {
+                          "english": "Are you sure you want to",
+                          "viet": "Bạn có chắc chắn muốn",
+                          "spanish": "¿Está seguro de que quiere"
+                        },
+                        "Name": {
+                          "english": "Name",
+                          "viet": "Tên",
+                          "spanish": "Nombre"
+                        },
+                       
+                        "Edit Activity": {
+                          "english": "Edit Activity",
+                          "viet": "Chỉnh sửa Hoạt động",
+                          "spanish": "Editar Actividad"
+                        },
+                        "Delete": {
+                          "english": "Delete",
+                          "viet": "Xóa",
+                          "spanish": "Eliminar"
+                        },
+                        "Edit": {
+                          "english": "Edit",
+                          "viet": "Chỉnh sửa",
+                          "spanish": "Editar"
+                        },
+                        "Minutes": {
+                          "english": "Minutes",
+                          "viet": "Phút",
+                          "spanish": "Minutos"
+                        },
+                        "Time": {
+                          "english": "Time",
+                          "viet": "Thời gian",
+                          "spanish": "Tiempo"
+                        },
+                        "Date": {
+                          "english": "Date",
+                          "viet": "Ngày",
+                          "spanish": "Fecha"
+                        }
+}
