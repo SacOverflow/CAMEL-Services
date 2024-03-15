@@ -450,3 +450,36 @@ export const getAllNonOrganizationMembers = async (
 		([] as IUsers[]);
 	return resp;
 };
+
+/**
+ * @param user_id The user id to be get the lang pref of
+ * @returns varchat value indicating the language preference of the user, in case of failure then defualt language is english
+ */
+export async function getLangPrefOfUser(user_id: string) {
+	const supabase = await createSupbaseServerClientReadOnly();
+
+	// remove user from projects_member table
+	const { data: resp, error } = await supabase
+		.from('user_lang_pref')
+		.select('lang')
+		.eq('user_id', user_id);
+
+	if (error) {
+		console.error('getting user language faild', error);
+		return 'eng';
+	} else {
+		console.info('user pref lang is');
+		console.info(
+			resp[0]?.lang === undefined
+				? 'undefined, no such user lang pref exisist'
+				: resp[0].lang,
+		);
+	}
+
+	try {
+		return resp[0].lang;
+	} catch (e) {
+		console.info('no user_pref in data base, switching to english');
+		return 'english';
+	}
+}

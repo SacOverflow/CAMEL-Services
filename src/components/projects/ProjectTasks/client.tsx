@@ -16,7 +16,8 @@ import {
 	removeMemberFromTask,
 } from '@/lib/actions/client';
 import Image from 'next/image';
-
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 // return array of 3 ITasks array filtered
 export function organizeTasks(tasks: ITasks[]) {
 	const completedTasks: ITasks[] = [];
@@ -58,6 +59,15 @@ export function TasksSection({
 	const [errorDetails, SetErrrDetails] = useState(
 		'No error detected, try contacting our dev team and we shall help',
 	);
+	const [lang, setLang] = useState('english');
+	// filter tasks on status
+	useEffect(() => {
+		const getLanguage = async () => {
+			const tempLang = await getLangPrefOfUser();
+			setLang(tempLang);
+		};
+		getLanguage();
+	}, []);
 	// filter tasks on status
 	useEffect(() => {
 		setTasks(allProjecTasks);
@@ -94,11 +104,13 @@ export function TasksSection({
 					selectedCategory={selectedCategory}
 					setSelectedCategory={setSelectedCategory}
 					role={role}
+					lang={lang}
 				/>
 			) : (
 				<DesktopView
 					tasks={tasks}
 					role={role}
+					lang={lang}
 				/>
 			)}
 
@@ -134,6 +146,7 @@ const MobileView = ({
 	selectedCategory,
 	setSelectedCategory,
 	role,
+	lang,
 }: any) => {
 	const [completedTasks, setCompletedTasks] = useState<ITasks[]>([]);
 	const [inProgressTasks, setInProgressTasks] = useState<ITasks[]>([]);
@@ -167,15 +180,19 @@ const MobileView = ({
 
 	return (
 		<div className="flex flex-col items-center justify-between mb-4 w-full gap-2">
-			<h2 className="text-xl font-bold w-full">Tasks</h2>
+			<h2 className="text-xl font-bold w-full">{getLang('Tasks', lang)}</h2>
 			<select
 				value={selectedCategory}
 				onChange={e => setSelectedCategory(e.target.value)}
 				className="rounded-md border border-gray-300 p-2 min-w-fit text-sm font-medium"
 			>
-				<option value="Completed">Completed</option>
-				<option value="InProgress">In Progress</option>
-				<option value="NeedsApproval">Cancelled</option>
+				<option value="Completed">{getLang('Completed', lang)}</option>
+				<option value="InProgress">
+					{getLang('In Progress', lang)}
+				</option>
+				<option value="NeedsApproval">
+					{getLang('Cancelled', lang)}
+				</option>
 			</select>
 
 			{completedTasks.map(
@@ -215,12 +232,18 @@ const MobileView = ({
 };
 
 // component for desktop view
-const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
+const DesktopView = ({
+	tasks,
+	role,
+	lang = 'english',
+}: {
+	tasks: ITasks[];
+	role: string;
+	lang: string;
+}) => {
 	const [completedTasks, setCompletedTasks] = useState<ITasks[]>([]);
 	const [inProgressTasks, setInProgressTasks] = useState<ITasks[]>([]);
 	const [cancelledTasks, setCancelledTasks] = useState<ITasks[]>([]);
-
-	// filter tasks on status
 	useEffect(() => {
 		const [
 			newListOfCompletedTasks,
@@ -236,7 +259,9 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 	if (!tasks.length) {
 		return (
 			<div className="flex flex-col items-center justify-center h-80">
-				<h2 className="text-xl font-bold">No tasks yet</h2>
+				<h2 className="text-xl font-bold">
+					{getLang('No tasks yet', lang)}
+				</h2>
 			</div>
 		);
 	}
@@ -245,7 +270,7 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 		// handle here so no overflow
 		<div className={`flex flex-row gap-2 w-full`}>
 			<div className="flex-row grow p-4">
-				<h2 className={`text-xl font-bold my-2`}>Completed Tasks</h2>
+				<h2 className={`text-xl font-bold my-2`}>{getLang('Completed Tasks', lang)}</h2>
 				<div
 					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
@@ -261,7 +286,7 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 				</div>
 			</div>
 			<div className="flex-row grow p-4">
-				<h2 className={`text-xl font-bold my-2`}>In Progress Tasks</h2>
+				<h2 className={`text-xl font-bold my-2`}>{getLang('In Progress Tasks', lang)}</h2>
 				<div
 					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
@@ -277,7 +302,7 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 				</div>
 			</div>
 			<div className="flex-row grow p-4">
-				<h2 className={`text-xl font-bold my-2`}>Cancelled Tasks</h2>
+				<h2 className={`text-xl font-bold my-2`}>{getLang('Cancelled Tasks', lang)}</h2>
 				<div
 					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''

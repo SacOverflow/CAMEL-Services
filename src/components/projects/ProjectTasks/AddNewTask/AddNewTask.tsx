@@ -1,7 +1,8 @@
 'use client';
-
+import getLang from '@/app/translations/translations';
+import { getLangPrefOfUser } from '@/lib/actions/client';
 //import { createSupbaseServerClientReadOnly } from '@/lib/supabase/server';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type Task = {
 	id: string;
@@ -17,6 +18,15 @@ type CreateTaskFormProps = {
 };
 
 const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
+	const [lang, setLang] = useState('english');
+
+	useEffect(() => {
+		const getUserLanguage = async () => {
+			const tempLang = await getLangPrefOfUser();
+			setLang(tempLang);
+		};
+		getUserLanguage();
+	}, []);
 	const [newTask, setNewTask] = useState({
 		id: '',
 		taskName: '',
@@ -52,7 +62,7 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 						className="block text-gray-700 text-sm font-bold mb-2"
 						htmlFor="taskName"
 					>
-						Task Name
+						{getLang('Task Name', lang)}
 					</label>
 					<input
 						id="taskName"
@@ -67,7 +77,7 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 
 				{/* Created At */}
 				<div className="mb-4">
-					<label className="">Created At</label>
+					<label className="">{getLang('Created At', lang)}</label>
 					<input
 						id="createdAt"
 						name="createdAt"
@@ -83,7 +93,7 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 						className="block text-gray-700 text-sm font-bold mb-2"
 						htmlFor="status"
 					>
-						Status
+						{getLang('Status', lang)}
 					</label>
 					<select
 						id="status"
@@ -92,9 +102,15 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 						value={newTask.status}
 						onChange={handleChange}
 					>
-						<option value="In Progress">In Progress</option>
-						<option value="Completed">Completed</option>
-						<option value="Cancelled">Cancelled</option>
+						<option value="In Progress">
+							{getLang('In Progress', lang)}
+						</option>
+						<option value="Completed">
+							{getLang('Completed', lang)}
+						</option>
+						<option value="Cancelled">
+							{getLang('Cancelled', lang)}
+						</option>
 					</select>
 				</div>
 
@@ -104,7 +120,7 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 						className=""
 						htmlFor="completedBy"
 					>
-						Completed By
+						{getLang('Completed By', lang)}
 					</label>
 					<input
 						id="completedBy"
@@ -141,13 +157,13 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 						className="cancel-btn"
 						onClick={() => {}}
 					>
-						Cancel
+						{getLang('Cancel', lang)}
 					</button>
 					<button
 						type="submit"
 						className="save-btn"
 					>
-						Create
+						{getLang('Create', lang)}
 					</button>
 				</div>
 			</form>

@@ -8,13 +8,14 @@ import { useState } from 'react';
 import { createSupbaseClient } from '@/lib/supabase/client';
 import { ReturnComp } from '@/components/ProfileSettings/SettingsComponent/Nav/ClientComponents';
 import { PASSWORD_MESSAGE, PASSWORD_REGEX } from '@/types/auth.constants';
-
+import getLang from '@/app/translations/translations';
 interface UserProfileProps {
 	user: IUsers;
 	userrole: string;
+	lang?: string;
 }
 
-const AccountInputField = ({ user, userrole }: UserProfileProps) => {
+const AccountInputField = ({ user, userrole, lang }: UserProfileProps) => {
 	const { name, email, username } = user;
 
 	// limit split of lastname to 1
@@ -196,7 +197,9 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 							d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
 						/>
 					</svg>
-					<div className="accounttitle">Account</div>
+					<div className="accounttitle">
+						{getLang('Account', lang ? lang : 'english')}
+					</div>
 				</div>
 				<div className="accountcontainer">
 					<div className="accountinfo">
@@ -216,7 +219,10 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 					>
 						{/* firstname */}
 						<InputField
-							label="First Name"
+							label={getLang(
+								'First Name',
+								lang ? lang : 'english',
+							)}
 							value={firstName}
 							setValue={setFirstName}
 							placeholder={firstName}
@@ -224,7 +230,10 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 						/>
 						{/* last name */}
 						<InputField
-							label="Last Name"
+							label={getLang(
+								'Last Name',
+								lang ? lang : 'english',
+							)}
 							placeholder={lastName}
 							value={lastName}
 							setValue={setLastName}
@@ -233,7 +242,7 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 
 						{/* username */}
 						<InputField
-							label="Username"
+							label={getLang('Username', lang ? lang : 'english')}
 							placeholder={username}
 							value={newUsername}
 							setValue={setNewUsername}
@@ -243,7 +252,7 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 						{/* email */}
 
 						<InputField
-							label="Email"
+							label={getLang('Email', lang ? lang : 'english')}
 							placeholder={email}
 							value={newEmail}
 							setValue={setNewEmail}
@@ -268,11 +277,11 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 							type="submit"
 							className="btn btn-primary btn-medium mx-2 my-2 w-1/6"
 						>
-							Save
+							{getLang('Save', lang ? lang : 'english')}
 						</button>
 					</form>
 				</div>
-				<AccountPasswordContainer />
+				<AccountPasswordContainer lang={lang} />
 			</div>
 		</>
 	);
@@ -280,7 +289,7 @@ const AccountInputField = ({ user, userrole }: UserProfileProps) => {
 
 export { AccountInputField };
 
-function AccountPasswordContainer() {
+function AccountPasswordContainer({ lang }: { lang?: string }) {
 	const [newPassword, setNewPassword] = useState<string>('');
 	const [confirmPassword, setConfirmPassword] = useState<string>('');
 
@@ -361,7 +370,7 @@ function AccountPasswordContainer() {
 				onSubmit={handleSubmit}
 			>
 				<InputField
-					label="New Password"
+					label={getLang('New Password', lang ? lang : 'english')}
 					placeholder="********"
 					value={newPassword}
 					// setValue={setNewPassword}
@@ -373,7 +382,10 @@ function AccountPasswordContainer() {
 				/>
 
 				<InputField
-					label="Confirm New Password"
+					label={getLang(
+						'Confirm New Password',
+						lang ? lang : 'english',
+					)}
 					placeholder="********"
 					value={confirmPassword}
 					// setValue={setConfirmPassword}
@@ -404,7 +416,7 @@ function AccountPasswordContainer() {
 					type="submit"
 					className="btn btn-primary btn-medium mx-2 my-2 w-1/6"
 				>
-					Save
+					{getLang('Save', lang ? lang : 'english')}
 				</button>
 			</form>
 		</div>
