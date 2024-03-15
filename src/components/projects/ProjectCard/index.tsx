@@ -7,14 +7,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { EditProjectModal } from '../EditProjectModal';
-import './status.css';
+import getLang from '@/app/translations/translations';
 
+import './status.css';
+function capitalizeFirstLetterOfEachWord(str: string) {
+	return str
+		.split(' ')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
+}
 export const ProjectCard = async ({
 	project,
 	role = Roles.MEMBER,
+	lang,
 }: {
 	project: IProjects;
 	role?: Roles;
+	lang?: string;
 }) => {
 	const [editEnabled, setEditEnabled] = useState<IProjects | null>();
 
@@ -101,7 +110,10 @@ export const ProjectCard = async ({
 								project.status,
 							)} py-1 px-2 rounded-full text-gray-100 flex-1 text-center`}
 						>
-							{project.status}
+							{getLang(
+								capitalizeFirstLetterOfEachWord(project.status),
+								lang ? lang : 'english',
+							)}
 						</div>
 					</div>
 					<div className="font-bold flex justify-center text-lg">

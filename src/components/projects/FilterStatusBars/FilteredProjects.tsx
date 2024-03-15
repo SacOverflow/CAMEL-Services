@@ -4,9 +4,12 @@ import AddCard from '@/components/projects/AddCard';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import StatusBar from '@/components/projects/StatusBar/StatusBar';
 import { IProjects, Roles, Status } from '@/types/database.interface';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // CSS imports
 import '@/components/SharedComponents/InputComponent.css';
+import { getLangPrefOfUser } from '@/lib/actions/client';
+import translations from '../../../app/translations/language.json';
+import getLang from '@/app/translations/translations';
 export default function FilteredProjects({
 	projects,
 	role,
@@ -23,9 +26,18 @@ export default function FilteredProjects({
 		Status.NeedsApproval,
 		Status.ActionNeeded,
 	]);
+	const [lang, setLang] = useState('eng');
+	useEffect(() => {
+		const getLanguage = async () => {
+			const langPref = await getLangPrefOfUser();
+			setLang(langPref);
+		};
+		getLanguage();
+	}, []);
 	// use the currently selected to filter and display projects to user
 	const [filteredProjects, setFilteredProjects] =
 		useState<IProjects[]>(projects);
+	const translation: any = translations;
 
 	const [searchQuery, setSearchQuery] = useState('');
 
@@ -72,34 +84,39 @@ export default function FilteredProjects({
 		<>
 			<div className="flex flex-row grow ">
 				<div className="text-primary-green-600 text-4xl mt-1 font-bold px-2 py-1">
-					Projects
+					{getLang('Projects', lang)}
 				</div>
 				<div className="flex flex-row flex-wrap justify-start text-white overflow-x-auto">
 					{/* this all a component */}
 
 					{/* function for clicking  */}
 					<StatusBar
-						status={Status.Complete}
+						status={getLang(Status.Complete, lang)}
 						onClick={() => {
 							onStatusClick(Status.Complete);
 						}}
+						lang={lang}
 						active={currSelected.includes(Status.Complete)}
 					/>
 					<StatusBar
-						status={Status.InProgress}
+						status={getLang(Status.InProgress, lang)}
 						onClick={() => {
 							onStatusClick(Status.InProgress);
 						}}
 						active={currSelected.includes(Status.InProgress)}
+						lang={lang}
 					/>
 					<StatusBar
-						status={Status.NeedsApproval}
+						status={getLang(Status.NeedsApproval, lang)}
 						onClick={() => {
 							onStatusClick(Status.NeedsApproval);
 						}}
 						active={currSelected.includes(Status.NeedsApproval)}
+						lang={lang}
 					/>
+					{/**FIX ME WOOHOOO, HERE ~Hashem Jaber*/}
 					<StatusBar
+						lang={lang}
 						status={Status.ActionNeeded}
 						onClick={() => {
 							onStatusClick(Status.ActionNeeded);
@@ -140,11 +157,12 @@ export default function FilteredProjects({
 										key={project.id}
 										project={project}
 										role={role}
+										lang={lang}
 									/>
 								))
 							) : (
 								<div className="no-projects text-center my-auto text-2xl text-primary-green-300 ">
-									No projects found
+									{getLang('No projects found', lang)}
 								</div>
 							)}
 						</div>

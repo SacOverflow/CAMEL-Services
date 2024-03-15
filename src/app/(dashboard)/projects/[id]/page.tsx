@@ -5,10 +5,12 @@ import {
 	getProjectActivities,
 	getProjectMembers,
 	getUserInformation,
+	getLangPrefOfUser,
 } from '@/lib/actions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Poppins } from 'next/font/google';
+import translations from '../../../translations/language.json';
 
 // CSS import
 import './SingleProjectPage.css';
@@ -27,7 +29,7 @@ import DownloadExcelButton from '@/components/projects/excel_download_component/
 
 import RecieptList from '@/components/Invoices/ProjectReceiptList/recieptList';
 import { AddProjectReciept } from '@/components/projects/ProjectReciept';
-
+import getLang from '@/app/translations/translations';
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -60,6 +62,8 @@ export default async function SingleProjectPage({
 	if (!orgAndProjectAssociation) {
 		redirect('/projects');
 	}
+	// Temp fix but will need to define its own interface ---FIX ME HELOO WOLRD ~Hashem Jaber
+	const translation: any = translations;
 
 	const {
 		id: project_id,
@@ -87,7 +91,7 @@ export default async function SingleProjectPage({
 
 	/* get all projects */
 	const projectTasks = await getAllTasks(project_id);
-
+	const langPref = await getLangPrefOfUser(currUser?.id);
 	return (
 		<div className={`project-details ${PoppinsSemiBold.className}`}>
 			{/* <div className="project-title">
@@ -116,7 +120,7 @@ export default async function SingleProjectPage({
 						/>
 					</svg>
 					<div className="flex justify-between items-center w-full">
-						<span>Project Tasks</span>
+						<span>{getLang('Project Tasks', langPref)}</span>
 						{role === Roles.ADMIN ? (
 							<AddNewTaskButton
 								proj_id={project_id}
@@ -148,7 +152,7 @@ export default async function SingleProjectPage({
 						/>
 					</svg>
 					<div className="flex justify-between items-center w-full">
-						<span>Project Members</span>
+						<span>{getLang('Project Members', langPref)}</span>
 						{role === Roles.ADMIN ? <SearchBar /> : null}
 					</div>
 					{/* client component to allow adding members to this project */}
@@ -177,7 +181,7 @@ export default async function SingleProjectPage({
 					</svg>
 
 					<div className="flex justify-between items-center w-full">
-						<span>Project Reciepts</span>
+						<span>{getLang('Project Receipts', langPref)}</span>
 					</div>
 
 					<AddProjectReciept
@@ -205,9 +209,12 @@ export default async function SingleProjectPage({
 								d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"
 							/>
 						</svg>
-						<span>Project Activity</span>
+						<span>{getLang('Project Activity', langPref)}</span>
 					</div>
-					<AddProjectActivity project_id={project_id} />
+					<AddProjectActivity
+						project_id={project_id}
+						lang={langPref}
+					/>
 				</div>
 				<ProjectActivity
 					className="activity-card"
@@ -230,7 +237,9 @@ export default async function SingleProjectPage({
 							d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
 						/>
 					</svg>
-					<span>Project Attachments / References</span>
+					<span>
+						{getLang('Project Attachments / References', langPref)}
+					</span>
 				</div>
 				<ProjectAttachments />
 			</div>
@@ -249,7 +258,7 @@ export default async function SingleProjectPage({
 							d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
 						/>
 					</svg>
-					<span>Project Expenses</span>
+					<span>{getLang('Project Expenses', langPref)}</span>
 				</div>
 			</div>
 		</div>

@@ -12,6 +12,7 @@ import { Roles } from '@/types/database.interface';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import getLang from '@/app/translations/translations';
 import Buttons from '../Buttons';
 import './DetailsCard.css';
 
@@ -19,10 +20,12 @@ export function CreateOrgCard({
 	className,
 	children,
 	clickHandler,
+	lang,
 }: {
 	className?: string;
 	children?: React.ReactNode;
 	clickHandler?: () => void;
+	lang?: string;
 }) {
 	const [modalOpen, setModalOpen] = useState(false);
 
@@ -53,7 +56,9 @@ export function CreateOrgCard({
 				</div>
 
 				<span className="text-gray-500 font-semibold capitalize text-center">
-					Create New Organization...
+					{getLang('Create', lang ? lang : 'english')}{' '}
+					{getLang('New', lang ? lang : 'english')}{' '}
+					{getLang('Organization', lang ? lang : 'english')}...
 				</span>
 			</button>
 		</div>
@@ -73,6 +78,7 @@ interface OrgDetailsCardProps {
 	image: string;
 	created_at: Date | string;
 	role?: string;
+	lang?: string;
 }
 
 export function OrgDetailsCard({
@@ -84,6 +90,7 @@ export function OrgDetailsCard({
 	image,
 	created_at,
 	role,
+	lang,
 }: OrgDetailsCardProps) {
 	const router = useRouter();
 
@@ -118,6 +125,7 @@ export function OrgDetailsCard({
 					org_name={name}
 					org_image={image}
 					onEditOpen={handleEditOpenModal}
+					lang={lang}
 				/>
 			) : null}
 			{/* Image for the card details */}
@@ -139,6 +147,7 @@ export function OrgDetailsCard({
 		<EditOrgModal
 			clickHandler={handleEditCloseModal}
 			organization={organization}
+			lang={lang}
 		/>
 	);
 }
@@ -149,6 +158,7 @@ export function PermissionCard({
 	org_name,
 	org_image,
 	onEditOpen,
+	lang,
 }: {
 	className?: string;
 	children?: React.ReactNode;
@@ -157,6 +167,7 @@ export function PermissionCard({
 	org_name: string;
 	org_image: string;
 	onEditOpen: (org: IOrgEdit) => void;
+	lang?: string;
 }) {
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -190,6 +201,7 @@ export function PermissionCard({
 						org_id={org_id}
 						clickHandler={() => setDeleteModalOpen(false)}
 						org_name={org_name}
+						lang={lang}
 					/>
 				) : null}
 			</div>
@@ -202,11 +214,13 @@ export const DeleteModal = ({
 	clickHandler,
 	org_name,
 	className,
+	lang,
 }: {
 	org_id: string;
 	clickHandler: () => void;
 	org_name?: string;
 	className?: string;
+	lang?: string;
 }) => {
 	const router = useRouter();
 
@@ -234,12 +248,20 @@ export const DeleteModal = ({
 		<div className={`edit-modal${className ? ` ${className}` : ``}`}>
 			<div className="modal-content">
 				<div className="modal-header">
-					<span>Delete {org_name} organization</span>
+					<span>
+						{getLang('Delete', lang ? lang : 'english')} {org_name}{' '}
+						{getLang('Organization', lang ? lang : 'english')}
+					</span>
 				</div>
 				{/* <div className="modal-body"> */}
 				<div className="modal-body">
 					<span>
-						Are you sure you want to delete this organization?
+						{getLang(
+							'Are you sure you want to',
+							lang ? lang : 'english',
+						)}
+						{getLang('delete', lang ? lang : 'english')} this{' '}
+						{getLang('Organization', lang ? lang : 'english')}
 					</span>
 				</div>
 				{/* </div> */}
@@ -248,13 +270,13 @@ export const DeleteModal = ({
 						onClick={clickHandler}
 						className="btn btn-primary btn-small"
 					>
-						Cancel
+						{getLang('Cancel', lang ? lang : 'english')}
 					</button>
 					<button
 						onClick={deleteOrg}
 						className="btn btn-primary btn-small"
 					>
-						Delete
+						{getLang('Delete', lang ? lang : 'english')}
 					</button>
 				</div>
 			</div>

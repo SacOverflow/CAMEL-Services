@@ -9,18 +9,27 @@ import {
 	createProjectActivity,
 	editProjectActivity,
 } from '@/lib/actions/client';
-
+import getLang from '@/app/translations/translations';
+function capitalizeFirstLetterOfEachWord(str:string) {
+	return str
+	  .split(' ')
+	  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+	  .join(' ');
+  }
+  
 export default function ProjectActivityModal({
 	project_id,
 	project,
 	closeModal,
 	readMode = true,
+	lang
 }: {
 	project_id: string;
 	project?: IProject_Activities;
 	closeModal: () => void;
 	// readmode default true
 	readMode: boolean;
+	lang?:string;
 }) {
 	const [activity, setActivity] = useState<IProject_Activities>({
 		id: project?.id || '',
@@ -254,7 +263,7 @@ export default function ProjectActivityModal({
 					onSubmit={handleSubmit}
 				>
 					<div className="input-field">
-						<label htmlFor="Statuses">Status</label>
+						<label htmlFor="Statuses">{getLang("Status",lang?lang:"english")}</label>
 
 						<div className="status-labels">
 							<button
@@ -268,7 +277,7 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.Complete);
 								}}
 							>
-								Completed
+								{getLang("Completed",lang?lang:"english")}
 							</button>
 							<button
 								className={`status-button in-progress ${
@@ -281,7 +290,7 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.InProgress);
 								}}
 							>
-								In-Progress
+								{getLang("In Progress",lang?lang:"english")}
 							</button>
 							<button
 								className={`status-button needs-approval ${
@@ -294,7 +303,7 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.NeedsApproval);
 								}}
 							>
-								Needs-Approval
+								{getLang("Needs Approval",lang?lang:"english")}
 							</button>
 							<button
 								className={`status-button action-needed ${
@@ -308,12 +317,12 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.ActionNeeded);
 								}}
 							>
-								Action Needed
+								{getLang("Action Needed",lang?lang:"english")}
 							</button>
 						</div>
 					</div>
 					<div className="input-field">
-						<label htmlFor="notes">Notes</label>
+						<label htmlFor="notes">{getLang("Notes",lang?lang:"english")}</label>
 						<textarea
 							name="notes"
 							id="notes"
@@ -328,7 +337,7 @@ export default function ProjectActivityModal({
 					<div className="time-inputs-container ">
 						{/* date */}
 						<div className="input-field w-3/6">
-							<label htmlFor="date">Date</label>
+							<label htmlFor="date">{getLang("Date",lang?lang:"english")}</label>
 							<input
 								type="date"
 								name="date"
@@ -339,7 +348,7 @@ export default function ProjectActivityModal({
 							/>
 						</div>
 						<div className="input-field w-2/6">
-							<label htmlFor="start-time">Time</label>
+							<label htmlFor="start-time">{getLang("Time",lang?lang:"english")}</label>
 							<input
 								type="time"
 								name="start-time"
@@ -353,18 +362,19 @@ export default function ProjectActivityModal({
 						</div>
 
 						<div className="input-field w-1/6">
-							<label htmlFor="duration">Duration</label>
+							<label htmlFor="duration">{getLang("Duration",lang?lang:"english")}</label>
 							<DurationInput
 								duration={activity.duration}
 								durationEvent={handleDurationChange}
 								readMode={readMode}
+								lang={lang?lang:"english"}
 							/>
 						</div>
 					</div>
 
 					{popupText && (
 						<span className="error-message text-center">
-							Error. Please try again.
+							X Error. Please try again.
 						</span>
 					)}
 
@@ -380,7 +390,7 @@ export default function ProjectActivityModal({
 						</button>
 						{readMode ? null : (
 							<button className="btn btn-primary btn-large">
-								Submit
+								{getLang("Submit",lang?lang:"english")}
 							</button>
 						)}
 					</div>
@@ -394,10 +404,12 @@ const DurationInput = ({
 	duration,
 	durationEvent,
 	readMode = true,
+	lang
 }: {
 	duration: number;
 	durationEvent: (duration: number) => void;
 	readMode?: boolean;
+	lang?: string;
 }) => {
 	const MINUTES_INTERVAL = 15;
 
@@ -454,7 +466,7 @@ const DurationInput = ({
 						key={index}
 						value={index}
 					>
-						{index * 15} minutes
+						{index * 15} {getLang("Minutes",lang?lang:"english")}
 					</option>
 				))}
 			</select>
@@ -462,7 +474,10 @@ const DurationInput = ({
 	);
 };
 
-export const AddProjectActivity = ({ project_id }: { project_id: string }) => {
+export const AddProjectActivity = ({ project_id, lang }: {
+	 project_id: string ;
+	 lang?: string;
+	}) => {
 	const [showModal, setShowModal] = useState(false);
 
 	const openModal = () => {
@@ -499,6 +514,7 @@ export const AddProjectActivity = ({ project_id }: { project_id: string }) => {
 					project_id={project_id}
 					closeModal={closeModal}
 					readMode={false}
+					lang={lang}
 				/>
 			) : null}
 		</>
