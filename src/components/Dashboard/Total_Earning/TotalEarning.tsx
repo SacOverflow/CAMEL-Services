@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import './TotalEarning.css';
 import { getOrganizationProjectEarnings } from '@/lib/actions/dashboard';
 //Categorize data by its type def for props in TotalEarning to accept
-
+import getLang from '@/app/translations/translations';
 //Example of static data, initalizing data inside component
-const TotalEarning = ({ org_id }: { org_id: string }) => {
+const TotalEarning = ({ org_id, lang }: { org_id: string; lang: string }) => {
 	const [totalEarnings, setTotalEarnings] = useState({
 		currentEarning: 0,
 		previousEarning: 0,
@@ -70,7 +70,9 @@ const TotalEarning = ({ org_id }: { org_id: string }) => {
 			{hasData ? (
 				<>
 					<div className="earning-header">
-						<div className="earning-title">Total earning</div>
+						<div className="earning-title">
+							{getLang('Total Earning', lang)}
+						</div>
 					</div>
 					<div className="earning-format">
 						<div className="earning-value">
