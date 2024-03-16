@@ -1030,3 +1030,114 @@ export async function setLanguage(lang: string) {
 
 	return true;
 }
+/*FOLLOWING ARE FOR TESTING STRICTLY, WILL BE DELETED/EDITED !!!!-Hashem Jaber*/
+
+/*
+Creates project 
+returns a truthy or false based on success
+project interface required*/
+export const createProject = async (
+	org_id: string,
+	title: string,
+	address: string,
+	status: string,
+	budget: any,
+	details: string,
+	due_date: Date,
+	start_date: Date,
+	user_id: string,
+) => {
+	const supabase = await createSupbaseClient();
+
+	const submissionData = {
+		org_id: org_id,
+		title: title,
+		address: address,
+		status: status,
+		budget: budget,
+		details: details,
+		due_date: due_date,
+		start_date: start_date,
+		created_at: new Date().toISOString(),
+		current_spent: 0,
+		created_by: user_id,
+	};
+
+	// query db to create new entry
+	const { data: entryData, error: entryError } = await supabase
+		.from('projects')
+		.insert([submissionData])
+		.select('*');
+
+	// if there is an error, console error message
+	if (entryError) {
+		return false;
+	}
+
+	return true;
+};
+
+/*
+Update project 
+returns a truthy or false based on success
+project interface required*/
+export const updateProject = async (
+	project_id: string,
+	org_id: string,
+	title: string,
+	address: string,
+	status: string,
+	budget: any,
+	details: string,
+	due_date: Date,
+	start_date: Date,
+) => {
+	const supabase = await createSupbaseClient();
+
+	const submissionData = {
+		project_id: project_id,
+		org_id: org_id,
+		title: title,
+		address: address,
+		status: status,
+		budget: budget,
+		details: details,
+		due_date: due_date,
+		start_date: start_date,
+		created_at: new Date().toISOString(),
+		current_spent: 0,
+	};
+
+	const { data: entryData, error: entryError } = await supabase
+		.from('projects')
+		.update([submissionData])
+		.eq('id', project_id);
+
+	// if there is an error, console error message
+	if (entryError) {
+		return false;
+	}
+
+	return true;
+};
+
+/*
+Retrieve project 
+returns a truthy or false based on success
+project interface required*/
+export const getProjectById = async (project_id: string) => {
+	const supabase = await createSupbaseClient();
+
+	// query db to create new entry
+	const { data: entryData, error: entryError } = await supabase
+		.from('projects')
+		.select('*')
+		.eq('id', project_id);
+
+	// if there is an error, console error message
+	if (entryError) {
+		return false;
+	}
+
+	return true;
+};
