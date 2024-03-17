@@ -3,6 +3,8 @@
 @layer base {
 	.project-details {
 		@apply flex flex-col gap-y-4;
+		/* NOTE: handle below accorindlgy, fixes to sidenavbar */
+		@apply md:max-w-[80vw];
 
 		@apply p-5;
 
@@ -20,7 +22,7 @@
 		.project-title {
 			@apply text-2xl font-bold;
 		}
-		
+
 		.project-header {
 			@apply flex justify-between items-center;
 		}

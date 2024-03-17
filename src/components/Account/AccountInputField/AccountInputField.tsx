@@ -1,7 +1,6 @@
 'use client';
 import './AccountInputField.css';
 import Avatar from '@/components/Account/Avatar/Avatar';
-import Buttons from '@/components/SharedComponents/Buttons';
 import { IUsers } from '@/types/database.interface';
 import InputField from '@/components/Account/Inputfield/Inputfield';
 import '@/components/Account/Inputfield/Inputfield';
@@ -285,10 +284,21 @@ function AccountPasswordContainer() {
 	const [newPassword, setNewPassword] = useState<string>('');
 	const [confirmPassword, setConfirmPassword] = useState<string>('');
 
+	const [passwordValid, setPasswordValid] = useState<boolean>(true);
+
 	const [flag, setFlag] = useState<any>({
 		message: '',
 		check: false,
 	});
+
+	const checkPassword = (password: string) => {
+		// check if password meets requirements
+		if (!PASSWORD_REGEX.test(password)) {
+			setPasswordValid(false);
+		} else {
+			setPasswordValid(true);
+		}
+	};
 
 	const resetFlag = () => {
 		setTimeout(() => {
@@ -302,7 +312,6 @@ function AccountPasswordContainer() {
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		if (newPassword !== confirmPassword) {
-			console.log('Passwords do not match');
 			setFlag({
 				message: 'Passwords do not match',
 				check: true,
@@ -348,14 +357,18 @@ function AccountPasswordContainer() {
 	return (
 		<div className="accountcontainer">
 			<form
-				className="account-inputs flex flex-col"
+				className="account-inputs flex flex-col gap-2"
 				onSubmit={handleSubmit}
 			>
 				<InputField
 					label="New Password"
 					placeholder="********"
 					value={newPassword}
-					setValue={setNewPassword}
+					// setValue={setNewPassword}
+					setValue={value => {
+						setNewPassword(value);
+						checkPassword(value);
+					}}
 					type="password"
 				/>
 
@@ -363,9 +376,21 @@ function AccountPasswordContainer() {
 					label="Confirm New Password"
 					placeholder="********"
 					value={confirmPassword}
-					setValue={setConfirmPassword}
+					// setValue={setConfirmPassword}
+					setValue={value => {
+						setConfirmPassword(value);
+						checkPassword(value);
+					}}
 					type="password"
 				/>
+				{
+					// span for password requirements
+					!passwordValid && (
+						<span className="text-sm text-primary-red-300 text-center">
+							{PASSWORD_MESSAGE}
+						</span>
+					)
+				}
 				{
 					// if password updated display span text
 					flag.check && (

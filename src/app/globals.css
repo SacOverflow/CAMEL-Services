@@ -29,6 +29,7 @@ body {
 @layer base {
 	#home-section {
 		@apply mb-6;
+		@apply max-w-full;
 	}
 
 	.page-title {
@@ -46,5 +47,12 @@ body {
 	#image-content {
 		@apply md:bg-home-image;
 		@apply md:bg-cover md:bg-center;
+	}
+
+	.card-container {
+		@apply flex flex-col md:flex-row gap-2;
+		@apply items-center;
+		@apply max-w-full overflow-hidden;
+		@apply p-6 md:p-16;
 	}
 }

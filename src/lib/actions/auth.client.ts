@@ -1,8 +1,6 @@
 import { createSupbaseClient } from '../supabase/client';
 
-const PASSWORD_LENGTH = 6;
-const PASSWORD_REGEX_STRING = `^(?=.*[a-zA-Z])(?=.*\d).{${PASSWORD_LENGTH},}$`;
-const PASSWORD_REGEX = new RegExp(PASSWORD_REGEX_STRING);
+import { PASSWORD_REGEX, PASSWORD_LENGTH } from '@/types/auth.constants';
 
 const EMAIL_REGEX_STRING = '^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,4}$';
 const EMAIL_REGEX = new RegExp(EMAIL_REGEX_STRING);

@@ -2,7 +2,7 @@
 
 //Import CSS file for Monthly Spending styles
 import './MonthlySpending.css';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchMonthlySpendingData } from '@/lib/actions/dashboard';
 
 //Interface categorizing data by its type
@@ -14,7 +14,22 @@ interface SpendingData {
 }
 //Function to format numbers with commas for thousands
 function formatNumber(num: number): string {
-	return num.toLocaleString();
+	// return val using suffixes (K, M, B, T)
+	if (num < 10000) {
+		return num.toString();
+	}
+
+	// 728,609 should return 728.6K etc
+	if (num < 1000000) {
+		return (num / 1000).toFixed(1) + 'K';
+	}
+	if (num < 1000000000) {
+		return (num / 1000000).toFixed(1) + 'M';
+	}
+	if (num < 1000000000000) {
+		return (num / 1000000000).toFixed(1) + 'B';
+	}
+	return (num / 1000000000000).toFixed(1) + 'T';
 }
 //Functional Component to display monthly spending data
 const MonthlySpending = () => {
