@@ -130,10 +130,14 @@
 		}
 	}
 
-	.add-activity-ts {
+	.add-receipt-btn {
 		/* styling */
 		@apply rounded-full bg-primary-green-300;
 		/* spacing */
 		@apply p-2;
+
+		.add-receipt-svg {
+			@apply w-4 h-4 stroke-white !important;
+		}
 	}
 }

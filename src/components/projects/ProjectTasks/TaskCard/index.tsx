@@ -42,6 +42,16 @@ export function ProjectTask({ task, role }: { task: ITasks; role: string }) {
 		fetchMembers();
 	}, [task]);
 
+	const displayMembers = (members: string[]) => {
+		if (members.length === 0) {
+			return 'No Members';
+		} else if (members.length === 1) {
+			return members[0];
+		} else {
+			return `${members[0]} +${members.length - 1}`;
+		}
+	};
+
 	const getStatus = (status: Status) => {
 		switch (status) {
 			case Status.ToDo:
@@ -136,14 +146,8 @@ export function ProjectTask({ task, role }: { task: ITasks; role: string }) {
 						/>
 					</svg>
 
-					<span className="text text-ellipsis w-[20rem] max-w-[30rem]">
-						{members?.map((member, idx) => {
-							if (idx === members.length - 1) {
-								return member;
-							}
-
-							return `${member}, `;
-						})}
+					<span className="text text-ellipsis">
+						{displayMembers(members ? members : [])}
 					</span>
 				</div>
 			</div>

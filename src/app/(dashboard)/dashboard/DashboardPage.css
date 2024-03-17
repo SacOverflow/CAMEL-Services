@@ -3,7 +3,7 @@
 @layer base {
 	/* Section side of navbar; utilizing layout */
 	.desktop-container {
-		@apply md:flex flex-col p-5 gap-y-10 w-screen hidden min-h-full max-w-[calc(100%-250px)];
+		@apply md:flex flex-col p-5 gap-y-10 w-screen hidden min-h-full max-w-[calc(100%-225px)];
 	}
 
 	.mobile-container {

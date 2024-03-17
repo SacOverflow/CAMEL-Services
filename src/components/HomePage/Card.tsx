@@ -14,9 +14,12 @@ interface CardProps {
 export default function Card({ title, content, imageUrl, subText }: CardProps) {
 	return (
 		<div id="home-card">
-			<div className={`h-1/4 w-full ${inter.className}`}>
-				<h3 id="card-title">{title}</h3>
-			</div>
+			<h3
+				id={`card-title`}
+				className={`${inter.className}`}
+			>
+				{title}
+			</h3>
 
 			<div className="card-content">{content}</div>
 		</div>

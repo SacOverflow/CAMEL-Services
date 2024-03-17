@@ -17,6 +17,8 @@ function SignUpForm() {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [passwordMatch, setPasswordMatch] = useState(true);
 
+	const [passwordValid, setPasswordValid] = useState(true);
+
 	const [popup, setPopup] = useState(false);
 	const [popupMsg, setPopupMsg] = useState('');
 	const router = useRouter();
@@ -85,6 +87,16 @@ function SignUpForm() {
 		return data;
 	};
 
+	// function to check password requirements
+	const checkPassword = (password: string) => {
+		// check if password meets requirements
+		if (!PASSWORD_REGEX.test(password)) {
+			setPasswordValid(false);
+		} else {
+			setPasswordValid(true);
+		}
+	};
+
 	return (
 		<>
 			<PopUp
@@ -151,7 +163,14 @@ function SignUpForm() {
 					id="password"
 					placeholder="Enter Password"
 					value={password}
-					onChange={e => setPassword(e.target.value)}
+					onChange={e => {
+						const newValue = e.target.value;
+						setPassword(newValue);
+						checkPassword(newValue); // Check the password validity immediately
+						if (confirmPassword) {
+							setPasswordMatch(newValue === confirmPassword);
+						}
+					}}
 					required={true}
 				/>
 
@@ -164,10 +183,32 @@ function SignUpForm() {
 					value={confirmPassword}
 					onChange={e => {
 						setConfirmPassword(e.target.value);
-						setPasswordMatch(e.target.value === password);
+						if (password && e.target.value) {
+							setPasswordMatch(e.target.value === password);
+						}
+
+						// check if password meets requirements
+						checkPassword(e.target.value);
 					}}
 					required={true}
 				/>
+				{
+					// span for password requirements
+					passwordValid ? (
+						''
+					) : (
+						<span
+							className={`text-xs ${
+								passwordValid
+									? 'hidden'
+									: 'text-primary-green-500'
+							}`}
+						>
+							Password must contain at least 6 characters,
+							including one uppercase letter, & one number.
+						</span>
+					)
+				}
 
 				<div className="text-red-500">
 					{passwordMatch ? '' : 'Passwords do not match'}
@@ -179,7 +220,10 @@ function SignUpForm() {
 						form="signup-form"
 						type="submit"
 						id="signup-btn-form"
-						className=""
+						className={`${
+							!passwordValid || !passwordMatch ? 'disabled' : ''
+						}`}
+						disabled={!passwordValid || !passwordMatch}
 					>
 						Sign Up
 					</button>

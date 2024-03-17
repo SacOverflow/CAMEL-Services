@@ -1,0 +1,20 @@
+@tailwind base;
+
+@layer base {
+	.testimonial-image {
+		@apply rounded-full;
+		@apply w-[4.5rem] h-[4.5rem] md:w-20 md:h-20;
+	}
+
+	.testimonial-name {
+		/* @apply h-1/6; */
+		@apply max-h-[16.66%];
+		@apply font-bold text-primary-green-700;
+	}
+
+	.testimonial-text {
+		@apply text-sm;
+		/* @apply h-3/6; */
+		@apply max-h-[50%];
+	}
+}

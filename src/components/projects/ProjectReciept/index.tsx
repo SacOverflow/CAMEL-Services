@@ -379,7 +379,7 @@ export const AddProjectReciept = ({
 	return (
 		<>
 			<button
-				className="add-activity-ts"
+				className="add-receipt-btn"
 				onClick={() => setShowModal(!showModal)}
 			>
 				<svg
@@ -387,8 +387,7 @@ export const AddProjectReciept = ({
 					fill="none"
 					viewBox="0 0 24 24"
 					strokeWidth={1.5}
-					stroke="currentColor"
-					className="w-4 h-4 stroke-white"
+					className="add-receipt-svg"
 				>
 					<path
 						strokeLinecap="round"

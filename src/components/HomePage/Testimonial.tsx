@@ -1,7 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { createSupbaseClient } from '@/lib/supabase/client';
+
+// import CSS
+import './Testimonial.css';
 
 function Testimonial() {
 	const [thirdCard_tes, setThirdCard_tes] = useState([]);
@@ -10,6 +13,7 @@ function Testimonial() {
 	const [error, setError] = useState(null);
 	const num_rand = 5;
 
+	// upon first render, fetch the testimonials
 	useEffect(() => {
 		const fetchTest = async () => {
 			setIsLoading(true);
@@ -29,13 +33,14 @@ function Testimonial() {
 			} catch (error: any) {
 				setError(error.message);
 			} finally {
-				setIsLoading(false);
 			}
 		};
 
 		fetchTest();
+		setIsLoading(false);
 	}, []);
 
+	// set the userTest state to a random testimonial every 4 seconds
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			if (thirdCard_tes.length > 0) {
@@ -50,12 +55,12 @@ function Testimonial() {
 	}, [thirdCard_tes]);
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <div className="text-center">Loading...</div>;
 	}
 
-	if (error) {
-		return <div>Error: {error}</div>;
-	}
+	// if (error) {
+	// 	return <div>Error: {error}</div>;
+	// }
 
 	const {
 		id,
@@ -74,17 +79,15 @@ function Testimonial() {
 	};
 
 	return (
-		<div className="flex flex-col gap-y-2 justify-center items-center">
+		<div className="flex flex-col gap-y-2 justify-center items-center overflow-y-hidden">
 			<Image
 				src={user_profile_link}
 				width={100}
 				height={100}
 				alt="testimonial-image"
-				className="rounded-full w-20 h-20"
+				className="testimonial-image"
 			/>
-			<h5 className="testimonial-name font-bold text-primary-green-700">
-				{userName}
-			</h5>
+			<h5 className="testimonial-name">{userName}</h5>
 			<div className="testimonial-text">
 				<p>{review_content || 'Nothing to display'}</p>
 			</div>

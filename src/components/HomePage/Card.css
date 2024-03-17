@@ -3,28 +3,48 @@
 @layer base {
 	#home-card {
 		/* layout */
-		@apply w-3/4 flex flex-col justify-center items-center min-h-full gap-y-4;
+		@apply w-full flex flex-col justify-center items-center min-h-full gap-y-4;
 
 		/* layout padding margining */
 		@apply rounded-md p-6;
 
 		/* card styling */
 		@apply border border-b-4 border-primary-green-500 bg-gray-50;
+
+		/* sizing so static sizing */
+		@apply h-[400px] md:h-[350px] overflow-hidden;
 	}
 
 	#card-title {
 		/* text */
-		@apply text-2xl md:text-3xl font-normal;
-
-		/* layout */
-		@apply text-center justify-start;
+		/* @apply font-extrabold; */
+		/* @apply max-h-[25%]; */
+		@apply h-1/5;
+		font-size: clamp(1rem, 2.5vw, 4rem);
 	}
 
 	.card-content {
 		/* layout */
-		@apply w-full h-full flex flex-col justify-start items-start;
+		@apply w-full h-4/5 max-h-[80%] flex flex-col justify-start items-start;
 
 		/* layout padding margining */
 		@apply px-2;
+
+		/* apply sizing  to all children */
+		@apply w-full h-full;
+
+		/* text  sizing to children */
+		& > * {
+			@apply w-full;
+			@apply text-sm;
+		}
+
+		.description-list {
+			@apply list-disc;
+			font-size: clamp(1rem, 1.5vw, 1.25rem) !important;
+		}
+		.description-text {
+			font-size: clamp(0.88rem, 1.4vw, 1.25rem);
+		}
 	}
 }

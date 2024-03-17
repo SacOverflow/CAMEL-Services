@@ -76,7 +76,7 @@ export function TasksSection({
 	useEffect(() => {
 		const handleResize = () => {
 			const width = window.innerWidth;
-			setIsSmallScreen(width < 800);
+			setIsSmallScreen(width < 768);
 		};
 
 		window.addEventListener('resize', handleResize);
@@ -166,8 +166,8 @@ const MobileView = ({
 	}, [tasks]);
 
 	return (
-		<div className="flex flex-col items-center justify-between mb-4">
-			<h2 className="text-xl font-bold w-fit">Tasks</h2>
+		<div className="flex flex-col items-center justify-between mb-4 w-full gap-2">
+			<h2 className="text-xl font-bold w-full">Tasks</h2>
 			<select
 				value={selectedCategory}
 				onChange={e => setSelectedCategory(e.target.value)}
@@ -243,11 +243,11 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 
 	return (
 		// handle here so no overflow
-		<div className={`flex flex-row gap-2 justify-between max-w-full`}>
-			<div className="flex-row m-4">
+		<div className={`flex flex-row gap-2 w-full`}>
+			<div className="flex-row grow p-4">
 				<h2 className={`text-xl font-bold my-2`}>Completed Tasks</h2>
 				<div
-					className={`flex flex-col gap-2 overflow-auto ${
+					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
 					}`}
 				>
@@ -260,10 +260,10 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 					))}
 				</div>
 			</div>
-			<div className="flex-row m-4">
+			<div className="flex-row grow p-4">
 				<h2 className={`text-xl font-bold my-2`}>In Progress Tasks</h2>
 				<div
-					className={`flex flex-col gap-2 overflow-auto ${
+					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
 					}`}
 				>
@@ -276,10 +276,10 @@ const DesktopView = ({ tasks, role }: { tasks: ITasks[]; role: string }) => {
 					))}
 				</div>
 			</div>
-			<div className="flex-row m-4">
+			<div className="flex-row grow p-4">
 				<h2 className={`text-xl font-bold my-2`}>Cancelled Tasks</h2>
 				<div
-					className={`flex flex-col gap-2 overflow-auto ${
+					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
 					}`}
 				>
