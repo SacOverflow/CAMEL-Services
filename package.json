@@ -8,7 +8,7 @@
 		"start": "next start",
 		"lint": "next lint",
 		"prepare": "husky install",
-		"test": "cross-env DOTENV_CONFIG_PATH=test.env jest --setupFiles dotenv/config"
+		"test": "cross-env NODE_ENV=test DOTENV_CONFIG_PATH=test.env jest --setupFiles dotenv/config"
 	},
 	"dependencies": {
 		"@amcharts/amcharts5": "^5.5.4",

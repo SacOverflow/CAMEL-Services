@@ -1,5 +1,6 @@
 import { IUsers } from '@/types/database.interface';
 import { createSupbaseClient } from '../supabase/client';
+import { IGlobalResults } from '@/types/database.interface.misc';
 
 export const getOrganizationMembers = async (
 	organization_id: string,
@@ -149,3 +150,14 @@ export const getOrganizationMemberRole = async (org_id: string) => {
 
 	return resp;
 };
+
+export async function getGlobalSearchData(
+	search: string,
+): Promise<{ data: IGlobalResults[]; error: any }> {
+	const supabase = await createSupbaseClient();
+	const { data, error } = await supabase.rpc('global_search', {
+		search_text: search,
+	});
+
+	return { data, error };
+}

@@ -24,6 +24,19 @@ export const getCookie = (name: string): string => {
 	return '';
 };
 
+export const setCookie = (
+	name: string,
+	value: string,
+	expirationDays: number,
+): void => {
+	// const date = new Date();
+	// date.setTime(date.getTime() + expirationDays * 24 * 60 * 60 * 1000);
+	// window.document.cookie = `${name}=${value};path=/;expires=${date.toUTCString()}`;
+
+	// no expiration days
+	window.document.cookie = `${name}=${value};path=/`;
+};
+
 export const inviteProjectMember = async (
 	org_id: string,
 	project_id: string,
