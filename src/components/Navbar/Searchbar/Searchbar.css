@@ -1,0 +1,167 @@
+@tailwind base;
+
+/* effect for  moving text left to right */
+@keyframes marquee {
+	0% {
+		transform: translateX(10%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+/* key frame that only moves the text from left to right */
+@keyframes badgesMarquee {
+	0% {
+		transform: translateX(100%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+@layer base {
+	.search-bar-container {
+		/* layout */
+		@apply flex gap-x-4 justify-center;
+		/* styling */
+		@apply relative;
+		@apply w-1/2;
+		/* spacing */
+		@apply px-2;
+
+		.search-bar {
+			@apply flex items-center justify-center rounded-3xl shadow-sm appearance-none self-end;
+
+			/* Styling sizing */
+			@apply w-3/4 md:w-full h-8 md:h-10 px-3 py-2 pl-6 md:pl-10;
+			@apply transition-all duration-500 ease-in-out;
+			/* Styling */
+			@apply text-gray-100 bg-primary-green-400 border border-gray-300;
+			@apply focus:outline-none focus:ring-1 focus:ring-primary-green-300 focus:border-primary-green-300 sm:text-sm truncate;
+			@apply text-xs;
+			@apply placeholder:text-gray-100 placeholder:truncate;
+		}
+
+		.search-icon {
+			@apply w-4 h-4 md:w-5 md:h-5;
+
+			/* fill svg */
+			@apply stroke-gray-100;
+
+			/* position svg */
+			@apply absolute inset-y-0;
+			@apply top-[60%] md:top-1/2 transform -translate-y-1/2;
+			@apply left-[1.65rem] md:left-5;
+		}
+
+		/* container for the resulted results */
+		.search-results-container {
+			/* layout */
+			@apply flex flex-col gap-1;
+			/* styling */
+			@apply absolute;
+			@apply top-8 md:top-12 left-0 right-0;
+			@apply bg-white z-10;
+			/* spacing */
+			@apply p-1;
+
+			.search-results-empty {
+				@apply text-center text-primary-green-400;
+				font-size: clamp(0.6rem, 1.5vw, 1rem);
+			}
+		}
+	}
+
+	.search-result {
+		/* layout */
+		@apply flex gap-2 items-center justify-center;
+		/* Styling */
+		@apply bg-white rounded-sm;
+		@apply overflow-hidden;
+		/* spacing */
+		@apply p-2;
+
+		/* hover effect */
+		@apply transition-all duration-500 ease-in-out;
+		@apply hover:shadow-md;
+		@apply hover:bg-primary-green-100;
+
+		.search-result-img {
+			/* layout */
+			@apply inline-flex items-center justify-center;
+			/* styling */
+			@apply rounded-full h-4 w-4;
+			@apply md:h-6 md:w-6;
+		}
+
+		.search-result-badges {
+			@apply inline-flex;
+			@apply flex gap-1 items-center justify-start;
+			@apply overflow-hidden;
+
+			&.anim {
+				animation: marquee 10s linear infinite;
+				@screen md {
+					animation: none;
+				}
+			}
+
+			&:hover {
+				animation-play-state: paused;
+			}
+		}
+
+		.search-result-text {
+			/* layout */
+			@apply flex flex-col gap-2 items-start justify-center;
+			/* styling */
+			@apply w-4/5;
+			/* typography */
+			font-size: clamp(0.55rem, 1.5vw, 1rem);
+			@apply text-nowrap whitespace-nowrap overflow-hidden;
+		}
+		.search-result-type-badge {
+			/* styling */
+			@apply bg-primary-green-400 text-white rounded-md;
+			/* spacing */
+			@apply p-[.2rem] py-1;
+			/* typography */
+			font-size: clamp(0.4rem, 1.5vw, 1rem);
+		}
+
+		.search-result-org-badge,
+		.search-result-project-badge {
+			@apply flex items-center justify-center gap-1;
+			@apply inline-flex;
+			/* styling */
+			@apply bg-primary-green-300 text-white rounded-md;
+			/* spacing */
+			@apply p-[.2rem];
+			@apply overflow-hidden;
+			@apply truncate;
+			/* typography */
+			font-size: clamp(0.4rem, 1.5vw, 1rem);
+
+			svg {
+				@apply w-3 h-3;
+			}
+
+			.text-wrapper {
+				@apply flex-1;
+				@apply overflow-hidden;
+				@apply whitespace-nowrap;
+			}
+
+			span {
+				@apply truncate;
+				animation: badgesMarquee 10s linear infinite;
+			}
+		}
+
+		.search-result-project-badge {
+			/* styling */
+			@apply bg-primary-green-200 text-white;
+		}
+	}
+}
