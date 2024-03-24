@@ -5,6 +5,11 @@ import { act } from 'react-dom/test-utils';
 
 // TEST; Idea for implementing tests for the Home component
 describe('Home', () => {
+	beforeAll(() => {
+		// ignore error since implementation of testimonials is ha ha ha
+		jest.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
 	it('home renders a title of CAMEL', async () => {
 		await act(async () => {
 			render(<Home />);

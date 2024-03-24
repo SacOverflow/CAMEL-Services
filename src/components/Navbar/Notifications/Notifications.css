@@ -1,0 +1,110 @@
+@tailwind base;
+
+@keyframes slideInFromRight {
+	0% {
+		transform: translateX(100%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+@keyframes slideUp {
+	0% {
+		transform: translateY(10%);
+	}
+	100% {
+		transform: translateY(-100%);
+	}
+}
+
+@layer base {
+	#notification-button {
+		@apply relative;
+		@apply flex gap-x-2;
+
+		/* Button for Notifications */
+		.notification-bell {
+			@apply w-6 h-6 self-center stroke-gray-400;
+		}
+
+		.notification-icon {
+			@apply w-6 h-6;
+			&.created {
+				@apply stroke-white fill-green-500;
+			}
+			&.updated {
+				@apply stroke-blue-500 fill-blue-500;
+			}
+			&.deleted {
+				@apply stroke-white fill-red-500;
+			}
+		}
+
+		.notification-container {
+			/* layout */
+			@apply flex flex-col gap-1 items-center justify-start;
+			/* styling */
+			@apply w-48 md:w-72;
+			@apply max-h-[20rem];
+			@apply overflow-y-auto;
+			@apply absolute top-10 right-0;
+			@apply bg-white rounded-md shadow-md;
+			@apply z-50;
+			/* spacing */
+			@apply p-1;
+
+			/* NOTIFICATION CARDS */
+			.notification-card {
+				/* layout */
+				@apply flex gap-2 items-center justify-center rounded-md;
+				/* styling */
+				@apply h-20 min-h-[5rem] overflow-hidden;
+				@apply w-full;
+				@apply relative;
+				/* spacing */
+				@apply p-2;
+				.notification-content {
+					/* layout */
+					@apply flex flex-col gap-1 items-start justify-start;
+
+					/* styling */
+					@apply h-full;
+					@apply w-5/6;
+					@apply overflow-hidden;
+
+					.notification-title {
+						/* styling */
+						@apply h-1/3;
+						/* typography */
+						@apply text-xs font-semibold text-start;
+						@apply whitespace-nowrap;
+
+						/* animation */
+						animation: slideInFromRight 10s linear infinite;
+					}
+					.notification-message {
+						/* typography */
+						@apply text-xs text-gray-500 text-start;
+						@apply overflow-hidden overflow-ellipsis;
+
+						span {
+							/* styling */
+							@apply inline-block;
+							@apply w-full h-full;
+							/* typography */
+							@apply text-xs text-gray-700;
+							/* animation */
+							animation: slideUp 10s linear infinite;
+						}
+					}
+				}
+				.notification-cancel {
+					/* styling */
+					@apply absolute top-1 right-1;
+					@apply cursor-default;
+				}
+			}
+		}
+	}
+}
