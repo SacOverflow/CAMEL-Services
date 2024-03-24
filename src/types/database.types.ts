@@ -9,18 +9,88 @@ export type Json =
 export type Database = {
 	public: {
 		Tables: {
-			countries: {
+			notification_alerts: {
 				Row: {
-					id: number;
-					name: string;
+					created_at: string;
+					id: string;
+					message: string | null;
+					org_id: string | null;
+					project_id: string | null;
+					reference_type: Database['public']['Enums']['notification_reference'];
+					title: string | null;
+					type: Database['public']['Enums']['notification_type'];
 				};
 				Insert: {
-					id?: number;
-					name: string;
+					created_at?: string;
+					id?: string;
+					message?: string | null;
+					org_id?: string | null;
+					project_id?: string | null;
+					reference_type: Database['public']['Enums']['notification_reference'];
+					title?: string | null;
+					type: Database['public']['Enums']['notification_type'];
 				};
 				Update: {
-					id?: number;
-					name?: string;
+					created_at?: string;
+					id?: string;
+					message?: string | null;
+					org_id?: string | null;
+					project_id?: string | null;
+					reference_type?: Database['public']['Enums']['notification_reference'];
+					title?: string | null;
+					type?: Database['public']['Enums']['notification_type'];
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'public_notification_alerts_org_id_fkey';
+						columns: ['org_id'];
+						isOneToOne: false;
+						referencedRelation: 'organization';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'public_notification_alerts_project_id_fkey';
+						columns: ['project_id'];
+						isOneToOne: false;
+						referencedRelation: 'activity_view';
+						referencedColumns: ['project_id'];
+					},
+					{
+						foreignKeyName: 'public_notification_alerts_project_id_fkey';
+						columns: ['project_id'];
+						isOneToOne: false;
+						referencedRelation: 'projects';
+						referencedColumns: ['id'];
+					},
+				];
+			};
+			notifications: {
+				Row: {
+					action_desc: string | null;
+					created_at: string | null;
+					id: string;
+					item_id: string;
+					new_val: string | null;
+					old_val: string | null;
+					table_name: string | null;
+				};
+				Insert: {
+					action_desc?: string | null;
+					created_at?: string | null;
+					id?: string;
+					item_id: string;
+					new_val?: string | null;
+					old_val?: string | null;
+					table_name?: string | null;
+				};
+				Update: {
+					action_desc?: string | null;
+					created_at?: string | null;
+					id?: string;
+					item_id?: string;
+					new_val?: string | null;
+					old_val?: string | null;
+					table_name?: string | null;
 				};
 				Relationships: [];
 			};
@@ -546,6 +616,117 @@ export type Database = {
 					},
 				];
 			};
+			user_lang_pref: {
+				Row: {
+					lang: string | null;
+					user_id: string;
+				};
+				Insert: {
+					lang?: string | null;
+					user_id?: string;
+				};
+				Update: {
+					lang?: string | null;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'public_user_lang_pref_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: true;
+						referencedRelation: 'user';
+						referencedColumns: ['id'];
+					},
+				];
+			};
+			user_notifications: {
+				Row: {
+					created_at: string;
+					id: string;
+					notification_id: string;
+					read_at: string | null;
+					status:
+						| Database['public']['Enums']['notification_status']
+						| null;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					notification_id: string;
+					read_at?: string | null;
+					status?:
+						| Database['public']['Enums']['notification_status']
+						| null;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					notification_id?: string;
+					read_at?: string | null;
+					status?:
+						| Database['public']['Enums']['notification_status']
+						| null;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'public_user_notifications_notification_id_fkey';
+						columns: ['notification_id'];
+						isOneToOne: false;
+						referencedRelation: 'notification_alerts';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'public_user_notifications_notification_id_fkey';
+						columns: ['notification_id'];
+						isOneToOne: false;
+						referencedRelation: 'notification_user_view';
+						referencedColumns: ['notification_id'];
+					},
+					{
+						foreignKeyName: 'public_user_notifications_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'user';
+						referencedColumns: ['id'];
+					},
+				];
+			};
+			user_subscribed_to_task: {
+				Row: {
+					id: number;
+					task_id: string;
+					user_id: string;
+				};
+				Insert: {
+					id: number;
+					task_id: string;
+					user_id: string;
+				};
+				Update: {
+					id?: number;
+					task_id?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'public_user_subscribed_to_task_task_id_fkey';
+						columns: ['task_id'];
+						isOneToOne: false;
+						referencedRelation: 'tasks';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'public_user_subscribed_to_task_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'user';
+						referencedColumns: ['id'];
+					},
+				];
+			};
 		};
 		Views: {
 			activity_view: {
@@ -576,6 +757,55 @@ export type Database = {
 						columns: ['organization_id'];
 						isOneToOne: false;
 						referencedRelation: 'organization';
+						referencedColumns: ['id'];
+					},
+				];
+			};
+			notification_user_view: {
+				Row: {
+					message: string | null;
+					notification_created_at: string | null;
+					notification_id: string | null;
+					notification_read_at: string | null;
+					notification_status:
+						| Database['public']['Enums']['notification_status']
+						| null;
+					org_id: string | null;
+					project_id: string | null;
+					title: string | null;
+					type:
+						| Database['public']['Enums']['notification_type']
+						| null;
+					user_id: string | null;
+					user_notification_created_at: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'public_notification_alerts_org_id_fkey';
+						columns: ['org_id'];
+						isOneToOne: false;
+						referencedRelation: 'organization';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'public_notification_alerts_project_id_fkey';
+						columns: ['project_id'];
+						isOneToOne: false;
+						referencedRelation: 'projects';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'public_notification_alerts_project_id_fkey';
+						columns: ['project_id'];
+						isOneToOne: false;
+						referencedRelation: 'activity_view';
+						referencedColumns: ['project_id'];
+					},
+					{
+						foreignKeyName: 'public_user_notifications_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'user';
 						referencedColumns: ['id'];
 					},
 				];
@@ -747,6 +977,32 @@ export type Database = {
 			};
 		};
 		Functions: {
+			check_user_notifications: {
+				Args: {
+					user_id: string;
+				};
+				Returns: {
+					notification_id: string;
+					table_name: string;
+					action_desc: string;
+					old_val: string;
+					new_val: string;
+					item_id: string;
+				}[];
+			};
+			get_notifications_for_user: {
+				Args: {
+					user_id: string;
+				};
+				Returns: {
+					notification_id: string;
+					table_name: string;
+					action_desc: string;
+					old_val: string;
+					new_val: string;
+					item_id: string;
+				}[];
+			};
 			get_random_testimonials: {
 				Args: {
 					limit_count: number;
@@ -760,8 +1016,68 @@ export type Database = {
 					userName: string | null;
 				}[];
 			};
+			get_unread_notifications: {
+				Args: {
+					user_id: string;
+				};
+				Returns: {
+					notification_id: string;
+					title: string;
+					message: string;
+					org_id: string;
+					project_id: string;
+					notification_created_at: string;
+					notification_status: Database['public']['Enums']['notification_status'];
+					notification_read_at: string;
+					user_notification_created_at: string;
+					reference_type: Database['public']['Enums']['notification_reference'];
+				}[];
+			};
+			get_users_not_in_organization: {
+				Args: {
+					organization: string;
+				};
+				Returns: {
+					user_id: string;
+					email: string;
+					username: string;
+					name: string;
+					image: string;
+				}[];
+			};
+			get_users_not_in_project_and_in_organization: {
+				Args: {
+					project: string;
+					org: string;
+				};
+				Returns: {
+					user_id: string;
+					email: string;
+					username: string;
+					name: string;
+					image: string;
+				}[];
+			};
+			global_search: {
+				Args: {
+					search_text: string;
+				};
+				Returns: {
+					result_id: string;
+					result_type: string;
+					result_name: string;
+					result_image: string;
+					matched_column: string;
+					organization_name: string;
+					project_id: string;
+					project_name: string;
+				}[];
+			};
 		};
 		Enums: {
+			notification_reference: 'task' | 'organization' | 'project';
+			notification_status: 'read' | 'unread';
+			notification_type: 'created' | 'updated' | 'deleted';
 			proj_status:
 				| 'complete'
 				| 'in progress'
@@ -777,9 +1093,11 @@ export type Database = {
 	};
 };
 
+type PublicSchema = Database[Extract<keyof Database, 'public'>];
+
 export type Tables<
 	PublicTableNameOrOptions extends
-		| keyof (Database['public']['Tables'] & Database['public']['Views'])
+		| keyof (PublicSchema['Tables'] & PublicSchema['Views'])
 		| { schema: keyof Database },
 	TableName extends PublicTableNameOrOptions extends {
 		schema: keyof Database;
@@ -794,10 +1112,10 @@ export type Tables<
 	  }
 		? R
 		: never
-	: PublicTableNameOrOptions extends keyof (Database['public']['Tables'] &
-			Database['public']['Views'])
-	? (Database['public']['Tables'] &
-			Database['public']['Views'])[PublicTableNameOrOptions] extends {
+	: PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
+			PublicSchema['Views'])
+	? (PublicSchema['Tables'] &
+			PublicSchema['Views'])[PublicTableNameOrOptions] extends {
 			Row: infer R;
 	  }
 		? R
@@ -806,7 +1124,7 @@ export type Tables<
 
 export type TablesInsert<
 	PublicTableNameOrOptions extends
-		| keyof Database['public']['Tables']
+		| keyof PublicSchema['Tables']
 		| { schema: keyof Database },
 	TableName extends PublicTableNameOrOptions extends {
 		schema: keyof Database;
@@ -819,8 +1137,8 @@ export type TablesInsert<
 	  }
 		? I
 		: never
-	: PublicTableNameOrOptions extends keyof Database['public']['Tables']
-	? Database['public']['Tables'][PublicTableNameOrOptions] extends {
+	: PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+	? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
 			Insert: infer I;
 	  }
 		? I
@@ -829,7 +1147,7 @@ export type TablesInsert<
 
 export type TablesUpdate<
 	PublicTableNameOrOptions extends
-		| keyof Database['public']['Tables']
+		| keyof PublicSchema['Tables']
 		| { schema: keyof Database },
 	TableName extends PublicTableNameOrOptions extends {
 		schema: keyof Database;
@@ -842,8 +1160,8 @@ export type TablesUpdate<
 	  }
 		? U
 		: never
-	: PublicTableNameOrOptions extends keyof Database['public']['Tables']
-	? Database['public']['Tables'][PublicTableNameOrOptions] extends {
+	: PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+	? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
 			Update: infer U;
 	  }
 		? U
@@ -852,13 +1170,13 @@ export type TablesUpdate<
 
 export type Enums<
 	PublicEnumNameOrOptions extends
-		| keyof Database['public']['Enums']
+		| keyof PublicSchema['Enums']
 		| { schema: keyof Database },
 	EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
 		? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
 		: never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
 	? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-	: PublicEnumNameOrOptions extends keyof Database['public']['Enums']
-	? Database['public']['Enums'][PublicEnumNameOrOptions]
+	: PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
+	? PublicSchema['Enums'][PublicEnumNameOrOptions]
 	: never;

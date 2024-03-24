@@ -14,6 +14,10 @@ describe('Retrieving members from organization or project', () => {
 		process.env = { ...OLD_ENV }; // Make a copy
 	});
 
+	beforeAll(() => {
+		jest.spyOn(console, 'error').mockImplementation(() => {}); // Suppress console.error
+		jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+	});
 	afterAll(() => {
 		process.env = OLD_ENV; // Restore old environment
 	});
