@@ -47,6 +47,39 @@ export const signupNewUser = async (
 	return data;
 };
 
+export const signupUser = async (
+	emailOrUsername: string,
+	password: string,
+	firstName: string,
+	lastName: string,
+	userName: string,
+) => {
+	// create a browser client accessing cookie
+	const supabase = await createSupbaseClient();
+
+	// signup user with email, pass and meta data
+	const { data, error } = await supabase.auth.signUp({
+		email: emailOrUsername,
+		password: password,
+		options: {
+			data: {
+				// NOTE: How the Metadata fields are correlated later
+				name: `${firstName} ${lastName}`,
+				username: userName,
+			},
+		},
+	});
+
+	if (error) {
+		return { error };
+	}
+
+	// double check me
+	const { user, session } = data;
+
+	return data;
+};
+
 export const signInUser = async (emailOrUsername: string, password: string) => {
 	const supabase = await createSupbaseClient();
 	// check email regex else check via username
