@@ -499,10 +499,13 @@ export async function createTask(task: ITasks) {
 	if (error) {
 		console.error('Error creating task', error);
 		console.info(task);
-		return false;
-	} else {
-		return true;
+		return {
+			error: true,
+			message: 'Failed to create task',
+		};
 	}
+
+	return { error: false };
 }
 
 export async function getProjectMembersTasks(projectId: String) {
