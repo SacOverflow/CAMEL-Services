@@ -368,10 +368,15 @@ export async function getMemberTasks(member_id: string, proj_id: string) {
 				'getMemberTasks phase 1 failed line 271, index.ts :\n',
 				error,
 		  )
-		: console.info('getMemberTakss part 1 worked', tasks_id);
+		: console.info('getMemberTasks part 1 worked', tasks_id);
 
 	if (error) {
-		return [];
+		console.error('Failed to fetch tasks:', error);
+		return {
+			error: true,
+			message:
+				'Invalid member or project ID. Failed to fetch member tasks',
+		};
 	} else {
 		// console.log('tasks_id: ', tasks_id);
 		// console.info(tasks_id[0].task_id);
@@ -388,10 +393,10 @@ export async function getMemberTasks(member_id: string, proj_id: string) {
 					'getMemberTasks failed phase 2, index.ts, detils:\n',
 					respError,
 			  )
-			: console.info('getMemberTakss part 2 worked');
+			: console.info('getMemberTasks part 2 worked');
 
 		// TODO: Handle error
-		return resp;
+		return { error: false, data: resp };
 	}
 }
 
