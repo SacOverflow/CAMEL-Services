@@ -306,16 +306,16 @@ export async function updateTask(task: ITasks) {
 export async function getMembersinTask(task: ITasks) {
 	const supabase = await createSupbaseClient();
 
-	const { data, error } = await supabase
+	const { data: tasks_member, error } = await supabase
 		.from('tasks_member')
 		.select('*')
-		.eq('id', task.id);
+		.eq('task_id', task.id);
 
 	if (error) {
-		console.error(error.message);
-		return false;
+		console.error('Failed to fetch members in task:', error);
+		return { error: true, message: 'Failed to fetch members in task' };
 	} else {
-		return true;
+		return { error: false, data: tasks_member };
 	}
 }
 
@@ -563,7 +563,13 @@ export async function addTaskMember(
 		])
 		.select();
 	console.error(JSON.stringify(error));
-	return error ? false : true;
+
+	if (error) {
+		console.error('Failed to add task member:', error);
+		return { error: true, message: 'Failed to add task member' };
+	}
+
+	return { error: false };
 }
 
 const readReceipt_h = async (receiptId?: string) => {
