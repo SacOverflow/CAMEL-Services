@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { createSupbaseClient } from '@/lib/supabase/client';
 import PopUp from './PopUp';
 import { PASSWORD_MESSAGE, PASSWORD_REGEX } from '@/types/auth.constants';
+import { signupUser } from '@/lib/actions/auth.client';
 
 function SignUpForm() {
 	const [emailOrUsername, setEmailOrUsername] = useState('');
@@ -43,7 +44,14 @@ function SignUpForm() {
 			return;
 		}
 
-		const resp: any = await signupNewUser();
+		// const resp: any = await signupNewUser();
+		const resp: any = await signupUser(
+			emailOrUsername,
+			password,
+			firstName,
+			lastName,
+			userName,
+		);
 
 		if (resp?.error) {
 			// TODO:  if error message is 'User already registered.' then popup msg populate, redirect to signin as well...
@@ -60,32 +68,32 @@ function SignUpForm() {
 		router.refresh();
 	};
 
-	const signupNewUser = async () => {
-		// create a browser client accessing cookie
-		const supabase = await createSupbaseClient();
+	// const signupNewUser = async () => {
+	// 	// create a browser client accessing cookie
+	// 	const supabase = await createSupbaseClient();
 
-		// signup user with email, pass and meta data
-		const { data, error } = await supabase.auth.signUp({
-			email: emailOrUsername,
-			password: password,
-			options: {
-				data: {
-					// NOTE: How the Metadata fields are correlated later
-					name: `${firstName} ${lastName}`,
-					username: userName,
-				},
-			},
-		});
+	// 	// signup user with email, pass and meta data
+	// 	const { data, error } = await supabase.auth.signUp({
+	// 		email: emailOrUsername,
+	// 		password: password,
+	// 		options: {
+	// 			data: {
+	// 				// NOTE: How the Metadata fields are correlated later
+	// 				name: `${firstName} ${lastName}`,
+	// 				username: userName,
+	// 			},
+	// 		},
+	// 	});
 
-		if (error) {
-			return { error };
-		}
+	// 	if (error) {
+	// 		return { error };
+	// 	}
 
-		// double check me
-		const { user, session } = data;
+	// 	// double check me
+	// 	const { user, session } = data;
 
-		return data;
-	};
+	// 	return data;
+	// };
 
 	// function to check password requirements
 	const checkPassword = (password: string) => {
@@ -149,7 +157,7 @@ function SignUpForm() {
 					label="Username"
 					labelText="Username"
 					type=""
-					id=""
+					id="Username"
 					pattern="^[a-zA-Z0-9_]+$"
 					placeholder="Enter Username"
 					value={userName}
