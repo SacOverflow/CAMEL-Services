@@ -739,7 +739,7 @@ function TaskMemberSearchCard({
 		console.log('clicked member addition...');
 		const resp = await addTaskMember(task.project_id, task.id, member.id);
 
-		if (!resp) {
+		if (resp && resp.error) {
 			// error
 			// display some msgs
 			return;
