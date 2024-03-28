@@ -1,10 +1,10 @@
 'use client';
 // CSS imports
-import './CreateOrgModal.css';
-import { useState } from 'react';
 import Image from 'next/image';
-import { createSupbaseClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { createOrganization, updateImage } from './client.actions';
+import './CreateOrgModal.css';
 
 export default function CreateOrgModal({
 	className,
@@ -32,75 +32,31 @@ export default function CreateOrgModal({
 		setImageURL(URL.createObjectURL(e.target.files[0]));
 	};
 
-	const handleSubmit = async (e: any) => {
+	const createOrganizationHandler = async (e: any) => {
 		e.preventDefault();
 
 		// upload image
-		await createOrganization(e);
-	};
-
-	const createOrganization = async (e: any) => {
-		// create org using user auth
-		const supabase = await createSupbaseClient();
-
-		// user info
 		const {
-			data: { user },
-			error,
-		} = await supabase.auth.getUser();
+			data: newURL,
+			success,
+			error: imageError,
+			errorMessage,
+		} = await updateImage(imageURL, image);
 
-		let newURL = null;
+		const {
+			data: orgData,
+			success: orgSuccess,
+			error: orgError,
+			errorMessage: orgErrorMessage,
+		} = await createOrganization(orgName, newURL || imageURL);
 
-		if (imageURL !== DEFAULT_IMAGE) {
-			// create custom hash for image
-			const hash = Math.random().toString(36).substring(2);
-			// upload image to storage
-			const { data, error } = await supabase.storage
-				.from('profile-avatars')
-				.upload(`public/${hash}`, image, {
-					cacheControl: '3600',
-				});
-
-			if (error) {
-				console.error(error);
-				setOrgError('Error uploading image');
-				return;
+		if (orgError) {
+			setOrgError(orgErrorMessage);
+		} else {
+			if (clickHandler) {
+				clickHandler();
+				router.refresh();
 			}
-
-			// get image url
-			const {
-				data: { publicUrl },
-			} = supabase.storage
-				.from('profile-avatars')
-				.getPublicUrl(data?.path as string);
-
-			newURL = publicUrl;
-
-			setImageURL(publicUrl);
-		}
-
-		// query to create new row entry
-		const { data: entryData, error: entryError } = await supabase
-			.from('organization')
-			.insert([
-				{
-					name: orgName,
-					created_by: user?.id,
-					image: newURL || imageURL,
-				},
-			]);
-
-		if (
-			entryError?.message ===
-				'duplicate key value violates unique constraint "organization_name_key"' ||
-			entryError?.code === '23505'
-		) {
-			setOrgError('Org name is already taken. Choose a new one.');
-			return;
-		}
-		if (clickHandler) {
-			clickHandler();
-			router.refresh();
 		}
 	};
 	return (
@@ -144,7 +100,7 @@ export default function CreateOrgModal({
 						</button>
 						<button
 							className="create-button"
-							onClick={handleSubmit}
+							onClick={createOrganizationHandler}
 						>
 							Create
 						</button>
