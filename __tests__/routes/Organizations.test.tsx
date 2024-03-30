@@ -3,12 +3,16 @@ import {
 	updateImage,
 } from '@/components/Organization/client.actions';
 import CreateOrgModal from '@/components/Organization/CreateOrgModal';
-import { OrgDetailsCard } from '@/components/SharedComponents/DetailsCard/DetailsCard';
+import { editOrganization } from '@/components/Organization/EditOrganizationModal/client.actions';
+import EditOrgModal from '@/components/Organization/EditOrganizationModal/EditOrgModal';
+import {
+	DeleteModal,
+	OrgDetailsCard,
+} from '@/components/SharedComponents/DetailsCard/DetailsCard';
 import { getAllNonProjectMembers } from '@/lib/actions/get.client';
-import { createSupbaseClient } from '@/lib/supabase/client';
 import { Roles } from '@/types/database.interface';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
 
@@ -24,6 +28,16 @@ jest.mock('@/components/Organization/client.actions', () => ({
 	updateImage: jest.fn(),
 }));
 
+jest.mock(
+	'@/components/Organization/EditOrganizationModal/client.actions',
+	() => ({
+		editOrganization: jest.fn(),
+		updateImage: jest.fn(),
+	}),
+);
+
+const mockOrgDelete = jest.fn().mockResolvedValue({ data: null, error: null });
+const mockOrgUpdate = jest.fn().mockResolvedValue({ data: null, error: null });
 jest.mock('@/lib/supabase/client', () => ({
 	createSupbaseClient: jest.fn(() =>
 		Promise.resolve({
@@ -55,10 +69,25 @@ jest.mock('@/lib/supabase/client', () => ({
 					data: [{ id: '4444', name: 'Mocked Organization' }],
 					error: null,
 				}),
+				update: jest.fn(() => ({ eq: mockOrgUpdate })),
+				delete: jest.fn(() => ({
+					eq: mockOrgDelete,
+				})),
 			})),
 		}),
 	),
 }));
+
+jest.mock('next/image', () => ({ src, alt }) => (
+	<img
+		src={src}
+		alt={alt}
+	/>
+));
+
+beforeAll(() => {
+	jest.clearAllMocks();
+});
 
 // TEST; Idea for implementing tests for the Home component
 describe('Retrieving members from organization or project', () => {
@@ -146,6 +175,8 @@ describe('Creating an organization', () => {
 		await userEvent.type(nameInput, 'New Org');
 		await userEvent.click(createButton);
 
+		expect(useRouter().refresh).toHaveBeenCalled();
+		expect(createOrganization).toHaveBeenCalled();
 		expect(createOrganization).toHaveBeenCalledWith(
 			'New Org',
 			expect.anything(),
@@ -180,5 +211,102 @@ describe('Reading existing organizations', () => {
 		// 	'/_next/image?url=test-image.jpg',
 		// );
 		expect(screen.getByRole('button')).toBeInTheDocument();
+	});
+});
+
+// Update Org
+describe('editing an organization', () => {
+	beforeEach(() => {
+		jest.resetModules();
+	});
+
+	it('OrgDetailsCard renders correctly', () => {
+		const org = { id: '1', name: 'Test Org', image: '/test-image.jpg' };
+		render(
+			<EditOrgModal
+				organization={org}
+				clickHandler={() => {}}
+			/>,
+		);
+
+		expect(screen.getByPlaceholderText('Organization Name')).toHaveValue(
+			org.name,
+		);
+		expect(screen.getByRole('img')).toHaveAttribute('src', org.image);
+	});
+
+	it('allows editing the organization name', async () => {
+		const org = { id: '1', name: 'Test Org', image: '/test-image.jpg' };
+		render(
+			<EditOrgModal
+				organization={org}
+				clickHandler={() => {}}
+			/>,
+		);
+
+		const nameInput = screen.getByPlaceholderText('Organization Name');
+		await userEvent.clear(nameInput);
+		await userEvent.type(nameInput, 'New Org Name');
+
+		expect(nameInput).toHaveValue('New Org Name');
+	});
+
+	it('submits the form and updates an organization', async () => {
+		const mockRouterRefresh = jest.fn();
+		useRouter.mockImplementation(() => ({ refresh: mockRouterRefresh }));
+		editOrganization.mockResolvedValue({ success: true });
+		updateImage.mockResolvedValue({ success: true, data: 'new-image-url' });
+
+		const org = { id: '1', name: 'Edit Org', image: '/test-image.jpg' };
+		render(
+			<EditOrgModal
+				organization={org}
+				clickHandler={() => {}}
+			/>,
+		);
+
+		// const createButton = screen.getByText('Create');
+		// await userEvent.click(createButton);
+		const nameInput = screen.getByPlaceholderText('Organization Name');
+		await userEvent.type(nameInput, org.name);
+
+		const submitButton = screen.getByText('Submit');
+		await userEvent.click(submitButton);
+		await waitFor(() => {
+			expect(editOrganization).toHaveBeenCalled();
+		});
+
+		expect(updateImage).not.toHaveBeenCalled();
+		expect(editOrganization).toHaveBeenCalledWith(
+			org.name,
+			expect.anything(),
+		);
+	});
+});
+
+// Delete Org
+describe('deleting an organization', () => {
+	const mockPush = jest.fn();
+	beforeEach(() => {
+		useRouter.mockReset();
+		useRouter.mockImplementation(() => ({
+			push: mockPush,
+		}));
+	});
+
+	it('delete button is pressed and redirects', async () => {
+		const { getByText } = render(
+			<DeleteModal
+				org_id="123"
+				clickHandler={() => {}}
+				org_name="Test Org"
+			/>,
+		);
+
+		// Simulate the user clicking the 'Delete' button
+		await userEvent.click(getByText('Delete'));
+
+		expect(mockOrgDelete).toHaveBeenCalled();
+		expect(mockPush).toHaveBeenCalledWith('/organization');
 	});
 });
