@@ -197,7 +197,7 @@ export function PermissionCard({
 	);
 }
 
-const DeleteModal = ({
+export const DeleteModal = ({
 	org_id,
 	clickHandler,
 	org_name,
