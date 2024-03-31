@@ -345,6 +345,7 @@ export function DeleteTask({ task }: { task: ITasks }) {
 			strokeWidth={1.5}
 			stroke="currentColor"
 			className="delete-task-btn"
+			data-testid="delete-task-btn"
 		>
 			<path
 				strokeLinecap="round"
