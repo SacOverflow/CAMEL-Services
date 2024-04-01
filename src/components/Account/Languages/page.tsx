@@ -1,4 +1,11 @@
+/**
+ * SO-71
+ * Done By Hashme Jaber
+ *
+ */
+
 'use client';
+
 import { setLanguage } from '@/lib/actions/client';
 export default function LanguageOption({ lang }: { lang: string }) {
 	const languages: any = {
@@ -238,6 +245,7 @@ export default function LanguageOption({ lang }: { lang: string }) {
 						ry="4"
 						fill="#c93728"
 					></rect>
+
 					<path
 						d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
 						opacity=".15"
