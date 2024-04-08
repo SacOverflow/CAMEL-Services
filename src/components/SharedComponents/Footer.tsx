@@ -70,7 +70,7 @@ export function Footer() {
 								</li>
 								<li className="mb-2 hover:underline">
 									<Link
-										href={`https://github.com/imrenmore`}
+										href={`https://github.com/Miguel1357`}
 										target="_blank"
 									>
 										Miguel Lopez
@@ -78,7 +78,7 @@ export function Footer() {
 								</li>
 								<li className="mb-2 hover:underline">
 									<Link
-										href={`https://github.com/Miguel1357`}
+										href={`https://github.com/imrenmore`}
 										target="_blank"
 									>
 										Imren More

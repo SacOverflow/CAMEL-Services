@@ -3,10 +3,8 @@ import { render, screen } from '@testing-library/react';
 import Home from '@/app/page';
 import { act } from 'react-dom/test-utils';
 
-// TEST; Idea for implementing tests for the Home component
-describe('Home', () => {
+describe('Home page', () => {
 	beforeAll(() => {
-		// ignore error since implementation of testimonials is ha ha ha
 		jest.spyOn(console, 'error').mockImplementation(() => {});
 	});
 
@@ -23,5 +21,19 @@ describe('Home', () => {
 		expect(heading).toContainHTML(
 			'Cloud Asset Management Enhanced Launcher',
 		);
+	});
+
+	it('home renders content cards', async () => {
+		await act(async () => {
+			render(<Home />);
+		});
+
+		const cardOne = screen.getByText(
+			'Cloud Asset Management Enhanced Launcher (CAMEL)',
+		);
+		const cardTwo = screen.getByText('All-In-One Dashboard');
+
+		expect(cardOne).toBeInTheDocument();
+		expect(cardTwo).toBeInTheDocument();
 	});
 });
