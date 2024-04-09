@@ -58,24 +58,8 @@ export const EditTaskForm = ({
 				setSelectedTask: contxt.setSelectedTask,
 		  };
 
-	const [teamMember, setTeamMember]: any = useState();
-
 	const [taskMembers, setTaskMembers]: any = useState([]);
 
-	const [members, setMembers] = useState([
-		{
-			id: 1,
-			name: 'oops, No Members in sight',
-			image: '/https://files.oaiusercontent.com/file-npweLpN335IVGD1bfQAd6DIl?se=2024-02-23T09%3A47%3A17Z&sp=r&sv=2021-08-06&sr=b&rscc=max-age%3D31536000%2C%20immutable&rscd=attachment%3B%20filename%3D723e25a6-0861-40a7-8472-3d3245b64813.webp&sig=P1gXkBn4KMbQyIIrrF2USVXoRvtCCWqiUWFxVzaHOVg%3D',
-		},
-	]);
-
-	const [ref, setRef] = useState(false);
-	function reFresh() {
-		setRefresh();
-		setRef(!ref);
-		window.location.reload();
-	}
 	const [editedTask, setEditedTask] = useState<ITasks>({
 		id: (selectedTask as ITasks)?.id
 			? ((selectedTask as ITasks).id as string)
@@ -88,13 +72,13 @@ export const EditTaskForm = ({
 			: new Date(),
 		status: (selectedTask as ITasks)?.status
 			? ((selectedTask as ITasks)?.status as Status)
-			: Status.ToDo,
+			: Status.Complete,
 		completed_date: (selectedTask as ITasks)?.completed_date
 			? ((selectedTask as ITasks)?.completed_date as Date)
 			: (null as any),
 		due_date: (selectedTask as ITasks)?.due_date
 			? ((selectedTask as ITasks)?.due_date as Date) || new Date()
-			: (null as any),
+			: (new Date() as Date),
 		project_id: (selectedTask as ITasks)?.project_id
 			? ((selectedTask as ITasks)?.project_id as string)
 			: '',
@@ -102,32 +86,17 @@ export const EditTaskForm = ({
 
 	const [lang, setLang] = useState('english');
 	useEffect(() => {
-		selectedTask
-			? getAllTaskMembers(editedTask.id).then(members => {
-					getProjectMembersTasks(project_id).then((tmp: any) => {
-						console.log('Task Members:', taskMembers); // TODO: REMOVE: Debug: Check taskMembers content and type
+		const getTaskMembers = async () => {
+			if (!selectedTask || !editedTask.id) {
+				return;
+			}
 
-						if (Array.isArray(taskMembers)) {
-							// Ensure taskMembers is an array
-							const filteredMembers = tmp.filter(
-								(member: any) =>
-									!taskMembers.some(
-										(taskMember: any) =>
-											taskMember.id === member.id,
-									),
-							);
-							setTaskMembers(members);
-							setMembers(filteredMembers);
-						} else {
-							console.error(
-								'taskMembers is not an array:',
-								taskMembers,
-							);
-						}
-					});
-			  })
-			: () => {};
+			const members = await getAllTaskMembers(editedTask.id);
 
+			setTaskMembers(members);
+		};
+
+		getTaskMembers();
 		const getLanguage = async () => {
 			const tmpLang = await getLangPrefOfUser();
 			setLang(tmpLang);
@@ -144,7 +113,8 @@ export const EditTaskForm = ({
 
 	const handleSubmit = async (event: any) => {
 		event.preventDefault();
-		// Consolidate your create/update logic here
+
+		// if we have a task selected, we are updating
 		if (selectedTask) {
 			// if update is successful, clear the selected task
 			const resp = await updateTask(editedTask);
@@ -153,7 +123,7 @@ export const EditTaskForm = ({
 			}
 			// setSelectedTask(null);
 		} else {
-			editedTask.project_id = project_id;
+			// editedTask.project_id = project_id;
 			await createTask(editedTask);
 			dismiss();
 		}
@@ -173,20 +143,6 @@ export const EditTaskForm = ({
 				['due_date']: dateObj,
 			}));
 		}
-		// else if (name === 'team') {
-		// 	setTeamMember(value);
-		// 	const targetUser: number | any = members.find(
-		// 		member => member.name === value,
-		// 	)?.id;
-		// 	selectedTask
-		// 		? addTaskMember(project_id, editedTask.id, targetUser).then(
-		// 				res => {
-		// 					res
-		// 						? console.info('success')
-		// 						: console.info('fail');
-		// 				},
-		// 		  )
-		// 		: () => {};
 
 		// 	setMembers(members.filter(member => member.name !== value));
 		// }
@@ -195,11 +151,14 @@ export const EditTaskForm = ({
 			const enumStatus = {
 				completed: Status.Complete,
 				inprogress: Status.InProgress,
-				cancelled: Status.ActionNeeded,
+				'in progress': Status.InProgress,
+				cancelled: Status.Cancelled,
 			};
+			const keyVal = value.toLowerCase();
+
 			setEditedTask(prevTask => ({
 				...prevTask,
-				status: enumStatus[value as keyof typeof enumStatus],
+				status: enumStatus[keyVal as keyof typeof enumStatus],
 			}));
 		} else {
 			setEditedTask(prevTask => ({
@@ -217,6 +176,13 @@ export const EditTaskForm = ({
 		}
 		const dateStr = date.toISOString().split('T')[0];
 		return dateStr;
+	};
+	const formatDate = (date: Date) => {
+		const newDate = new Date(date.toLocaleString());
+		const month = (newDate.getMonth() + 1).toString().padStart(2, '0');
+		const day = newDate.getDate().toString().padStart(2, '0');
+		const year = newDate.getFullYear();
+		return `${year}-${month}-${day}`;
 	};
 
 	return (
@@ -285,16 +251,19 @@ export const EditTaskForm = ({
 					id="completed_date"
 					type="date"
 					name="completed_date"
-					value={getDateInput(editedTask.due_date)}
+					// value={getDateInput(editedTask.due_date)}
+					value={formatDate(editedTask.due_date)}
 					onChange={handleChange}
 				/>
 			</div>
 
 			{/* Searching input for user to add new members to tasks  */}
-			<TaskMemberInput
-				role={role}
-				task={editedTask}
-			/>
+			{selectedTask && editedTask.id && (
+				<TaskMemberInput
+					role={role}
+					task={editedTask}
+				/>
+			)}
 			{/*	
 			<select
 				className="option-input max-w-full"

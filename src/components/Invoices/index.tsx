@@ -3,8 +3,12 @@
 import { useState, useEffect } from 'react';
 
 import { createSupbaseClient } from '@/lib/supabase/client';
-import { IReceipts } from '@/types/database.interface';
-import { getLangPrefOfUser } from '@/lib/actions/client';
+import { IProjects, IReceipts } from '@/types/database.interface';
+import {
+	getAllProjects,
+	getCookie,
+	getLangPrefOfUser,
+} from '@/lib/actions/client';
 import getLang from '@/app/translations/translations';
 
 export default function ReceiptPage() {
@@ -12,9 +16,6 @@ export default function ReceiptPage() {
 		'https://apqmqmysgnkmkyesdrnn.supabase.co/storage/v1/object/public/profile-avatars/wyncoservices.png';
 	const [receiptFile, setReceiptFile] = useState<File | null>(null);
 	const [receiptData, setReceiptData] = useState(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState('');
-	const [items, setItems] = useState([]);
 	const [image, setImage] = useState<any>([]);
 	const [imageURL, setImageURL] = useState(DEFAULT_IMAGE);
 	const [user_lang, setUserLang] = useState('english');
@@ -23,7 +24,8 @@ export default function ReceiptPage() {
 		errorMessage: string;
 		errorCode: string | number;
 	}>({ error: false, errorMessage: 'No error for now', errorCode: 100 });
-	//FIXME: EXTRACT PROJECT_ID AMD org_id dyncmically -Hashem Jaber
+
+	const [projects, setProjects] = useState<IProjects[]>([]);
 
 	useEffect(() => {
 		const getuserLang = async () => {
@@ -31,21 +33,33 @@ export default function ReceiptPage() {
 			setUserLang(userLang);
 		};
 
+		const getAllProjecttsAssociations = async () => {
+			// retrieve the cookie upon mount
+			const cookie = getCookie('org');
+			setReciept((prevReciept: any) => ({
+				...prevReciept,
+				org_id: cookie,
+			}));
+			const projects = await getAllProjects(cookie);
+
+			setProjects(projects);
+		};
+
 		getuserLang();
+		getAllProjecttsAssociations();
 	}, []);
 
 	const [reciept, setReciept] = useState<IReceipts | any>({
-		// proj_id: 'a7188d51-4ea8-492e-9277-7989551a3b97',
 		proj_id: '',
 		org_id: '',
-		img_id: 'some-img-id',
-		store: 'store',
+		img_id: '',
+		store: '',
 		category: 'category',
 		updated_by: null,
 		updated_at: new Date(),
 		created_by: '',
 		created_at: new Date(),
-		price_total: 100.0,
+		price_total: 0,
 		note: '',
 	});
 
@@ -54,11 +68,49 @@ export default function ReceiptPage() {
 	) => {
 		const { name, value } = event.target;
 
-		// Create a new object for the state update
-		setReciept((prevReciept: any) => ({
-			...prevReciept, // Spread the previous state
-			[name]: name === 'price_total' ? parseFloat(value) : value, // Ensure numbers are handled correctly
-		}));
+		if (name === 'created_at') {
+			const [year, month, day] = value.split('-');
+			// create date obj using local time
+			const date = new Date(year, month - 1, day);
+			// set the date to the state
+			setReciept((prevReciept: any) => ({
+				...prevReciept, // Spread the previous state
+				[name]: date,
+			}));
+		} else {
+			// Create a new object for the state update
+			setReciept((prevReciept: any) => ({
+				...prevReciept, // Spread the previous state
+				[name]: name === 'price_total' ? parseFloat(value) : value, // Ensure numbers are handled correctly
+			}));
+		}
+	};
+
+	const receiptCheckPass = () => {
+		const hasAllFields =
+			!reciept.proj_id ||
+			!reciept.org_id ||
+			!reciept.img_id ||
+			!reciept.store ||
+			!reciept.category ||
+			// !reciept.updated_by ||
+			!reciept.created_by ||
+			!reciept.created_at ||
+			!reciept.price_total;
+
+		if (hasAllFields) {
+			return false;
+		}
+
+		return true;
+	};
+
+	const formatDate = (date: Date) => {
+		const newDate = new Date(date.toLocaleString());
+		const month = (newDate.getMonth() + 1).toString().padStart(2, '0');
+		const day = newDate.getDate().toString().padStart(2, '0');
+		const year = newDate.getFullYear();
+		return `${year}-${month}-${day}`;
 	};
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,13 +123,8 @@ export default function ReceiptPage() {
 		setReceiptFile(event.target.files ? event.target.files[0] : null);
 	};
 
-	const handleSubmitForm = async (e: any) => {
-		e.preventDefault();
-
-		// upload image
-		await createReciept(e);
-	};
 	const createReciept = async (e: any): Promise<boolean> => {
+		// verify the receipt has all required fields
 		let resp = false;
 		// create org using user auth
 		const supabase = await createSupbaseClient();
@@ -97,14 +144,7 @@ export default function ReceiptPage() {
 			});
 			return false;
 		}
-		// error
-		//     ? setErrorMessage({
-		//         error: true,
-		//         errorMessage:
-		//             'failed to extract user info, are you sure your signed in?',
-		//         errorCode: 400,
-		//     })
-		//     : () => { };
+
 		let newURL = null;
 
 		// if image is not default??¿¿¿ NOTE: unsure of this logic
@@ -114,7 +154,7 @@ export default function ReceiptPage() {
 			// upload image to storage
 			const { data, error } = await supabase.storage
 				.from('profile-avatars')
-				.upload(`public/${hash}`, image, {
+				.upload(`receipts/${hash}`, image, {
 					cacheControl: '3600',
 				});
 
@@ -142,29 +182,30 @@ export default function ReceiptPage() {
 		}
 
 		reciept.created_by = user?.id;
+		reciept.img_id = newURL || imageURL;
+		const pass = receiptCheckPass();
+		if (!pass) {
+			setErrorMessage({
+				error: true,
+				errorMessage:
+					'failed to upload reciept, please ensure all fields are filled',
+				errorCode: 400,
+			});
+			return false;
+		}
 		// query to create new row entry
 		const { data: entryData, error: entryError } = await supabase
 			.from('receipts')
 			.insert([
 				{
 					...reciept,
-					image: newURL || imageURL,
+					// image: newURL || imageURL,
 				},
 			]);
 
-		// entryError
-		//     ? setErrorMessage({
-		//         error: true,
-		//         errorMessage: entryError?.message,
-		//         errorCode: entryError?.code,
-		//     })
-		//     : setErrorMessage({
-		//         error: false,
-		//         errorMessage: 'no errors to report',
-		//         errorCode: 200,
-		//     });
-
 		if (entryError) {
+			console.error(entryError);
+			console.log('error creating receipt');
 			setErrorMessage({
 				error: true,
 				errorMessage: entryError?.message,
@@ -178,19 +219,12 @@ export default function ReceiptPage() {
 				errorCode: 200,
 			});
 		}
-		// entryError
-		//     ? setError('Reciept creation failed due to unknown ')
-		//     : setErrorMessage({
-		//         error: false,
-		//         errorMessage: 'no errors to report',
-		//         errorCode: 200,
-		//     });
 
 		if (
-			(entryError as any).message ===
+			(entryError as any)?.message ===
 				'duplicate key value violates unique constraint "organization_name_key"' ||
 			// entryError?.code === '23505'
-			(entryError as any).code === '23505'
+			(entryError as any)?.code === '23505'
 		) {
 			setErrorMessage({
 				error: true,
@@ -206,51 +240,25 @@ export default function ReceiptPage() {
 	};
 
 	return (
-		<div className="receipts-input-form-container mx-auto">
-			<div
-				// style={{
-				//     background: 'white',
-				//     margin: 'auto',
-				//     width: '50%',
-				//     padding: '10px',
-				//     border: '1px grey',
-				//     borderRadius: '8px',
-				//     marginTop: '20px',
-				// }}
-				className="receipts-input-form flex flex-col gap-2  bg-white rounded-md my-5 p-4"
-			>
+		<div className="receipts-input-form-container mx-auto max-w-[14rem] md:max-w-none">
+			<div className="receipts-input-form flex flex-col gap-2  bg-white rounded-md my-5 p-4 ">
 				<h1 className="text-center font-bold text-xl">
 					{getLang('Upload Receipt', user_lang)}
 				</h1>
 
-				<form onSubmit={() => {}}>
-					<div className="form-uploader">
-						<input
-							type="file"
-							onChange={handleFileChange}
-							className="mb-4"
-						/>
-					</div>
+				<form
+					onSubmit={() => {}}
+					className="flex flex-col gap-4"
+				>
+					<input
+						type="file"
+						onChange={handleFileChange}
+						className="mb-4"
+					/>
 				</form>
 				<div className="flex flex-col gap-4">
-					{/* <button
-                        style={{
-                            padding: '10px',
-                            backgroundColor: '#5A8472',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                        }}
-                    >
-                        Scan Receipt
-                    </button> */}
 					<input
-						// style={{
-						//     padding: '10px',
-						//     border: '1px solid #ccc',
-						//     borderRadius: '4px',
-						// }}
-						className="p-4 border border-gray-300 rounded-md"
+						className="p-2 md:p-4 border border-gray-300 rounded-md"
 						placeholder="Store"
 						value={reciept?.store}
 						name="store"
@@ -258,52 +266,30 @@ export default function ReceiptPage() {
 					/>
 					<div className="flex gap-1 items-center">
 						<input
-							// style={{
-							//     flex: 1,
-							//     padding: '10px',
-							//     border: '1px solid #ccc',
-							//     borderRadius: '4px',
-							// }}
-							className="flex-1 p-4 border border-gray-300 rounded-md"
+							className="flex p-2 md:p-4 border border-gray-300 rounded-md w-3/4"
 							onChange={handleChange}
 							name="price_total"
 							placeholder="Price/Total"
 							type="number"
 							value={reciept?.price_total}
 						/>
-						<select
-							// style={{
-							//     padding: '10px',
-							//     border: '1px solid #ccc',
-							//     borderRadius: '4px',
-							// }}
-							className="p-4 border border-gray-300 rounded-md"
-						>
+						<select className="p-2 md:p-4 border border-gray-300 rounded-md w-1/4">
 							<option value="USD">USD</option>
 							{/* Add other currencies as needed */}
 						</select>
 					</div>
 					<input
-						// style={{
-						//     padding: '10px',
-						//     border: '1px solid #ccc',
-						//     borderRadius: '4px',
-						// }}
-						className="p-4 border border-gray-300 rounded-md"
+						className="p-2 md:p-4 border border-gray-300 rounded-md"
 						placeholder="MM/DD/YYYY"
+						value={formatDate(reciept?.created_at)}
 						type="date"
+						name="created_at"
+						onChange={handleChange}
 					/>
 					<span>{getLang('Category', user_lang)}</span>
 					<select
 						name="category"
-						// style={{
-						//     padding: '10px',
-						//     backgroundColor: '#5A8472',
-						//     color: 'white',
-						//     border: 'none',
-						//     borderRadius: '4px',
-						// }}
-						className="p-4 rounded-md bg-[#5A8472] text-white"
+						className="p-2 md:p-4 rounded-md bg-[#5A8472] text-white"
 						onChange={handleChange}
 					>
 						<option value="">
@@ -349,56 +335,46 @@ export default function ReceiptPage() {
 							{getLang('Miscellaneous Expenses', user_lang)}
 						</option>
 					</select>
+					<span>{getLang('Project', user_lang)}</span>
+					<select
+						name="proj_id"
+						className="p-2 md:p-4 rounded-md bg-[#5A8472] text-white"
+						onChange={handleChange}
+					>
+						<option value="">
+							{getLang('Select Project', user_lang)}
+						</option>
+						{projects.map(project => (
+							<option
+								key={project.id}
+								value={project.id}
+							>
+								{project.title}
+							</option>
+						))}
+					</select>
+
 					<textarea
-						// style={{
-						//     padding: '10px',
-						//     border: '1px solid #ccc',
-						//     borderRadius: '4px',
-						//     minHeight: '100px',
-						// }}
 						className="p-4 border border-gray-300 rounded-md h-32"
 						placeholder="Notes"
 						name="note"
 						value={reciept?.note}
 						onChange={handleChange}
 					/>
-					<div
-						// style={{ display: 'flex', gap: '10px' }}
-						className="flex gap-4"
-					>
-						<button
-							// style={{
-							//     flex: 1,
-							//     padding: '10px',
-							//     backgroundColor: 'white',
-							//     color: 'black',
-							//     border: 'none',
-							//     borderRadius: '4px',
-							// }}
-							className="flex-1 p-4 border border-gray-300 rounded-md text-black"
-						>
+					<div className="flex gap-4">
+						<button className="flex-1 p-4 border border-gray-300 rounded-md text-black">
 							{getLang('Cancel', user_lang)}
 						</button>
 						<button
-							// style={{
-							//     flex: 1,
-							//     padding: '10px',
-							//     backgroundColor: '#5A8472',
-							//     color: 'white',
-							//     border: 'none',
-							//     borderRadius: '4px',
-							// }}
 							className="flex-1 p-4 border border-gray-300 rounded-md bg-[#5A8472] text-white"
-							onClick={async () => {
-								const resp = await createReciept('');
+							onClick={async (e: any) => {
+								const resp = await createReciept(e);
 
-								//
-								// FIXME:  had some alerts again;
-								// NOTE: noting this down ONCE AGAIN; DO NOT USE OR PUSH ALERTS TO THE MAIN BRANCH OR WHEN COMMITING PLEASEEEEEE
-								// LETS FOLLOW PROPER FORMATTING THAT WE HAVE BEEN USING OF MODALS OR JUST SIMPLE SPAN TEXTS THANK YOU!!!!
-								// if (resp) {
-								//     setReceiptData(reciept);
-								// }
+								if (resp) {
+									setTimeout(() => {
+										window.location.reload();
+									}, 5000);
+								}
 							}}
 						>
 							{getLang('Submit', user_lang)}

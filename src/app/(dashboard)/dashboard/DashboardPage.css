@@ -91,4 +91,19 @@
 	.chart-titles {
 		@apply flex justify-between items-center w-full;
 	}
+
+	/* charts no data */
+	.chart-no-data {
+		@apply w-full h-full;
+		@apply flex justify-center items-center;
+		@apply bg-gray-100;
+		@apply rounded-lg;
+
+		@apply shadow-primary-green-400 shadow-sm;
+
+		/* green bg ones */
+		&.special {
+			@apply bg-primary-green-700 text-white;
+		}
+	}
 }

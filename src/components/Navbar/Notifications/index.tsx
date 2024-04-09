@@ -6,7 +6,7 @@ import { Database } from '@/types/database.types';
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { setCookie } from '@/lib/actions/client';
+import { getCookie, setCookie } from '@/lib/actions/client';
 import { createSupbaseClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -29,6 +29,7 @@ interface Notification {
 export default function NotificationButton() {
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 
+	const [currUser, setCurrUser] = useState<any>(null);
 	const [showNotifications, setShowNotifications] = useState(false);
 	const ref = useRef<HTMLButtonElement>(null);
 
@@ -38,6 +39,8 @@ export default function NotificationButton() {
 			.from('notification_user_view')
 			.select('*')
 			.eq('notification_status', 'unread')
+			.eq('org_id', getCookie('org'))
+			.eq('user_id', currUser?.id)
 			.order('notification_created_at', { ascending: false })
 			.limit(40);
 
@@ -51,6 +54,28 @@ export default function NotificationButton() {
 		}
 	};
 
+	// const updateNotifications = (notification_id: string) => {
+	// 	// get the notification
+	// 	const notificationRef = notifications.find(
+	// 		n => n.notification_id === notification_id,
+	// 	);
+	// 	console.log('notification being updated, ', notificationRef);
+	// 	const newNotifications = notifications.filter(
+	// 		n => n.notification_id !== notification_id,
+	// 	);
+
+	// 	setNotifications(newNotifications);
+
+	// 	// .from('user_notifications')
+	// 	// .update({
+	// 	// 	status: 'read',
+	// 	// 	read_at: new Date(),
+	// 	// })
+	// 	// .eq('notification_id', notification_id)
+	// 	// .eq('user_id', notifications[0].user_id)
+	// 	// .select();
+	// };
+
 	useEffect(() => {
 		// add event listener to close the notifications
 		const handleClickOutside = (event: any) => {
@@ -59,8 +84,21 @@ export default function NotificationButton() {
 			}
 		};
 
+		const getUser = async () => {
+			const supabase = await createSupbaseClient();
+			const { data, error } = await supabase.auth.getUser();
+
+			if (error) {
+				console.error(error);
+			} else {
+				setCurrUser(data?.user);
+			}
+		};
+
+		getUser();
+
 		document.addEventListener('mousedown', handleClickOutside);
-		getNotifications();
+		// getNotifications();
 
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
@@ -68,6 +106,13 @@ export default function NotificationButton() {
 
 		// get the notifications
 	}, []);
+
+	useEffect(() => {
+		if (!currUser) {
+			return;
+		}
+		getNotifications();
+	}, [currUser]);
 
 	return (
 		<button
@@ -98,21 +143,26 @@ export default function NotificationButton() {
 			</svg>
 
 			{showNotifications && notifications.length > 0 && (
-				<NotificationsContainer notifications={notifications} />
+				<NotificationsContainer
+					notifications={notifications}
+					// updateNotifications={updateNotifications}
+				/>
 			)}
 		</button>
 	);
 }
 
 const NotificationsContainer = ({
-	notifications,
+	notifications, // updateNotifications,
 }: {
 	notifications: Notification[];
+	// updateNotifications: (notification_id: string) => void;
 }) => {
 	const [currentNotifications, setCurrentNotifications] =
 		useState<Notification[]>(notifications);
 
 	const removeNotificationAlert = async (notification: Notification) => {
+		// updateNotifications(notification.notification_id);
 		const newNotifications = currentNotifications.filter(
 			n => n.notification_id !== notification.notification_id,
 		);
@@ -152,7 +202,7 @@ const NotificationCard = ({
 			case 'organization':
 			default:
 				// set the cookie and redirect
-				setCookie('org_id', notification.org_id, 1);
+				setCookie('org', notification.org_id, 1);
 				return '/dashboard';
 		}
 	};
@@ -161,6 +211,7 @@ const NotificationCard = ({
 		// mark the notification as read
 		const supabase = await createSupbaseClient();
 
+		console.log('updating notification ref: ', notification);
 		const { data, error } = await supabase
 			.from('user_notifications')
 			.update({
@@ -170,10 +221,20 @@ const NotificationCard = ({
 			.eq('notification_id', notification.notification_id)
 			.eq('user_id', notification.user_id)
 			.select();
+		// const { data, error } = await supabase.rpc('update_user_notification', {
+		// 	notification_id_p: notification.notification_id,
+		// 	user_id_p: notification.user_id,
+		// });
 
+		console.log('updating notification', data, error);
 		if (error) {
 			console.error(error);
 		} else {
+			if (!data) {
+				// update reference did not work...
+				console.error('no data returned');
+				return;
+			}
 			// remove the notification from the list
 			markAsRead();
 		}

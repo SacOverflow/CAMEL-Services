@@ -1,5 +1,6 @@
 import { IReceipts } from '@/types/database.interface';
 import { createSupbaseClient } from '../supabase/client';
+import { DoubleLineChartDataElement } from '@/types/componentTypes';
 
 // function for retrieving full budget of an org
 // function for receipts bare data from one org.
@@ -27,14 +28,24 @@ export interface TotalEarningCard {
 	previousEarning: number;
 }
 
-export async function getFilteredRevenueChartData(
-	type: 'month' | 'yearly' = 'month',
-): Promise<ChartData[]> {
+export async function getFilteredRevenueChartData({
+	org_id,
+	type = 'month',
+}: {
+	type: 'month' | 'yearly';
+	org_id: string;
+}): Promise<ChartData[]> {
+	if (!org_id) {
+		console.error('org_id is required');
+		return [];
+	}
+
 	const supabase = await createSupbaseClient();
 
 	const { data: receipts, error } = await supabase
 		.from('receipts')
 		.select('*')
+		.eq('org_id', org_id)
 		.order('updated_at', { ascending: true });
 
 	if (error) {
@@ -42,26 +53,86 @@ export async function getFilteredRevenueChartData(
 		return [];
 	}
 
-	// Ensure you provide a type for the parameter in the map function
-	const processedData: ChartData[] =
-		receipts?.map((receipt: IReceipts) => ({
-			date: receipt.updated_at
-				? new Date(receipt.updated_at).toISOString().split('T')[0]
-				: '',
-			income: Math.random() * 1000, // Placeholder, replace with actual logic
-			expenses: Math.random() * 1000, // Placeholder, replace with actual logic
-		})) || [];
+	// grouped receipts by month (Expenses)
+	const groupedExpensesData = receipts.reduce((acc, receipt) => {
+		const date = new Date(receipt.updated_at);
+		const total = receipt.price_total || 0;
+		const month = date.getMonth() + 1;
+		const year = date.getFullYear();
+		const day = '28'; // hardcoding day to 28th of the month
+		const key = `${year}-${month}-${day}`;
+		if (acc[key]) {
+			// calculate the total expenses for the month
+			acc[key].total += total;
+		} else {
+			acc[key] = { total, date: key };
+		}
+		return acc;
+	}, {});
 
-	return processedData;
+	// grouped income based off the projects within org
+	const { data: projects, error: projectError } = await supabase
+		.from('projects')
+		.select('*')
+		.eq('org_id', org_id)
+		.order('created_at', { ascending: true });
+
+	if (projectError) {
+		console.error('Error fetching expenses data:', projectError);
+
+		// check if maybe just no projects error
+		return [];
+	}
+
+	// group projects by month and retrieve their budget allocations and as object
+	const tmp = projects.map(project => {
+		const date = new Date(project.created_at);
+		const budget = project.budget;
+		const month = date.getMonth() + 1;
+		const year = date.getFullYear();
+		const day = '28'; // hardcoding day to 28th of the month
+		const key = `${year}-${month}-${day}`;
+		return { budget, date: key };
+	});
+	const groupedIncomeRevenueData: any = {};
+	tmp.forEach(project => {
+		const resp = {
+			date: project.date,
+			budget: project.budget,
+		};
+		// if we exist
+		if (groupedIncomeRevenueData[project.date]) {
+			// add the budget to the existing budget
+			resp.budget += groupedIncomeRevenueData[project.date].budget || 0;
+			groupedIncomeRevenueData[project.date] = resp;
+		} else {
+			resp.budget = project.budget || 0;
+			groupedIncomeRevenueData[project.date] = resp;
+		}
+	});
+
+	// merge the 2 based off the date
+	const mergedData = Object.keys(groupedIncomeRevenueData).map(key => {
+		const income = groupedIncomeRevenueData[key].budget || 0;
+		const expenses = groupedExpensesData[key]?.total || 0;
+		return {
+			date: key,
+			income,
+			expenses,
+		};
+	});
+
+	return mergedData;
 }
 
-export async function getFilteredCategoryPieChart(): Promise<
-	PieChartDataElement[]
-> {
+export async function getFilteredCategoryPieChart(
+	org_id: string,
+): Promise<PieChartDataElement[]> {
 	const supabase = await createSupbaseClient();
 	const { data: receipts, error } = await supabase
 		.from('receipts')
-		.select('category, price_total');
+		.select('category, price_total')
+		.eq('org_id', org_id);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -233,6 +304,263 @@ export const getOrganizationProjectEarnings = async (org_id: string) => {
 		percentageDifference: formatDifference,
 		isPositive,
 	};
+};
+
+/**
+ * Function to retrieve a double lines chart data but using the top 2 categories for the current month.
+ */
+export const getDoubleLineChartData = async (
+	org_id: string,
+): Promise<DoubleLineChartDataElement[]> => {
+	try {
+		const supabase = await createSupbaseClient();
+
+		const { data: receipts, error: receiptsError } = await supabase
+			.from('receipts')
+			.select('*')
+			.eq('org_id', org_id);
+
+		if (receiptsError) {
+			console.error('Error fetching double line charts data.');
+			return [] as any;
+		}
+
+		const MONTH_INCREMENT = 1;
+
+		// group receipts by month and category
+		const groupedData = receipts.reduce((acc, receipt) => {
+			const date = new Date(receipt.updated_at);
+			const total = receipt.price_total || 0;
+			const month = String(date.getMonth() + 1).padStart(2, '0');
+			const year = date.getFullYear();
+
+			// use the month and year as the key
+			const key = `${year}-${month}`;
+
+			// Create new entry if it doesn't exist
+			if (!acc[key]) {
+				acc[key] = [];
+			}
+
+			// Check if category exists
+			const categoryIndex = acc[key].findIndex(
+				({
+					category,
+				}: {
+					category: string;
+					total: number;
+					date: string;
+				}) => category === receipt.category,
+			);
+			if (categoryIndex > -1) {
+				// Category exists, add to total
+				acc[key][categoryIndex].total += total;
+			} else {
+				// Create new category entry
+				acc[key].push({ total, date: key, category: receipt.category });
+			}
+
+			// Return accumulator map
+			return acc;
+		}, {});
+
+		// using grouped data, use last month data and see top 2 categories
+		// get the current month
+		const currentDate = new Date();
+		const currentMonth = String(
+			currentDate.getMonth() + MONTH_INCREMENT,
+		).padStart(2, '0');
+		const currentYear = currentDate.getFullYear();
+
+		// get the key for the current month (latest)
+		let key = `${currentYear}-${currentMonth}`;
+
+		// fetch data for key
+		let currMonthData = groupedData[key];
+
+		// if len is less than 2, use prev month
+		if (currMonthData && currMonthData.length < 2) {
+			const prevMonth = String(currentDate.getMonth()).padStart(2, '0');
+			const prevYear = currentDate.getFullYear();
+			const prevKey = `${prevYear}-${prevMonth}`;
+
+			key = prevKey;
+
+			currMonthData = groupedData[prevKey];
+		}
+
+		// get top 2 categories
+		const top2Categories = currMonthData
+			?.sort((a: any, b: any) => b.total - a.total)
+			?.slice(0, 2);
+
+		if (top2Categories?.length < 2) {
+			// return empty array
+			console.debug('not enough data');
+			return [] as any;
+		}
+		// else we have top 2 categories; retrieve the categories
+		const top2CategoriesData = [
+			top2Categories[0].category,
+			top2Categories[1].category,
+		];
+
+		const getWeekOfMonth = (date: Date) => {
+			const firstDayOfMonth = new Date(
+				date.getFullYear(),
+				date.getMonth(),
+				1,
+			);
+			const firstDayOfWeek = firstDayOfMonth.getDay();
+			const offsetDate = date.getDate() + firstDayOfWeek - 1;
+			return Math.floor(offsetDate / 7) + 1;
+		};
+
+		const weekData = receipts.reduce((acc, receipt) => {
+			const date = new Date(receipt.updated_at);
+			const total = receipt.price_total || 0;
+			const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() is zero-based
+			const year = date.getFullYear();
+			const weekNumber = String(getWeekOfMonth(date)).padStart(2, '0');
+
+			const category = receipt.category;
+
+			if (top2CategoriesData.includes(category)) {
+				const weekKey = `${year}-${month}-${weekNumber}`;
+
+				const insertData = {
+					total,
+					date: weekKey,
+					category,
+				};
+
+				if (!acc[weekKey]) {
+					acc[weekKey] = [];
+				}
+
+				const categoryIndex = acc[weekKey].findIndex(
+					({
+						category: c,
+					}: {
+						category: string;
+						total: number;
+						date: string;
+					}) => c === category,
+				);
+
+				if (categoryIndex > -1) {
+					acc[weekKey][categoryIndex].total += total;
+				} else {
+					acc[weekKey].push(insertData);
+				}
+			}
+
+			return acc;
+		}, {});
+
+		// get all data just for this month and return array of objects
+		const allData: any = Object.values(weekData).reduce(
+			(acc: any, week: any) => {
+				// check if for current month
+				if (week[0].date.includes(`${currentYear}-${currentMonth}`)) {
+					// add to acc
+					acc.push(...week);
+				}
+
+				return acc;
+			},
+			[],
+		);
+
+		// combine the data based off dates
+		const combinedData = allData.reduce((acc: any, data: any) => {
+			const date = data.date;
+			const category = data.category;
+			const total = data.total;
+
+			if (acc[date]) {
+				// check if category exists
+				const categoryIndex = acc[date].findIndex(
+					({
+						category: c,
+					}: {
+						category: string;
+						total: number;
+						date: string;
+					}) => c === category,
+				);
+
+				// if category exists, add to total
+				if (categoryIndex > -1) {
+					acc[date][categoryIndex].total += total;
+				} else {
+					// else create new category entry
+					acc[date].push(data);
+				}
+			} else {
+				acc[date] = [data];
+			}
+
+			return acc;
+		}, {});
+
+		const chartData = Object.entries(combinedData).map(
+			([dateKey, categories]: [string, any]) => {
+				const dateStr = new Date(dateKey);
+
+				// get the total for each category
+				const value = categories[0] ? categories[0].total : 0;
+				const value2 = categories[1] ? categories[1].total : 0;
+
+				return {
+					date: dateKey,
+					value,
+					value2,
+				};
+			},
+		);
+
+		return (chartData as any) || [];
+	} catch (error) {
+		console.error('Error fetching double line charts data.', error);
+		return [] as any;
+	}
+};
+
+export const getReceiptsCategoriesTop = async (
+	org_id: string,
+): Promise<string[]> => {
+	const supabase = await createSupbaseClient();
+
+	const { data: receipts, error: receiptsError } = await supabase
+		.from('receipts')
+		.select('*')
+		.eq('org_id', org_id);
+
+	if (receiptsError) {
+		console.error('Error fetching receipts categories.');
+		return [];
+	}
+
+	// Aggregate data by category
+	const aggregatedData: { [key: string]: number } = {};
+	receipts.forEach(receipt => {
+		const category = receipt.category;
+		const value = receipt.price_total;
+		if (category in aggregatedData) {
+			aggregatedData[category] += value;
+		} else {
+			aggregatedData[category] = value;
+		}
+	});
+
+	// Convert aggregated data to array and sort by value
+	const sortedData: string[] = Object.entries(aggregatedData)
+		.map(([category, value]) => category)
+		.sort((a, b) => aggregatedData[b] - aggregatedData[a]);
+	// .slice(0, 2); // Get top 2 categories
+
+	return sortedData;
 };
 
 interface IProjectSumData {

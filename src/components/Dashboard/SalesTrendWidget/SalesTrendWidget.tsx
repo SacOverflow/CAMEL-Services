@@ -1,15 +1,17 @@
+'use client';
 import {
-	SingleLineChart,
 	DoubleLineChart,
+	SingleLineChartComponent,
 } from '@/components/Dashboard/LineChart/LineCharts';
 import getLang from '@/app/translations/translations';
-// helper functions
-import { calculatePercentageDifference } from '@/utils/generalUtils';
 // CSS imports
 import './SalesTrendWidget.css';
-import { getSalesOverviewData, getSpendingCategories } from '@/utils/dataUtils';
-import { getUserInformation, getLangPrefOfUser } from '@/lib/actions/index';
-const SalesTrendWidget = async ({
+import { getCookie, getLangPrefOfUser } from '@/lib/actions/client';
+import { TrendWidgetPercentage } from './TrendWidget';
+import { useEffect, useState } from 'react';
+import { DoubleLineChartDataElement } from '@/types/componentTypes';
+import { getDoubleLineChartData } from '@/lib/actions/dashboard';
+const SalesTrendWidget = ({
 	filterType = 'year',
 	className,
 	org,
@@ -18,30 +20,16 @@ const SalesTrendWidget = async ({
 	className?: string;
 	org: string;
 }) => {
-	// get the mockaroo data
-	const SalesOverview = await getSalesOverviewData();
-	const user = await getUserInformation();
-	const lang = await getLangPrefOfUser(user?.id);
+	const [lang, setLang] = useState('en');
+	useEffect(() => {
+		const getUserAndLang = async () => {
+			const langPref = await getLangPrefOfUser();
+			setLang(langPref);
+		};
+
+		getUserAndLang();
+	}, []);
 	// check if totals not null keys
-	const isValidTotals =
-		SalesOverview &&
-		SalesOverview.total !== undefined &&
-		SalesOverview.previousTotal !== undefined &&
-		SalesOverview.data;
-
-	const spendingCategory = (await getSpendingCategories()).splice(0, 3);
-
-	// Not enough data or invalid data.
-	if (!isValidTotals || !spendingCategory) {
-		return (
-			<div className="trends-widget">
-				<span className="trends-widget-title">Sales Trend</span>
-				<span className="trends-widget-no-data-text">
-					No data to display. Please check back later.
-				</span>
-			</div>
-		);
-	}
 
 	return (
 		<>
@@ -50,53 +38,80 @@ const SalesTrendWidget = async ({
 					{' '}
 					{getLang('Sales Trend', lang)}
 				</span>
-				<div className="trends-widget-percentage">
-					<span className="trends-widget-percentage-value">
-						{calculatePercentageDifference(
-							SalesOverview.total,
-							SalesOverview.previousTotal,
-						)}
-						<span className="percentage-sign">%</span>
-					</span>
-					<span className="trends-widget-percentage-text">
-						{getLang('Compared to', lang)} $
-						{SalesOverview.previousTotal}{' '}
-						{getLang('Last year', lang)}.
-					</span>
-				</div>
-				{/* charts utilizing AM Charts */}
-				<DoubleLineChart
-					data={SalesOverview.data}
-					filterType={`week`}
-					id={`double-line-chart`}
-				/>
+				<DoubleLineChartComponent lang={lang} />
 			</div>
 			{/* bottom card component */}
 			<div id="costBreakdownSection">
-				{/* map out the spending categories coming in. */}
-				{spendingCategory?.map((category, index) => {
-					// Generate a unique ID for each chart
+				{/* generate 3 and render the singleLine Chart Component */}
+				{Array.from({ length: 3 }).map((_, index) => {
 					const chartId = `bar-${index}`;
 					return (
 						<div
 							className="category"
 							key={index}
 						>
-							<span className="title">
-								{getLang(category.category, lang)}
-							</span>
-							<span className="amount">
-								${category?.total || '0'}
-							</span>
-							<SingleLineChart
-								data={category.data}
-								filterType={`week`}
+							<SingleLineChartComponent
 								id={chartId}
+								filterType={`week`}
+								idx={index}
+								lang={lang}
 							/>
 						</div>
 					);
 				})}
 			</div>
+		</>
+	);
+};
+
+const DoubleLineChartComponent = ({ lang }: { lang: string }) => {
+	const [org_id, setOrgId] = useState<string>('');
+
+	const [presentData, setPresentData] = useState<boolean>(false);
+
+	const [chartData, setChartData] = useState<DoubleLineChartDataElement[]>(
+		[],
+	);
+
+	useEffect(() => {
+		// setChartData(data);
+
+		// get the users cookie
+		const cookie = getCookie('org');
+
+		setOrgId(cookie || '');
+	}, []);
+
+	useEffect(() => {
+		if (org_id !== '') {
+			const fetchData = async () => {
+				const data: DoubleLineChartDataElement[] =
+					await getDoubleLineChartData(org_id);
+
+				// convert the arrays objects date key to a string representation
+				if (!data || data.length < 2) {
+					return;
+				}
+				setPresentData(true);
+				setChartData(data);
+			};
+
+			fetchData();
+		}
+	}, [org_id]);
+
+	return (
+		<>
+			<TrendWidgetPercentage
+				lang={lang}
+				data={presentData}
+			/>
+			{/* charts utilizing AM Charts */}
+			<DoubleLineChart
+				data={chartData}
+				filterType={`week`}
+				id={`double-line-chart`}
+			/>
 		</>
 	);
 };

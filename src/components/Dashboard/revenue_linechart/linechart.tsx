@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
@@ -8,22 +8,35 @@ import {
 	getFilteredRevenueChartData,
 	ChartData,
 } from '@/lib/actions/dashboard';
+import { getCookie } from '@/lib/actions/client';
 
 function LineChart(props: { id: string; className: string }) {
 	const { id, className } = props;
 	const chartRef = useRef<am5xy.XYChart | null>(null);
 	const [chartData, setChartData] = useState<ChartData[]>([]);
 
+	const [org_id, setOrgId] = useState<string | null>(null);
+
 	useEffect(() => {
+		// Fetch org_id from cookie
+		const org_id = getCookie('org');
+		setOrgId(org_id);
+
 		// Call the function to fetch and set data for the chart
 		const fetchData = async () => {
-			const data = await getFilteredRevenueChartData('month'); // or 'yearly', based on your requirement
+			const data = await getFilteredRevenueChartData({
+				org_id: org_id,
+				type: 'month',
+			}); // or 'yearly', based on your requirement
 			setChartData(data);
 		};
 		fetchData();
 	}, []);
 
-	useLayoutEffect(() => {
+	useEffect(() => {
+		if (chartData.length === 0) {
+			return () => {};
+		}
 		const root = am5.Root.new(`${id}`);
 
 		root.setThemes([am5themes_Animated.new(root)]);
@@ -145,14 +158,34 @@ function LineChart(props: { id: string; className: string }) {
 		legend.data.setAll(chart.series.values);
 
 		xAxis.data.setAll(chartData);
-		console.log('CHARTDATA LINE CHART', chartData);
+		// console.log('CHARTDATA LINE CHART', chartData);
 
 		return () => {
 			root.dispose();
 		};
-	}, [chartData]);
+	}, [chartData, org_id]);
 
+	if (chartData.length === 0) {
+		return (
+			<div
+				id={`${id}`}
+				className={`${className} chart-no-data`}
+				style={{
+					width: '100%',
+					height: '20rem',
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
+				<p className="text-primary-green-500 text-lg">
+					No data is present 😕
+				</p>
+			</div>
+		);
+	}
 	return (
+		// Render the chart
 		<div
 			id={`${id}`}
 			className={`${className}`}

@@ -53,8 +53,8 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
 			const ws = XLSX.utils.json_to_sheet(data);
 			XLSX.utils.book_append_sheet(workbook, ws, month);
 		});
-		console.log('projectDetails:', projectDetails);
-		console.log('overviewData[0]:', projectDetails?.overviewData[0]);
+		// console.log('projectDetails:', projectDetails);
+		// console.log('overviewData[0]:', projectDetails?.overviewData[0]);
 
 		// Write the workbook to a file
 		const fileName =
