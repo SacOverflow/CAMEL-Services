@@ -13,11 +13,13 @@ import {
 	deleteTask,
 	getAllNonTaskMembers,
 	getAllTaskMembers,
+	getCookie,
 	removeMemberFromTask,
 } from '@/lib/actions/client';
 import Image from 'next/image';
 import getLang from '@/app/translations/translations';
 import { getLangPrefOfUser } from '@/lib/actions/client';
+import { createSupbaseClient } from '@/lib/supabase/client';
 // return array of 3 ITasks array filtered
 export function organizeTasks(tasks: ITasks[]) {
 	const completedTasks: ITasks[] = [];
@@ -53,7 +55,6 @@ export function TasksSection({
 }) {
 	const { tasks, setTasks, setTaskMembers, selectedTask } =
 		useContext(TaskContext);
-	const [isTaskCreating, setTaskCreating] = useState(false);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('Completed');
 	const [errorDetails, SetErrrDetails] = useState(
@@ -180,7 +181,9 @@ const MobileView = ({
 
 	return (
 		<div className="flex flex-col items-center justify-between mb-4 w-full gap-2">
-			<h2 className="text-xl font-bold w-full">{getLang('Tasks', lang)}</h2>
+			<h2 className="text-xl font-bold w-full">
+				{getLang('Tasks', lang)}
+			</h2>
 			<select
 				value={selectedCategory}
 				onChange={e => setSelectedCategory(e.target.value)}
@@ -270,7 +273,9 @@ const DesktopView = ({
 		// handle here so no overflow
 		<div className={`flex flex-row gap-2 w-full`}>
 			<div className="flex-row grow p-4">
-				<h2 className={`text-xl font-bold my-2`}>{getLang('Completed Tasks', lang)}</h2>
+				<h2 className={`text-xl font-bold my-2`}>
+					{getLang('Completed Tasks', lang)}
+				</h2>
 				<div
 					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
@@ -286,7 +291,9 @@ const DesktopView = ({
 				</div>
 			</div>
 			<div className="flex-row grow p-4">
-				<h2 className={`text-xl font-bold my-2`}>{getLang('In Progress Tasks', lang)}</h2>
+				<h2 className={`text-xl font-bold my-2`}>
+					{getLang('In Progress Tasks', lang)}
+				</h2>
 				<div
 					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
@@ -302,7 +309,9 @@ const DesktopView = ({
 				</div>
 			</div>
 			<div className="flex-row grow p-4">
-				<h2 className={`text-xl font-bold my-2`}>{getLang('Cancelled Tasks', lang)}</h2>
+				<h2 className={`text-xl font-bold my-2`}>
+					{getLang('Cancelled Tasks', lang)}
+				</h2>
 				<div
 					className={`flex flex-col grow gap-2 w-full overflow-auto ${
 						tasks.length ? 'h-80' : ''
@@ -399,12 +408,51 @@ export function TaskMemberInput({
 	useEffect(() => {
 		// fetch members from db
 		const getMembs = async () => {
+			if (!task.id) {
+				return;
+			}
+
 			const resp = await getAllTaskMembers(task.id);
 
 			setMembers(resp);
 		};
 
 		const getNonMems = async () => {
+			if (!task.id) {
+				return;
+				// COMMENT: ignore this crud since you cant add a member to a task that is not created yet
+				// const supabase = await createSupbaseClient();
+
+				// const { data: orgMembers, error: orgMembersError } =
+				// 	await supabase
+				// 		.from('organization_member')
+				// 		.select('*')
+				// 		.eq('org_id', getCookie('org'));
+
+				// if (orgMembersError) {
+				// 	console.error('error fetching org members');
+				// 	return;
+				// }
+
+				// // parse out just the member_id into an array
+				// const orgMemberIds = orgMembers.map(
+				// 	(member: any) => member.member_id,
+				// );
+
+				// const { data: allUsers, error: allUsersError } = await supabase
+				// 	.from('user')
+				// 	.select('*')
+				// 	.in('id', orgMemberIds);
+
+				// if (allUsersError) {
+				// 	console.error('error fetching all users');
+				// 	return;
+				// }
+
+				// setNonMembers(allUsers);
+				// return;
+			}
+
 			const resp = await getAllNonTaskMembers(task.id);
 			setNonMembers(resp);
 		};

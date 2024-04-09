@@ -29,6 +29,10 @@ export const calculatePercentageDifference = (
 	previousAmount: number,
 ) => {
 	const percentage = amount / previousAmount;
+	// check if infinity just return 100%
+	if (percentage === Infinity) {
+		return '100';
+	}
 	// return percentage to 2 decimal places
 	return percentage.toFixed(2);
 };

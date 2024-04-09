@@ -84,6 +84,14 @@
 				@apply flex items-center justify-center;
 			}
 
+			.title {
+				/* styling */
+				@apply flex items-center justify-start;
+				@apply overflow-hidden whitespace-nowrap;
+				@apply max-w-[33%];
+				font-size: clamp(0.75rem, 2vw, 1rem);
+			}
+
 			/* single individual AM charts */
 			.chart-container {
 				@apply flex-1 h-24;

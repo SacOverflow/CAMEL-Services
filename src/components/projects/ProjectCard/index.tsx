@@ -101,14 +101,15 @@ export const ProjectCard = async ({
 				</div>
 
 				<Link href={`/projects/${project.id}`}>
-					<div className="flex justify-between place-items-center space-x-2">
-						<div className="font-medium flex-1">
+					<div className="flex gap-2 items-center justify-center">
+						<div className="font-medium flex-1 w-3/4 overflow-x-auto whitespace-nowrap">
 							{formatTimeStamp(project.created_at as Date)}
 						</div>
 						<div
 							className={`status-bar ${getStatusClass(
 								project.status,
-							)} py-1 px-2 rounded-full text-gray-100 flex-1 text-center`}
+							)} p-1 rounded-full text-gray-100 flex-1 text-start w-1/4 overflow-x-auto whitespace-nowrap `}
+							style={{ fontSize: 'clamp(0.7rem, 1vh, 1rem)' }}
 						>
 							{getLang(
 								capitalizeFirstLetterOfEachWord(project.status),

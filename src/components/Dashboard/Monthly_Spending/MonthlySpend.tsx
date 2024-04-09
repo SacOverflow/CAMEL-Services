@@ -50,6 +50,15 @@ const MonthlySpending = () => {
 		loadData();
 	}, []);
 
+	// check if data not present
+	if (data.length === 0) {
+		return (
+			<div className="monthly-spending-container chart-no-data special">
+				<p className="text-white text-lg">No data is present 😕</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className="monthly-spending-container">
 			{/* Container for the list of data */}

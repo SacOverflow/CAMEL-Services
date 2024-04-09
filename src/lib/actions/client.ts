@@ -4,6 +4,7 @@ import {
 	IUsers,
 	IProject_Activities,
 	ITasks,
+	IProjects,
 } from '@/types/database.interface';
 
 import { createSupbaseClient } from '../supabase/client';
@@ -930,22 +931,32 @@ export async function getLangPrefOfUser() {
 	const supabase = await createSupbaseClient();
 	const { data: userData, error: userError } = await supabase.auth.getUser();
 	// from the table user_lang_pref select the pref lang based on the user_id
-	const { data: resp, error } = await supabase
-		.from('user_lang_pref')
-		.select('lang')
-		.eq('user_id', userData.user?.id);
 
-	if (error) {
-		console.error('getting user language faild', error);
+	let resp;
+	try {
+		const { data: langResp, error } = await supabase
+			.from('user_lang_pref')
+			.select('lang')
+			.eq('user_id', userData.user?.id);
+
+		resp = langResp || [];
+
+		// if (error) {
+		// 	console.error('getting user language faild', error);
+		// 	return 'eng';
+		// } else {
+		// 	// console.info('user pref lang is');
+		// 	// console.info(
+		// 	// 	resp[0]?.lang === undefined
+		// 	// 		? 'undefined, no such user lang pref exisist'
+		// 	// 		: resp[0].lang,
+		// 	// );
+		// }
+	} catch (e) {
+		console.info('no user_pref in data base, switching to english');
 		return 'eng';
-	} else {
-		console.info('user pref lang is');
-		console.info(
-			resp[0]?.lang === undefined
-				? 'undefined, no such user lang pref exisist'
-				: resp[0].lang,
-		);
 	}
+
 	try {
 		return resp[0].lang;
 	} catch (e) {
@@ -1367,3 +1378,19 @@ export const get_Information_About_Tasks_Projects_Members_For_CamelAI =
 
 		return state;
 	};
+export async function getAllProjects(org_id: string): Promise<IProjects[]> {
+	const supabase = await createSupbaseClient();
+
+	const { data: projects, error: err } = await supabase
+		.from('projects')
+		.select('*')
+		.eq('org_id', org_id)
+		.order('start_date', { ascending: false });
+
+	if (err) {
+		console.error('Error getting projects', err);
+		return [];
+	}
+
+	return projects;
+}

@@ -9,7 +9,7 @@ import {
 	PieChartDataElement,
 } from '@/lib/actions/dashboard';
 import getLang from '@/app/translations/translations';
-import { getLangPrefOfUser } from '@/lib/actions/client';
+import { getCookie, getLangPrefOfUser } from '@/lib/actions/client';
 function capitalizeFirstLetter(inputString: string): string {
 	return inputString.charAt(0).toUpperCase() + inputString.slice(1);
 }
@@ -18,10 +18,17 @@ function PieChart(props: { className: string }) {
 	const { className } = props;
 	const [chartData, setChartData] = useState<PieChartDataElement[]>([]);
 	const [lang, setLang] = useState('english');
+
+	const [org_id, setOrgId] = useState<string | null>(null);
+
 	useEffect(() => {
+		// Fetch org_id from cookie
+		const org_id = getCookie('org');
+		setOrgId(org_id);
+
 		// Asynchronously fetch data when the component mounts
 		const fetchData = async () => {
-			const data = await getFilteredCategoryPieChart(); // Ensure this function is implemented to fetch data from Supabase
+			const data = await getFilteredCategoryPieChart(org_id); // Ensure this function is implemented to fetch data from Supabase
 			setChartData(data);
 		};
 
@@ -34,6 +41,11 @@ function PieChart(props: { className: string }) {
 		getLanguage();
 	}, []);
 	useEffect(() => {
+		if (chartData.length === 0) {
+			// expects an object returned disposing christ.
+			return () => {};
+		}
+
 		// Create root element
 		const root = am5.Root.new('chartdiv1');
 
@@ -149,11 +161,27 @@ function PieChart(props: { className: string }) {
 
 		// Play initial series animation
 		series.appear(1000, 100);
-		console.log('PIE CHART DATA: ', chartData);
 
 		// Cleanup
 		return () => root.dispose();
-	}, [chartData]);
+	}, [chartData, org_id]);
+
+	if (chartData.length === 0) {
+		return (
+			<div
+				id="chartdiv1"
+				className={`${className} chart-no-data`}
+				style={{
+					width: '100%',
+					height: '100%',
+				}}
+			>
+				<p className="text-primary-green-500 text-lg">
+					No data is present 😕
+				</p>
+			</div>
+		);
+	}
 
 	return (
 		<div

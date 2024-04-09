@@ -1,10 +1,12 @@
 'use client';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import * as am5 from '@amcharts/amcharts5';
 import * as am5radar from '@amcharts/amcharts5/radar';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import { createSupbaseClient } from '@/lib/supabase/client';
+import { getCookie } from '@/lib/actions/client';
 
 interface ArcGaugeChartDataElement {
 	month: string;
@@ -22,74 +24,118 @@ function getMinMaxValue(data: ArcGaugeChartDataElement[]) {
 	return { min, max };
 }
 
-// Meh
-function getPercentageValue(data: ArcGaugeChartDataElement[], key: string) {
-	const convertObjectValues = Object.values(data).map(
-		element => element.value,
-	);
-	const max = Math.max(...convertObjectValues);
-
-	const idx = parseInt(key);
-
-	// const percentVal = (data[key].value * 100) / max;
-	const percentVal = (data[idx].value * 100) / max;
-	return percentVal;
-}
-
 // Guidance https://www.amcharts.com/demos/animated-gauge/
-const ArcGaugeChart = (props: {
-	data?: ArcGaugeChartDataElement[];
-	id: string;
-	className?: string;
-}) => {
+const ArcGaugeChart = (props: { id: string; className?: string }) => {
 	const [currentMonth, setCurrentMonth] = useState('January');
 	const [chartFill, setChartFill] = useState(0);
 	const [currentValue, setCurrentValue] = useState(0);
 
-	const updateMonth = (month: string) => {
-		setCurrentMonth(month);
-		const monthsArray = Object.entries(months).map(([key, value]) => ({
-			month: key,
-			value: value,
-		}));
-		const percentVal = getPercentageValue(monthsArray, month);
-		setChartFill(percentVal);
-		setCurrentValue(months[month as keyof typeof months]);
-	};
-
-	// fetch from API here
-	const months = {
+	const [months, setMonths] = useState({
 		January: 0,
-		February: 3000.25,
-		March: 15424.25,
-		April: 12345.86,
-		May: 17654.21,
-		June: 12345.86,
-		July: 12140.22,
-		August: 13589.12,
-		September: 12301.12,
-		October: 14435.86,
-		November: 12789.99,
-		December: 11215.94,
-	};
-
-	const monthsArray: ArcGaugeChartDataElement[] = Object.entries(months).map(
-		([month, value]) => {
-			return { month, value };
-		},
-	);
-
-	// get min and max values
-	const { min, max } = getMinMaxValue(monthsArray);
-
-	// convert object to object with percentage attributes TODO: implement filling chart dynamically
-	const newData = Object.entries(months).map(([month, value]) => {
-		const percent = (value / max) * 100;
-		return { month, value: percent };
+		February: 0,
+		March: 0,
+		April: 0,
+		May: 0,
+		June: 0,
+		July: 0,
+		August: 0,
+		September: 0,
+		October: 0,
+		November: 0,
+		December: 0,
 	});
 
-	const { data, id, className } = props;
-	useLayoutEffect(() => {
+	const [chartData, setChartData] = useState<
+		ArcGaugeChartDataElement[] | any[]
+	>([]);
+	const [org_id, setOrgId] = useState('');
+	const [max, setMax] = useState(0);
+	const [min, setMin] = useState(0);
+
+	useEffect(() => {
+		// get cookie
+		const cookie = getCookie('org');
+
+		// set org_id
+		setOrgId(cookie || '');
+	}, []);
+
+	useEffect(() => {
+		// fetch data from supabase
+
+		const fetchSalesData = async () => {
+			if (!org_id) {
+				return;
+			}
+			const supabase = await createSupbaseClient();
+			const { data, error } = await supabase
+				.from('receipts')
+				.select('*')
+				.eq('org_id', org_id);
+
+			if (error) {
+				console.error('Error fetching sales data', error);
+				return;
+			}
+
+			// Create a new months object to collect the data
+			const newMonths: any = { ...months };
+			// using the data, calculate the total spenditures for each month
+			data.forEach((receipt: any) => {
+				const date = new Date(receipt.created_at);
+				const month = date.toLocaleString('default', { month: 'long' });
+				const amount = receipt.price_total || 0;
+
+				// add to the months object
+				newMonths[month] = (newMonths[month] || 0) + amount;
+			});
+
+			const mnthArray: any[] = Object.entries(newMonths).map(
+				([month, value]) => {
+					return { month, value };
+				},
+			);
+			// get min and max values
+			const { min, max } = getMinMaxValue(mnthArray);
+			setMax(max);
+			setMin(min);
+
+			// convert object to object with percentage attributes TODO: implement filling chart dynamically
+			const newData = Object.entries(newMonths).map(
+				([month, value]: [string, any]) => {
+					const percent = (value / max) * 100;
+					return { month, value: percent };
+				},
+			);
+
+			setChartData(newMonths);
+
+			const monthsArray: ArcGaugeChartDataElement[] = Object.entries(
+				months,
+			).map(([month, value]) => {
+				return { month, value };
+			});
+		};
+
+		fetchSalesData();
+	}, [org_id]);
+
+	const updateMonth = (month: string) => {
+		setCurrentMonth(month);
+
+		// Find the percent value for the clicked month and update the state
+		const clickedMonthVal = chartData[month as keyof typeof chartData];
+		const percentVal = clickedMonthVal ? (clickedMonthVal * 100) / max : 0;
+
+		const value = clickedMonthVal || 0;
+		setCurrentValue(value);
+
+		setChartFill(percentVal);
+		setCurrentValue(clickedMonthVal || 0);
+	};
+
+	const { id, className } = props;
+	useEffect(() => {
 		// use this to mount the chart
 		// Create root element
 		// https://www.amcharts.com/docs/v5/getting-started/#Root_element
@@ -150,7 +196,7 @@ const ArcGaugeChart = (props: {
 				fontSize: '1.5em',
 				fill: am5.color(0x0000),
 				fontWeight: 'bold',
-				text: `$453.12`,
+				text: `$${currentValue}`,
 			}),
 		);
 
@@ -161,8 +207,7 @@ const ArcGaugeChart = (props: {
 			xAxis.makeDataItem({
 				above: true,
 				value: 0,
-				// endValue: chartFill, // TODO: dynamically have this value set based off incoming props
-				endValue: 70,
+				endValue: chartFill,
 			}),
 		);
 
@@ -194,10 +239,43 @@ const ArcGaugeChart = (props: {
 			forceHidden: true,
 		});
 
+		// Update chart dynamically when chartData changes
+		if (chartData && chartData.length > 0) {
+			// Update label text based on the current month
+			label.set(
+				'text',
+				chartData
+					.find(x => x.month === currentMonth)
+					?.value.toString() || '',
+			);
+
+			// Find the percent value for the current month
+			const currentPercent =
+				chartData.find(x => x.month === currentMonth)?.value || 0;
+
+			// Update the axis range dynamically
+			axisRange0.setAll({
+				endValue: currentPercent,
+			});
+		}
+
 		return () => {
 			root.dispose();
 		};
-	}, []);
+	}, [chartData, currentMonth]);
+
+	if (Object.keys(chartData).length === 0) {
+		return (
+			<div
+				id={id}
+				className="chart-container"
+			>
+				<p className="text-primary-green-500 text-lg">
+					No data is present 😕
+				</p>
+			</div>
+		);
+	}
 
 	return (
 		<>
@@ -210,7 +288,7 @@ const ArcGaugeChart = (props: {
 			<div
 				className={`flex justify-between text-sm border-gray-300 w-full border-t-2 p-2 flex-wrap `}
 			>
-				{Object.keys(months).map((month, idx) => (
+				{Object.keys(chartData).map((month, idx) => (
 					<span
 						key={idx}
 						onClick={() => updateMonth(month)}

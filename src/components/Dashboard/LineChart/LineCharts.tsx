@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
@@ -11,18 +11,66 @@ import {
 
 // helper functions
 import { generateRandomHexColor } from '@/utils/generalUtils';
+import { getCookie } from '@/lib/actions/client';
+import getLang from '@/app/translations/translations';
+import { getSpendingCategories } from '@/utils/dataUtils';
 
 function DoubleLineChart(props: {
-	data: DoubleLineChartDataElement[];
 	id: string;
 	filterType: 'year' | 'month' | 'week';
+	data: DoubleLineChartDataElement[];
 }) {
-	const { filterType, id } = props;
+	const { filterType, id, data } = props;
 
-	// TODO: incorporate this use. mockaroo I cant get incremental data values, which our API should return for date
-	const { data } = props;
+	const [org_id, setOrgId] = useState<string>('');
+	const [responseString, setResponseString] = useState<string>(
+		'No data is present 😕',
+	);
+
+	const [chartData, setChartData] = useState<DoubleLineChartDataElement[]>(
+		[],
+	);
 
 	useEffect(() => {
+		// setChartData(data);
+
+		// get the users cookie
+		const cookie = getCookie('org');
+
+		setOrgId(cookie || '');
+	}, []);
+
+	useEffect(() => {
+		if (!data || data?.length <= 2) {
+			setResponseString('Not enough data to display 😕');
+			return;
+		}
+
+		setChartData(data);
+	}, [data]);
+
+	// useEffect(() => {
+	// 	if (org_id !== '') {
+	// 		const fetchData = async () => {
+	// 			const data: DoubleLineChartDataElement[] =
+	// 				await getDoubleLineChartData(org_id);
+
+	// 			// convert the arrays objects date key to a string representation
+	// 			if (data.length < 2) {
+	// 				setResponseString('Not enough data to display');
+	// 				return;
+	// 			}
+	// 			setChartData(data);
+	// 		};
+
+	// 		fetchData();
+	// 	}
+	// }, [org_id]);
+
+	useEffect(() => {
+		if (!chartData || chartData.length <= 2) {
+			return () => {};
+		}
 		const root = am5.Root.new(`${id}`, {});
 
 		// Set themes
@@ -33,34 +81,6 @@ function DoubleLineChart(props: {
 			dateFormat: 'yyyy',
 			dateFields: ['valueX'],
 		});
-
-		const data: DoubleLineChartDataElement[] = [
-			{
-				date: '2012-01-01',
-				value: 8,
-				value2: 5,
-			},
-			{
-				date: '2012-01-02',
-				value: 6,
-				value2: 7,
-			},
-			{
-				date: '2012-01-03',
-				value: 12,
-				value2: 10,
-			},
-			{
-				date: '2012-01-04',
-				value: 14,
-				value2: 11,
-			},
-			{
-				date: '2012-01-05',
-				value: 11,
-				value2: 6,
-			},
-		];
 
 		// Create chart
 		// https://www.amcharts.com/docs/v5/charts/xy-chart/
@@ -139,7 +159,7 @@ function DoubleLineChart(props: {
 			dateFormat: 'yyyy-MM-dd',
 			dateFields: ['date'],
 		});
-		series.data.setAll(data);
+		series.data.setAll(chartData);
 
 		// Add series
 		// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
@@ -164,12 +184,25 @@ function DoubleLineChart(props: {
 			dateFormat: 'yyyy-MM-dd',
 			dateFields: ['date'],
 		});
-		series2.data.setAll(data);
+		series2.data.setAll(chartData);
 
 		return () => {
 			root.dispose();
 		};
-	}, []);
+	}, [chartData]);
+
+	if (!chartData || chartData.length === 0) {
+		return (
+			<div
+				id={id}
+				className="double-chart-container"
+			>
+				<p className="text-primary-green-500 text-lg">
+					{responseString}
+				</p>
+			</div>
+		);
+	}
 
 	return (
 		<div
@@ -189,8 +222,21 @@ function SingleLineChart(props: {
 
 	// TODO: API call rout eshould return data as incremental values for the date
 	const { data } = props;
+	const [chartData, setChartData] = useState<SingleLineChartDataElement[]>(
+		[],
+	);
+	useEffect(() => {
+		if (!data || data.length === 0) {
+			return;
+		}
+		setChartData(data);
+	}, [data]);
 
 	useEffect(() => {
+		if (!chartData || chartData?.length < 2) {
+			return () => {};
+		}
+
 		const root = am5.Root.new(`${id}`, {});
 		// Set themes
 		// https://www.amcharts.com/docs/v5/concepts/themes/
@@ -279,7 +325,7 @@ function SingleLineChart(props: {
 			dateFormat: 'yyyy-MM-dd',
 			dateFields: ['date'],
 		});
-		series.data.setAll(data);
+		series.data.setAll(chartData);
 
 		// Add cursor
 		// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
@@ -293,7 +339,7 @@ function SingleLineChart(props: {
 		return () => {
 			root.dispose();
 		};
-	}, []);
+	}, [chartData]);
 
 	return (
 		<div
@@ -304,4 +350,71 @@ function SingleLineChart(props: {
 	);
 }
 
-export { SingleLineChart, DoubleLineChart };
+const SingleLineChartComponent = (props: {
+	id: string;
+	filterType: 'year' | 'month' | 'week';
+	idx: number;
+	lang: string;
+}) => {
+	const { id, idx, lang } = props;
+
+	const [org_id, setOrgId] = useState<string>('');
+	const [category, setCategory] = useState<{
+		category: string;
+		total: number;
+		data: SingleLineChartDataElement[];
+	}>({
+		category: '',
+		total: 0,
+		data: [],
+	});
+
+	useEffect(() => {
+		// get the users cookie
+		const cookie = getCookie('org');
+
+		setOrgId(cookie || '');
+	}, []);
+
+	useEffect(() => {
+		if (org_id !== '') {
+			const fetchData = async () => {
+				const categoriesData = await getSpendingCategories(org_id);
+				const category = categoriesData[idx];
+
+				setCategory(category);
+			};
+
+			fetchData();
+		}
+	}, [idx, org_id]);
+
+	if (!category || !category.data || category?.data?.length === 0) {
+		return (
+			<div
+				id={id}
+				className="chart-container"
+			>
+				<p className="text-primary-green-500 text-lg">
+					No data is present 😕
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<>
+			<span className="title">
+				<span>{getLang(category.category, lang)}</span>
+			</span>
+			<span className="amount">${category?.total || '0'}</span>
+			<SingleLineChart
+				data={category.data}
+				filterType={`week`}
+				id={id}
+			/>
+		</>
+	);
+};
+
+export { SingleLineChart, DoubleLineChart, SingleLineChartComponent };
