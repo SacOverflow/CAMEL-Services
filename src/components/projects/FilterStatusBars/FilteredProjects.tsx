@@ -4,12 +4,12 @@ import AddCard from '@/components/projects/AddCard';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import StatusBar from '@/components/projects/StatusBar/StatusBar';
 import { IProjects, Roles, Status } from '@/types/database.interface';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // CSS imports
+import getLang from '@/app/translations/translations';
 import '@/components/SharedComponents/InputComponent.css';
 import { getLangPrefOfUser } from '@/lib/actions/client';
 import translations from '../../../app/translations/language.json';
-import getLang from '@/app/translations/translations';
 export default function FilteredProjects({
 	projects,
 	role,
@@ -141,7 +141,7 @@ export default function FilteredProjects({
 			<div className="flex flex-col h-screen overflow-y-auto">
 				<div>
 					<div className="flex-grow overflow-y-auto text-default-text h-full">
-						<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-7 m-8">
+						<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-8">
 							{/* create new project if they have perms */}
 							{role === Roles.SUPERVISOR ||
 							role === Roles.ADMIN ? (
