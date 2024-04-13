@@ -815,7 +815,7 @@ const deleteOrganization = async (org_id: string, member_id: string) => {
 Get All receipts based on project ID
 returns a sorted reciept lists based on newest to oldest date of creation.
 project id required*/
-const getAllReceiptsByProject = async (project_id: string) => {
+export const getAllReceiptsByProject = async (project_id: string) => {
 	const supabase = await createSupbaseClient();
 	//If project Id is provided then query supabase api
 	if (project_id) {
@@ -842,7 +842,7 @@ const getAllReceiptsByProject = async (project_id: string) => {
 Get All receipts based on organization ID
 returns a sorted reciept lists based on newest to oldest date of creation.
 org id required*/
-const getAllReceiptsByOrganization = async (org_id: string) => {
+export const getAllReceiptsByOrganization = async (org_id: string) => {
 	const supabase = await createSupbaseClient();
 
 	//If org_id Id is provided then query supabase api
@@ -870,7 +870,7 @@ const getAllReceiptsByOrganization = async (org_id: string) => {
 Get All receipts based on user ID and project ID 
 returns a sorted reciept lists based on newest to oldest date of creation.
 user_id and project_id required*/
-const getAllReceiptsByUserAndProject = async (
+export const getAllReceiptsByUserAndProject = async (
 	user_id: string,
 	project_id: string,
 ) => {
@@ -905,7 +905,7 @@ const getAllReceiptsByUserAndProject = async (
 Get All receipts based on user ID and project ID 
 returns a sorted reciept lists based on newest to oldest date of creation.
 user_id and project_id required*/
-const getAllReceiptsByUserAndOrganization = async (
+export const getAllReceiptsByUserAndOrganization = async (
 	user_id: string,
 	org_id: string,
 ) => {
