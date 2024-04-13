@@ -1,18 +1,10 @@
-import {
-	//getTasks,
-	//getAllTasks,
-	createTask,
-	//getProjectMembersTasks,
-} from '../../src/lib/actions/client';
-import {
-	getAllTasks,
-	/* Ignore Activities for now */
-	//getMembersProjectActivities,
-	//getOrganizationProjectActivities,
-	//getProjectActivities,
-	getMemberTasks,
-} from '../../src/lib/actions/index';
 import '@testing-library/jest-dom';
+import { render } from '@testing-library/react';
+import {
+	createTask,
+	getProjectMembersTasks,
+} from '../../src/lib/actions/client';
+import { getAllTasks, getMemberTasks } from '../../src/lib/actions/index';
 import { Status } from '../../src/types/database.interface';
 
 require('dotenv').config({ path: 'test.env' });
@@ -221,5 +213,83 @@ describe('getMemberTasks', () => {
 			message:
 				'Invalid member or project ID. Failed to fetch member tasks',
 		});
+	});
+});
+
+describe('getProjectMembersTasks', () => {
+	beforeEach(() => {
+		jest.resetModules(); // Most important - it clears the cache
+		process.env = { ...OLD_ENV }; // Make a copy
+
+		jest.spyOn(console, 'error').mockImplementation(() => {}); // Suppress console.error
+		jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+	});
+
+	afterAll(() => {
+		process.env = OLD_ENV; // Restore old environment
+
+		jest.restoreAllMocks();
+	});
+
+	const userIds = [{ id: 123 }, { user: 321 }];
+	const users = [
+		{ id: 123, name: 'John Doe' },
+		{ id: 321, name: 'Joe Smith' },
+	];
+
+	jest.mock('@/lib/supabase/client', () => ({
+		createSupbaseClient: jest.fn(() => {
+			Promise.resolve({
+				from: jest.fn(() => ({
+					select: jest.fn(() => ({
+						eq: jest
+							.fn()
+							.mockImplementation((projectId, values) => {
+								if (projectId === process.env.PROJECT_ID!) {
+									return {
+										data: [{ id: 123 }, { id: 321 }],
+										error: null,
+									};
+								}
+								// Return mocked member IDs for the projects_member table
+								return {
+									data: [], // Mocked member IDs
+									error: null,
+								};
+							}),
+						in: jest.fn().mockImplementation((userId, values) => {
+							if (userId === userIds) {
+								return {
+									data: [{ id: 123, name: 'John Doe' }],
+									error: null,
+								};
+							}
+							// Return mocked member IDs for the projects_member table
+							return {
+								data: [], // Mocked member IDs
+								error: null,
+							};
+						}),
+					})),
+				})),
+			});
+		}),
+	}));
+
+	it('read all members on task', async () => {
+		const projectId: string = process.env.PROJECT_ID!;
+		const users = await getProjectMembersTasks(projectId);
+		const userOne = users[0];
+
+		expect(userOne.id).not.toBeNull();
+		expect(userOne.name).not.toBeNull();
+	});
+
+	it('members not on task, cannot view', async () => {
+		// Random projectId
+		const projectId: string = 'a273da34-7038-4ff6-b140-1317f8dc743C';
+		const users = await getProjectMembersTasks(projectId);
+
+		expect(users).toEqual([]);
 	});
 });
