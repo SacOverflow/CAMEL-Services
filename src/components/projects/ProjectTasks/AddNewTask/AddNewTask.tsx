@@ -77,7 +77,12 @@ const CreateTaskForm = ({ onSave }: CreateTaskFormProps) => {
 
 				{/* Created At */}
 				<div className="mb-4">
-					<label className="">{getLang('Created At', lang)}</label>
+					<label
+						className=""
+						htmlFor="createdAt"
+					>
+						{getLang('Created At', lang)}
+					</label>
 					<input
 						id="createdAt"
 						name="createdAt"
