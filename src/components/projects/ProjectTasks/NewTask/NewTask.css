@@ -53,7 +53,23 @@
 			@apply shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none;
 		}
 	}
+	text-area {
+		/* Text */
+		@apply sm:text-sm text-primary-green-500;
 
+		/* layout */
+		@apply block w-full bg-white;
+		/* styling */
+		@apply rounded-md;
+		@apply appearance-none ring-2 ring-primary-green-400;
+
+		/* layout styling */
+		@apply mt-2 px-3 h-10 shadow-sm w-full;
+
+		/* placeholder styling */
+		@apply placeholder:text-primary-green-400;
+		@apply focus:outline-none focus:ring-primary-green-700;
+	}
 	/* .task-member-input-badge {
 		@apply relative items-center gap-2;
 		@apply right-0;
