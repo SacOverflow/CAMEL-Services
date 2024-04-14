@@ -584,7 +584,7 @@ const ProjectActivityTimestamp = ({
 						viewBox="0 0 24 24"
 						strokeWidth={1.5}
 						stroke="currentColor"
-						className="w-6 h-6 stroke-red-300 hover:stroke-red-500 cursor-pointer transition-all duration-300 ease-in-out z-10"
+						className=" delete-button w-6 h-6 stroke-red-300 hover:stroke-red-500 cursor-pointer transition-all duration-300 ease-in-out z-10"
 						onClick={e => {
 							e.stopPropagation();
 							handleDelete(activity.id);
