@@ -71,6 +71,7 @@ export async function middleware(request: NextRequest) {
 		'/settings',
 		'/settings/*',
 		'/organization',
+		'invoices',
 		'/organization/*',
 	];
 	const unauthenticatedRoutes = [

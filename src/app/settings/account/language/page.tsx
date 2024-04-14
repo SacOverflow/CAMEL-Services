@@ -18,6 +18,7 @@ export default function Lagnuage() {
 	useEffect(() => {
 		const getLanguage = async () => {
 			const langPref = await getLangPrefOfUser();
+			console.log('got user info for testing and its ', langPref);
 			setUserPrefLang(langPref);
 		};
 		getLanguage();

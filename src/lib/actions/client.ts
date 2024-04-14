@@ -319,22 +319,6 @@ export async function getMembersinTask(task: ITasks) {
 	}
 }
 
-export async function addMembertoTask(task: ITasks, member_id: string) {
-	const supabase = await createSupbaseClient();
-
-	const { data, error } = await supabase
-		.from('tasks_member')
-		.select('*')
-		.eq('id', task.id);
-
-	if (error) {
-		console.error(error.message);
-		return false;
-	} else {
-		return true;
-	}
-}
-
 export async function removeMemberFromTask(task: ITasks, member_id: string) {
 	const supabase = await createSupbaseClient();
 
@@ -485,6 +469,7 @@ export async function deleteTask(task: ITasks) {
 
 export async function createTask(task: ITasks) {
 	const supabase = await createSupbaseClient();
+	const note = task?.notes || 'no notes';
 
 	// parse for creating whats needed
 	const newRow: any = {
@@ -492,6 +477,7 @@ export async function createTask(task: ITasks) {
 		title: task.title,
 		due_date: task.due_date,
 		project_id: task.project_id,
+		notes: note,
 	};
 
 	const { error } = await supabase.from('tasks').insert({ ...newRow });
@@ -1141,3 +1127,243 @@ export const getProjectById = async (project_id: string) => {
 
 	return true;
 };
+
+/**
+ *
+ * @returns financial state of the organization acorss all projects
+ */
+export const get_financial_state = async () => {
+	let state: String = 'No financial summary can be provided';
+	const client = await createSupbaseClient();
+	const { data, error: err } = await client.rpc('calculate_financials');
+
+	if (err) {
+		console.log(err);
+		return state;
+	} else {
+		console.log('got responce on financial summary ', data);
+	}
+
+	state = data;
+
+	return state;
+};
+
+/**
+ *
+ * @returns gets tasks information along side its members
+ */
+export const get_tasks_with_members_for_CAMELAI = async () => {
+	let state: String = 'No tasks summary can be provided';
+	const client = await createSupbaseClient();
+	const { data, error: err } = await client.rpc(
+		'get_tasks_with_members_for_camelai',
+	);
+
+	if (err) {
+		console.log(err);
+		return state;
+	} else {
+		console.log('got responce on tasks summary ', data);
+	}
+
+	state = data;
+
+	return state;
+};
+
+/**
+ *
+ * @param reciept
+ * @returns boolean if created returns true, else false
+ */
+export const createReciept = async (reciept: any) => {
+	// create org using user auth
+	const supabase = await createSupbaseClient();
+
+	// user info
+	const {
+		data: { user },
+		error,
+	} = await supabase.auth.getUser();
+
+	if (error) {
+		return;
+	}
+
+	reciept.created_by = user?.id;
+	// query to create new row entry
+	const { data: entryData, error: entryError } = await supabase
+		.from('receipts')
+		.insert([
+			{
+				...reciept,
+			},
+		]);
+
+	if (entryError) {
+		console.error('failed to create reciept');
+	} else {
+		console.error('reciept successfule');
+		return;
+	}
+};
+
+/**
+ *
+ * @param org_id not needed
+ * @param project_id needed
+ * @param member_id needed
+ * @returns boolean, true if successfule, false if not
+ */
+export const inviteProjectMemberForCamelAI = async ({
+	org_id,
+	project_id,
+	member_id,
+}: {
+	org_id?: string;
+	project_id: string;
+	member_id: string;
+}): Promise<boolean> => {
+	let resp = false;
+
+	const client = await createSupbaseClient();
+
+	const { data, error: err } = await client.from('projects_member').insert([
+		{
+			project_id: project_id,
+			user_id: member_id,
+		},
+	]);
+
+	if (err) {
+		console.log(err);
+		return resp;
+	} else {
+		console.log('got data from inviteProjectMemberForCamelAI ' + data);
+	}
+
+	resp = true;
+
+	return resp;
+};
+
+/**
+ *
+ * @param project_id needed
+ * @param member_id needed
+ * @returns boolean, true if successfule, false if not
+ */
+export async function removeProjectMemberForCamelAI({
+	project_id,
+	member_id,
+}: {
+	project_id: string;
+	member_id: string;
+}) {
+	const supabase = await createSupbaseClient();
+
+	// remove user from projects_member table
+	const { error } = await supabase
+		.from('projects_member')
+		.delete()
+		.eq('project_id', project_id)
+		.eq('user_id', member_id);
+
+	if (error) {
+		alert('failed');
+		console.error('Error removing project member', error);
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ *
+ * @param task_id needed
+ * @param member_id needed
+ * @returns boolean, true if successfule, false if not
+ */
+export async function addMembertoTaskForCamelAI({
+	task_id,
+	member_id,
+	project_id,
+}: {
+	task_id: string;
+	member_id: string;
+	project_id: string;
+}) {
+	const supabase = await createSupbaseClient();
+
+	let resp = false;
+
+	const client = await createSupbaseClient();
+
+	const { data, error: err } = await client.from('tasks_member').insert([
+		{
+			project_id: project_id,
+			user_id: member_id,
+			task_id: task_id,
+		},
+	]);
+
+	if (err) {
+		console.log(err);
+		return resp;
+	}
+
+	resp = true;
+	return resp;
+}
+
+export async function removeMemberFromTaskForCamelAI({
+	task_id,
+	member_id,
+}: {
+	task_id: string;
+	member_id: string;
+}) {
+	const supabase = await createSupbaseClient();
+
+	const { error } = await supabase
+		.from('tasks_member')
+		.delete()
+		.eq('user_id', member_id)
+		.eq('task_id', task_id);
+
+	if (error) {
+		console.error(JSON.stringify(error));
+		return false;
+	} else {
+		return true;
+	}
+}
+
+//get_information_about_tasks_projects_members
+
+//get_information_about_tasks_projects_members_for_camel
+
+/**
+ *
+ * @returns gets projects, tasks, members information
+ */
+export const get_Information_About_Tasks_Projects_Members_For_CamelAI =
+	async () => {
+		let state: String = 'No tasks summary can be provided';
+		const client = await createSupbaseClient();
+		const { data, error: err } = await client.rpc(
+			'get_information_about_tasks_projects_members_for_camel',
+		);
+
+		if (err) {
+			console.log(err);
+			return state;
+		} else {
+			console.log('got responce on tasks summary ', data);
+		}
+
+		state = data;
+
+		return state;
+	};

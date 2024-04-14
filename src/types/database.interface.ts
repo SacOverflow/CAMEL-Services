@@ -69,6 +69,7 @@ export interface ITasks {
 	due_date: Date;
 	completed_date: Date;
 	created_at: Date;
+	notes?: string;
 }
 
 export interface ITasks_member {
