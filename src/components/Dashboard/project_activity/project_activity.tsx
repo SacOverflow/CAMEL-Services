@@ -31,6 +31,11 @@ interface ActivityElement {
 	age: string;
 }
 
+interface ProjectActivityProps {
+	activites: IProject_Activities[];
+	currUser: IUsers;
+}
+
 const Months = [
 	'Jan',
 	'Feb',
