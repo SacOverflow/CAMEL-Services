@@ -1138,6 +1138,25 @@ export const getProjectById = async (project_id: string) => {
 
 	return true;
 };
+export const getProjectDetailsById = async (
+	project_id: string,
+): Promise<IProjects | null> => {
+	const supabase = await createSupbaseClient();
+
+	// query db to create new entry
+	const { data: entryData, error: entryError } = await supabase
+		.from('projects')
+		.select('*')
+		.eq('id', project_id)
+		.single();
+
+	// if there is an error, console error message
+	if (entryError) {
+		return null;
+	}
+
+	return entryData as IProjects;
+};
 
 /**
  *
@@ -1394,3 +1413,56 @@ export async function getAllProjects(org_id: string): Promise<IProjects[]> {
 
 	return projects;
 }
+
+export const getReceiptsForProject = async (
+	project_id: string,
+): Promise<IReceipts[]> => {
+	const supabase = await createSupbaseClient();
+
+	const { data: receipts, error } = await supabase
+		.from('receipts')
+		.select('*')
+		.eq('proj_id', project_id)
+		// .order('created_at', { ascending: false });
+		.order('price_total', { ascending: false });
+
+	if (error) {
+		console.error('Failed to fetch receipts:', error);
+		return [];
+	}
+
+	return receipts;
+};
+
+export const getReceiptsForProjectByGroup = async (
+	projects: IReceipts[],
+	column: string,
+) => {
+	// check if the column is valid
+	if (['store', 'category'].indexOf(column) === -1) {
+		console.info('Invalid column name');
+		return [];
+	}
+
+	// return an arry of receipts grouped by the specific column
+
+	let groupedReceipts: any;
+	if (column === 'store') {
+		groupedReceipts = Object.groupBy(projects, ({ store }) => store);
+	} else {
+		groupedReceipts = Object.groupBy(projects, ({ category }) => category);
+	}
+
+	for (const key in groupedReceipts) {
+		groupedReceipts[key] = {
+			receipts: groupedReceipts[key],
+			total: groupedReceipts[key]?.reduce(
+				(acc: number, { price_total }: { price_total: number }) =>
+					acc + price_total,
+				0,
+			),
+		};
+	}
+
+	return groupedReceipts;
+};

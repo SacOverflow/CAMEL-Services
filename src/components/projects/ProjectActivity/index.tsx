@@ -10,26 +10,20 @@ import {
 	editProjectActivity,
 } from '@/lib/actions/client';
 import getLang from '@/app/translations/translations';
-function capitalizeFirstLetterOfEachWord(str:string) {
-	return str
-	  .split(' ')
-	  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-	  .join(' ');
-  }
-  
+
 export default function ProjectActivityModal({
 	project_id,
 	project,
 	closeModal,
 	readMode = true,
-	lang
+	lang,
 }: {
 	project_id: string;
 	project?: IProject_Activities;
 	closeModal: () => void;
 	// readmode default true
 	readMode: boolean;
-	lang?:string;
+	lang?: string;
 }) {
 	const [activity, setActivity] = useState<IProject_Activities>({
 		id: project?.id || '',
@@ -159,34 +153,6 @@ export default function ProjectActivityModal({
 	const editActivity = async (activity: IProject_Activities) => {
 		// const supabase = await createSupbaseClient();
 
-		// Function to format timestamp as UTC string
-		const formatTimestampUTC = (date: Date) => {
-			// check if date is valid
-			if (typeof date === 'string') {
-				date = new Date(date);
-			}
-			if (isNaN(date.getTime())) {
-				console.log('error: ', 'date is invalid');
-			}
-
-			// Get UTC date components; format to store in ISO
-			const year = date.getFullYear();
-			const month = date.getMonth() + 1; // Month is zero-based, so add 1
-			const day = date.getDate();
-			const hours = date.getHours();
-			const minutes = date.getMinutes();
-			const seconds = date.getSeconds();
-
-			// Format as YYYY-MM-DD HH:MM:SS
-			return `${year}-${month.toString().padStart(2, '0')}-${day
-				.toString()
-				.padStart(2, '0')} ${hours
-				.toString()
-				.padStart(2, '0')}:${minutes
-				.toString()
-				.padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-		};
-
 		// validate the object
 		// utilize both insert data and activity, but overwrite with just
 		const response = await editProjectActivity(activity, project_id);
@@ -263,7 +229,9 @@ export default function ProjectActivityModal({
 					onSubmit={handleSubmit}
 				>
 					<div className="input-field">
-						<label htmlFor="Statuses">{getLang("Status",lang?lang:"english")}</label>
+						<label htmlFor="Statuses">
+							{getLang('Status', lang ? lang : 'english')}
+						</label>
 
 						<div className="status-labels">
 							<button
@@ -277,7 +245,7 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.Complete);
 								}}
 							>
-								{getLang("Completed",lang?lang:"english")}
+								{getLang('Completed', lang ? lang : 'english')}
 							</button>
 							<button
 								className={`status-button in-progress ${
@@ -290,7 +258,10 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.InProgress);
 								}}
 							>
-								{getLang("In Progress",lang?lang:"english")}
+								{getLang(
+									'In Progress',
+									lang ? lang : 'english',
+								)}
 							</button>
 							<button
 								className={`status-button needs-approval ${
@@ -303,7 +274,10 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.NeedsApproval);
 								}}
 							>
-								{getLang("Needs Approval",lang?lang:"english")}
+								{getLang(
+									'Needs Approval',
+									lang ? lang : 'english',
+								)}
 							</button>
 							<button
 								className={`status-button action-needed ${
@@ -317,12 +291,17 @@ export default function ProjectActivityModal({
 									handleStatusChange(Status.ActionNeeded);
 								}}
 							>
-								{getLang("Action Needed",lang?lang:"english")}
+								{getLang(
+									'Action Needed',
+									lang ? lang : 'english',
+								)}
 							</button>
 						</div>
 					</div>
 					<div className="input-field">
-						<label htmlFor="notes">{getLang("Notes",lang?lang:"english")}</label>
+						<label htmlFor="notes">
+							{getLang('Notes', lang ? lang : 'english')}
+						</label>
 						<textarea
 							name="notes"
 							id="notes"
@@ -337,7 +316,9 @@ export default function ProjectActivityModal({
 					<div className="time-inputs-container ">
 						{/* date */}
 						<div className="input-field w-3/6">
-							<label htmlFor="date">{getLang("Date",lang?lang:"english")}</label>
+							<label htmlFor="date">
+								{getLang('Date', lang ? lang : 'english')}
+							</label>
 							<input
 								type="date"
 								name="date"
@@ -348,7 +329,9 @@ export default function ProjectActivityModal({
 							/>
 						</div>
 						<div className="input-field w-2/6">
-							<label htmlFor="start-time">{getLang("Time",lang?lang:"english")}</label>
+							<label htmlFor="start-time">
+								{getLang('Time', lang ? lang : 'english')}
+							</label>
 							<input
 								type="time"
 								name="start-time"
@@ -361,13 +344,15 @@ export default function ProjectActivityModal({
 							/>
 						</div>
 
-						<div className="input-field w-1/6">
-							<label htmlFor="duration">{getLang("Duration",lang?lang:"english")}</label>
+						<div className="input-field md:w-1/6">
+							<label htmlFor="duration">
+								{getLang('Duration', lang ? lang : 'english')}
+							</label>
 							<DurationInput
 								duration={activity.duration}
 								durationEvent={handleDurationChange}
 								readMode={readMode}
-								lang={lang?lang:"english"}
+								lang={lang ? lang : 'english'}
 							/>
 						</div>
 					</div>
@@ -390,7 +375,7 @@ export default function ProjectActivityModal({
 						</button>
 						{readMode ? null : (
 							<button className="btn btn-primary btn-large">
-								{getLang("Submit",lang?lang:"english")}
+								{getLang('Submit', lang ? lang : 'english')}
 							</button>
 						)}
 					</div>
@@ -404,7 +389,7 @@ const DurationInput = ({
 	duration,
 	durationEvent,
 	readMode = true,
-	lang
+	lang,
 }: {
 	duration: number;
 	durationEvent: (duration: number) => void;
@@ -466,7 +451,8 @@ const DurationInput = ({
 						key={index}
 						value={index}
 					>
-						{index * 15} {getLang("Minutes",lang?lang:"english")}
+						{index * 15}{' '}
+						{getLang('Minutes', lang ? lang : 'english')}
 					</option>
 				))}
 			</select>
@@ -474,10 +460,13 @@ const DurationInput = ({
 	);
 };
 
-export const AddProjectActivity = ({ project_id, lang }: {
-	 project_id: string ;
-	 lang?: string;
-	}) => {
+export const AddProjectActivity = ({
+	project_id,
+	lang,
+}: {
+	project_id: string;
+	lang?: string;
+}) => {
 	const [showModal, setShowModal] = useState(false);
 
 	const openModal = () => {

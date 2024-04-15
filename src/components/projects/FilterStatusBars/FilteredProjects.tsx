@@ -8,7 +8,6 @@ import { IProjects, Roles, Status } from '@/types/database.interface';
 import getLang from '@/app/translations/translations';
 import '@/components/SharedComponents/InputComponent.css';
 import { getLangPrefOfUser } from '@/lib/actions/client';
-import translations from '../../../app/translations/language.json';
 
 // Define the type for the component props
 interface FilteredProjectsProps {
@@ -67,6 +66,20 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 				: setSearchQueryInternal(query);
 			retrieveFilteredProjects &&
 				retrieveFilteredProjects(currSelected, query);
+
+			// if search query is empty, reset filtered projects to all projects
+			if (!query) {
+				setFilteredProjects(projects);
+			}
+
+			const searchQuery = query.toLowerCase();
+			const filteredProjects = projects.filter(project => {
+				return (
+					project.title.toLowerCase().includes(searchQuery) ||
+					project.address.toLowerCase().includes(searchQuery)
+				);
+			});
+			setFilteredProjects(filteredProjects);
 		}
 	};
 

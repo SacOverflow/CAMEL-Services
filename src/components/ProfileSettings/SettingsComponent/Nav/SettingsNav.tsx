@@ -13,7 +13,7 @@ const SettingsItemNav = ({ title, href, icon }: SettingsNavItem) => {
 	return (
 		<a
 			className="settings-item"
-			href={`settings/${href}`}
+			href={`${href}`}
 		>
 			{/* icon */}
 			<div className="content">

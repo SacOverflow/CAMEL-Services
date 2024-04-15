@@ -46,6 +46,10 @@
 		.project-attachments {
 			@apply flex flex-col gap-2;
 		}
+
+		.project-expenses {
+			@apply flex flex-col gap-2;
+		}
 	}
 	.project-tasks {
 		/* hashem */

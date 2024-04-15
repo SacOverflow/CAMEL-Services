@@ -3,14 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { fetchProjectData } from '@/lib/actions/project_csv';
-import { BeakerIcon } from '@heroicons/react/24/solid';
-import {
-	ProjectData,
-	ReceiptData,
-	OverviewData,
-	TotalSpentRow,
-	MonthData,
-} from '@/lib/actions/project_csv';
+import { ProjectData } from '@/lib/actions/project_csv';
 
 interface DownloadExcelButtonProps {
 	project_id: string;
@@ -29,7 +22,7 @@ const DownloadExcelButton: React.FC<DownloadExcelButtonProps> = ({
 			setProjectDetails(data);
 		}
 
-		loadData().catch(console.error);
+		loadData().catch();
 	}, [project_id]);
 
 	const handleDownloadExcel = () => {
