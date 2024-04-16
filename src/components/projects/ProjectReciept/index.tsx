@@ -8,6 +8,8 @@ import { createSupbaseClient } from '@/lib/supabase/client';
 import getLang from '@/app/translations/translations';
 import { getLangPrefOfUser } from '@/lib/actions/client';
 
+import { tessearctImageOCR } from '@/lib/actions/OCR_actions';
+
 const ReceiptModal = ({
 	project_id,
 	org_id,
@@ -22,9 +24,6 @@ const ReceiptModal = ({
 	readMode: boolean;
 }) => {
 	const DEFAULT_IMAGE = '';
-	const [receiptFile, setReceiptFile] = useState<File | null>(null);
-	const [error, setError] = useState('');
-	const [items, setItems] = useState([]);
 	const [image, setImage] = useState<any>([]);
 	const [imageURL, setImageURL] = useState(DEFAULT_IMAGE);
 	const [createFlag, setCreateFlag] = useState(false);
@@ -39,17 +38,18 @@ const ReceiptModal = ({
 	const [reciept, setReciept] = useState<IReceipts | any>({
 		proj_id: project_id,
 		org_id: org_id,
-		// img_id: 'some-img-id',
 		img_id: '',
-		store: 'store',
+		store: '',
 		category: 'category',
 		updated_by: null,
 		updated_at: new Date(),
 		created_by: user_id,
 		created_at: new Date(),
-		price_total: 100.0,
+		price_total: null,
 		note: '',
 	});
+
+	const [receiptLoader, setReceiptLoader] = useState<boolean>(false);
 
 	const handleChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | any>,
@@ -75,6 +75,7 @@ const ReceiptModal = ({
 
 		// if date isnt valid return todays
 		if (isNaN(d.getTime())) {
+			console.log('date obj');
 			return new Date().toISOString().split('T')[0];
 		}
 		// // return in ISO format
@@ -87,22 +88,49 @@ const ReceiptModal = ({
 		return d.toISOString().split('T')[0];
 	};
 
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const receiptCheckPass = () => {
+		const hasAllFields =
+			!reciept.proj_id ||
+			!reciept.org_id ||
+			!reciept.img_id ||
+			!reciept.store ||
+			!reciept.category ||
+			// !reciept.updated_by ||
+			!reciept.created_by ||
+			!reciept.created_at ||
+			!reciept.price_total;
+
+		if (hasAllFields) {
+			return false;
+		}
+
+		return true;
+	};
+
+	const handleFileChange = async (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
 		if (!event.target.files) {
 			return;
 		}
 
 		setImage(event.target.files[0]);
 		setImageURL(URL.createObjectURL(event.target.files[0]));
-		setReceiptFile(event.target.files ? event.target.files[0] : null);
+
+		setReceiptLoader(true);
+
+		const { total, confidence, store } = await tessearctImageOCR(
+			URL.createObjectURL(event.target.files[0]),
+		);
+		setReceiptLoader(false);
+
+		setReciept((prevReciept: any) => ({
+			...prevReciept,
+			price_total: total,
+			store: store,
+		}));
 	};
 
-	const handleSubmitForm = async (e: any) => {
-		e.preventDefault();
-
-		// upload image
-		await createReciept(e);
-	};
 	const createReciept = async (e: any) => {
 		// create org using user auth
 		const supabase = await createSupbaseClient();
@@ -130,7 +158,7 @@ const ReceiptModal = ({
 			// upload image to storage
 			const { data, error } = await supabase.storage
 				.from('profile-avatars')
-				.upload(`public/${hash}`, image, {
+				.upload(`receipts/${hash}`, image, {
 					cacheControl: '3600',
 				});
 
@@ -157,6 +185,20 @@ const ReceiptModal = ({
 			setImageURL(publicUrl);
 		}
 		reciept.created_by = user?.id;
+		reciept.img_id = newURL || imageURL;
+		const pass = receiptCheckPass();
+		if (!pass) {
+			setErrorMessage({
+				error: true,
+				errorMessage:
+					'failed to upload reciept, please ensure all fields are filled',
+				errorCode: 400,
+			});
+			return;
+		}
+
+		// captilize to have consistency on store
+		reciept.store = reciept.store?.toUpperCase();
 		// query to create new row entry
 		const { data: entryData, error: entryError } = await supabase
 			.from('receipts')
@@ -167,26 +209,8 @@ const ReceiptModal = ({
 				},
 			]);
 
-		// entryError
-		//     ? setErrorMessage({
-		//         error: true,
-		//         errorMessage: entryError?.message,
-		//         errorCode: entryError?.code,
-		//     })
-		//     : setErrorMessage({
-		//         error: false,
-		//         errorMessage: 'no errors to report',
-		//         errorCode: 200,
-		//     });
-		// entryError
-		//     ? setError('Reciept creation failed due to unknown ')
-		//     : setErrorMessage({
-		//         error: false,
-		//         errorMessage: 'no errors to report',
-		//         errorCode: 200,
-		//     });
 		if (entryError) {
-			setError('Reciept creation failed due to unknown ');
+			console.error(entryError);
 		} else {
 			setErrorMessage({
 				error: false,
@@ -212,12 +236,15 @@ const ReceiptModal = ({
 	return (
 		<div className="project-receipts-modal">
 			<div className="project-receipts-container">
-				<div className="flex flex-row justify-center items-center w-full h-full">
-					<div className="bg-white p-4 rounded-md border border-gray-300 my-4 m-auto ">
-						<h1 className="text-center font-bold text-xl">
+				<div className="flex flex-row justify-center items-center overflow-hidden">
+					<div className="bg-white p-4 rounded-md border border-gray-300 my-4">
+						<h1 className="receipt-upload-title">
 							{getLang('Upload Receipt', user_lang)}
 						</h1>
-						<form onSubmit={() => {}}>
+						<form
+							onSubmit={() => {}}
+							className={`${receiptLoader ? 'hidden' : ''}`}
+						>
 							<div className="form-uploader">
 								<input
 									type="file"
@@ -226,20 +253,12 @@ const ReceiptModal = ({
 								/>
 							</div>
 						</form>
-						<div className="flex flex-col gap-4 text-xl">
-							{/* <button
-                        style={{
-                            padding: '10px',
-                            backgroundColor: '#5A8472',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                        }}
-                    >
-                        Scan Receipt
-                    </button> */}
+						<ReceiptLoaderComp
+							className={`${!receiptLoader ? 'hidden' : ''}`}
+						/>
+						<div className="input-form-fields">
 							<input
-								className="p-4 border border-gray-300 rounded-md"
+								className="input-fields"
 								placeholder="Store"
 								value={reciept?.store}
 								name="store"
@@ -247,7 +266,7 @@ const ReceiptModal = ({
 							/>
 							<div className="flex flex-row gap-4">
 								<input
-									className="p-4 border border-gray-300 rounded-md"
+									className="input-fields"
 									onChange={handleChange}
 									name="price_total"
 									placeholder="Price/Total"
@@ -256,7 +275,7 @@ const ReceiptModal = ({
 								/>
 							</div>
 							<input
-								className="p-4 border border-gray-300 rounded-md"
+								className="input-fields"
 								// place holder be todays date
 								placeholder={getDateFormat(reciept?.updated_at)}
 								value={getDateFormat(reciept?.updated_at)}
@@ -267,7 +286,7 @@ const ReceiptModal = ({
 							<span> {getLang('Category', user_lang)}</span>
 							<select
 								name="category"
-								className="p-4 rounded-md text-white bg-[#5A8472]"
+								className="category-select"
 								onChange={handleChange}
 							>
 								<option value="">
@@ -326,23 +345,23 @@ const ReceiptModal = ({
 								</option>
 							</select>
 							<textarea
-								className="p-4 border border-gray-300 rounded-md h-32"
+								className="input-fields h-32"
 								placeholder="Notes"
 								name="note"
 								value={reciept?.note}
 								onChange={handleChange}
 							/>
-							<div className="flex gap-4">
+							<div className="receipts-btns">
 								<button
 									onClick={closeModal}
-									className="flex-1 p-4 bg-white text-black border border-gray-300 rounded-md"
+									className="cancel-btn"
 								>
 									{errorRe.errorCode === 200
 										? getLang('Close', user_lang)
 										: getLang('Cancel', user_lang)}
 								</button>
 								<button
-									className="flex-1 p-4 bg-[#5A8472] text-white border border-gray-300 rounded-md"
+									className="submit-btn"
 									onClick={() => {
 										setCreateFlag(true);
 										createReciept('')
@@ -364,7 +383,7 @@ const ReceiptModal = ({
 								</button>
 							</div>
 							{errorRe.errorCode === 200 && (
-								<span>
+								<span className="text-center">
 									{getLang(
 										'Receipt uploaded successfully 🎉🥳!',
 										user_lang,
@@ -372,7 +391,7 @@ const ReceiptModal = ({
 								</span>
 							)}
 							{errorRe.error && (
-								<span>
+								<span className="text-center">
 									{getLang(
 										'Oops something went wrong: errorCode',
 										user_lang,
@@ -439,5 +458,26 @@ export const AddProjectReciept = ({
 				/>
 			) : null}
 		</>
+	);
+};
+
+const ReceiptLoaderComp = ({ className }: { className: string }) => {
+	return (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+			strokeWidth={1.5}
+			stroke="currentColor"
+			className={`loader-receipt-icon w-6 h-6 animate-spin text-center mx-auto ${
+				className || ''
+			}`}
+		>
+			<path
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+			/>
+		</svg>
 	);
 };

@@ -193,6 +193,8 @@ export default function ReceiptPage() {
 			});
 			return false;
 		}
+		reciept.store = reciept.store?.toUpperCase();
+
 		// query to create new row entry
 		const { data: entryData, error: entryError } = await supabase
 			.from('receipts')
