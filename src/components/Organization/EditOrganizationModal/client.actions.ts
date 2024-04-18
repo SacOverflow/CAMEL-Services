@@ -92,7 +92,8 @@ export const editOrganization = async (
 				image: imageURL,
 			},
 		])
-		.eq('id', orgId);
+		.eq('id', orgId)
+		.select();
 
 	if (
 		entryError?.message ===

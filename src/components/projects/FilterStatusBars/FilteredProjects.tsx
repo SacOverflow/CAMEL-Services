@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AddCard from '@/components/projects/AddCard';
+import { default as AddNewProjectCard } from '@/components/projects/AddCard';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import StatusBar from '@/components/projects/StatusBar/StatusBar';
 import { IProjects, Roles, Status } from '@/types/database.interface';
@@ -54,6 +54,11 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 				: [...prevSelected, status];
 			retrieveFilteredProjects &&
 				retrieveFilteredProjects(updatedSelected, searchQuery);
+
+			const filteredProjects = projects.filter(project => {
+				return updatedSelected.includes(project.status);
+			});
+			setFilteredProjects(filteredProjects);
 			return updatedSelected;
 		});
 	};
@@ -75,7 +80,7 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 			const searchQuery = query.toLowerCase();
 			const filteredProjects = projects.filter(project => {
 				return (
-					project.title.toLowerCase().includes(searchQuery) ||
+					project.title.toLowerCase().includes(searchQuery) &&
 					project.address.toLowerCase().includes(searchQuery)
 				);
 			});
@@ -126,12 +131,6 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 						}}
 						active={currSelected.includes(Status.ActionNeeded)}
 					/>
-					{/* <input
-                	type="search"
-                	placeholder="Search"
-                	className='input-forms max-w-40 border-4 outline-4'
-					onKeyDown={onSearchKeyDown}
-            		/> */}
 					{/* this all a single component */}
 				</div>
 				<input
@@ -139,6 +138,12 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 					placeholder="Search"
 					className="input-forms max-w-40 outline-4"
 					onKeyDown={onSearchKeyDown}
+					onChange={e => {
+						if (e.target.value === '') {
+							setSearchQueryInternal('');
+							setFilteredProjects(projects);
+						}
+					}}
 				/>
 			</div>
 			<div className="flex flex-row flex-wrap justify-start text-white overflow-x-auto md:hidden">
@@ -182,7 +187,7 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 				<div className="flex-grow overflow-y-auto text-default-text h-full">
 					<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-8">
 						{role === Roles.SUPERVISOR || role === Roles.ADMIN ? (
-							<AddCard org_id={org} />
+							<AddNewProjectCard org_id={org} />
 						) : null}
 						{filteredProjects.length ? (
 							filteredProjects.map(project => (

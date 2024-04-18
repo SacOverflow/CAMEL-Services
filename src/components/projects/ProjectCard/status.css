@@ -30,4 +30,43 @@
 			@apply bg-red-700 hover:bg-red-800;
 		}
 	}
+
+	.project-cards {
+		@apply relative;
+		@apply flex flex-col;
+		@apply bg-gray-100 hover:bg-gray-300;
+		@apply rounded-md shadow-lg p-3 m-2;
+		@apply transition-all duration-500 ease-in-out;
+
+		/* hover effect */
+		&:hover {
+			.edit-container {
+				@apply flex;
+			}
+		}
+
+		.project-edit-icon {
+			@apply w-6 h-6;
+			@apply stroke-primary-green-700;
+
+			@apply transition-all duration-500 ease-in-out;
+			@apply hover:stroke-primary-green-900;
+		}
+
+		.project-delete-icon {
+			@apply w-6 h-6;
+			@apply stroke-red-600;
+
+			@apply transition-all duration-500 ease-in-out;
+			@apply hover:stroke-red-800;
+		}
+	}
+	/* edit svg for editing project */
+	.edit-container {
+		@apply flex justify-end absolute top-1 right-2;
+		@apply gap-2;
+
+		@apply transition-all duration-500 ease-in-out;
+		@apply hidden;
+	}
 }

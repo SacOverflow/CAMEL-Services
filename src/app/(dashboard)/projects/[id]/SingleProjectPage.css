@@ -5,6 +5,7 @@
 		@apply flex flex-col gap-y-4;
 		/* NOTE: handle below accorindlgy, fixes to sidenavbar */
 		@apply md:max-w-[80vw];
+		@apply w-full;
 
 		@apply p-5;
 

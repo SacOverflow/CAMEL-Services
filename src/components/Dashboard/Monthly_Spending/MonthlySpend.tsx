@@ -4,6 +4,7 @@
 import './MonthlySpending.css';
 import { useEffect, useState } from 'react';
 import { fetchMonthlySpendingData } from '@/lib/actions/dashboard';
+import { getCookie } from '@/lib/actions/client';
 
 //Interface categorizing data by its type
 interface SpendingData {
@@ -34,11 +35,19 @@ function formatNumber(num: number): string {
 //Functional Component to display monthly spending data
 const MonthlySpending = () => {
 	const [data, setData] = useState<SpendingData[]>([]);
+	const [orgId, setOrgId] = useState<string>('');
 	//Example data of spending data array
 	useEffect(() => {
+		const orgID = getCookie('org');
+		setOrgId(orgID);
+	}, []);
+	useEffect(() => {
+		if (!orgId) {
+			return;
+		}
 		// Function to fetch data and update state
 		const loadData = async () => {
-			const fetchedData = await fetchMonthlySpendingData();
+			const fetchedData = await fetchMonthlySpendingData(orgId);
 
 			// fetched data filter top 5 based off of total
 			fetchedData.sort((a, b) => b.total - a.total);
@@ -46,9 +55,8 @@ const MonthlySpending = () => {
 
 			setData(fetchedData);
 		};
-
 		loadData();
-	}, []);
+	}, [orgId]);
 
 	// check if data not present
 	if (data.length === 0) {

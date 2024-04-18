@@ -119,7 +119,7 @@ export default function ReceiptPage() {
 	const handleFileChange = async (
 		event: React.ChangeEvent<HTMLInputElement>,
 	) => {
-		if (!event.target.files) {
+		if (!event.target.files || !event.target.files[0]) {
 			return;
 		}
 
@@ -135,7 +135,7 @@ export default function ReceiptPage() {
 
 		setReciept((prevReciept: any) => ({
 			...prevReciept,
-			price_total: total,
+			price_total: total.toFixed(2),
 			store: store,
 		}));
 
@@ -212,6 +212,8 @@ export default function ReceiptPage() {
 			});
 			return false;
 		}
+		reciept.store = reciept.store?.toUpperCase();
+
 		// query to create new row entry
 		const { data: entryData, error: entryError } = await supabase
 			.from('receipts')

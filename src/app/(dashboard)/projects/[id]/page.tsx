@@ -187,7 +187,11 @@ export default async function SingleProjectPage({
 					/>
 				</div>
 
-				<RecieptList proj_id={project_id} />
+				<RecieptList
+					proj_id={project_id}
+					role={role}
+					user={currUser}
+				/>
 			</div>
 
 			<div className="project-activity">

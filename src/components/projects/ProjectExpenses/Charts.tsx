@@ -189,18 +189,23 @@ const ProjectExpensesCharts = ({
 	// state for the chart data
 	const [chartData, setChartData] = useState<any>([]);
 
-	const formatNumber = (num: number) => {
+	const formatNumber = (num: number): string => {
+		// negative values
+		if (num < 0) {
+			return `-${formatNumber(Math.abs(num))}`;
+		}
+		// return the value in $XXX,XXX.XX format
 		// return , separate at numbers, but if num len > 7 providing suffixes
+
 		if (num > 999999) {
 			return `${(num / 1000000).toFixed(1)}M`;
-		} else if (num > 999) {
-			return num.toLocaleString();
-		} else if (num < 0) {
-			num = Math.abs(num);
-			num = formatNumber(num) as number;
-			return `-${num.toLocaleString()}`;
+		} else if (num >= 1000) {
+			return num.toLocaleString(undefined, {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			});
 		} else {
-			return num;
+			return num.toFixed(2);
 		}
 	};
 

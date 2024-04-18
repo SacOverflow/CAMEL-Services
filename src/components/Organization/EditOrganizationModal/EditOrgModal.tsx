@@ -11,11 +11,11 @@ import { editOrganization, updateImage } from './client.actions';
 export default function EditOrgModal({
 	clickHandler,
 	organization,
-	lang
+	lang,
 }: {
 	clickHandler: () => void;
 	organization: IOrgEdit;
-	lang?:string; 
+	lang?: string;
 }) {
 	const [formData, setFormData] = useState({
 		orgName: organization.name,
@@ -29,6 +29,8 @@ export default function EditOrgModal({
 	const [imageURL, setImageURL] = useState(PREVIOUS_IMAGE);
 	const [orgError, setOrgError] = useState('');
 
+	const [imageChanged, setImageChanged] = useState(false);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
 			...formData,
@@ -41,6 +43,8 @@ export default function EditOrgModal({
 			return;
 		}
 
+		setImageChanged(true);
+
 		setImage(e.target.files[0]);
 		setImageURL(URL.createObjectURL(e.target.files[0]));
 	};
@@ -49,12 +53,23 @@ export default function EditOrgModal({
 		e.preventDefault();
 
 		// upload image
-		const {
-			data: newURL,
-			success,
-			error: imageError,
-			errorMessage,
-		} = await updateImage(imageURL, image);
+		let newURL = organization.image;
+		if (imageChanged) {
+			const {
+				data: imgURL,
+				success,
+				error: imageError,
+				errorMessage,
+			} = await updateImage(imageURL, image);
+
+			if (imageError) {
+				setOrgError(errorMessage);
+				return;
+			}
+
+			setImageURL(imgURL);
+			newURL = imgURL;
+		}
 
 		const {
 			data: orgData,
@@ -81,7 +96,10 @@ export default function EditOrgModal({
 		<>
 			<div className="organization-modal w-full">
 				<div className="header-section">
-					<span className="title">{getLang("Edit",lang?lang:"english")} {getLang("Organization",lang?lang:"english")}</span>
+					<span className="title">
+						{getLang('Edit', lang ? lang : 'english')}{' '}
+						{getLang('Organization', lang ? lang : 'english')}
+					</span>
 				</div>
 
 				<form className="form-section flex flex-col gap-2">
@@ -116,13 +134,13 @@ export default function EditOrgModal({
 							className="cancel-button"
 							onClick={clickHandler}
 						>
-							{getLang("Cancel",lang?lang:"english")}
+							{getLang('Cancel', lang ? lang : 'english')}
 						</button>
 						<button
 							className="create-button"
 							onClick={editOrganizationHandler}
 						>
-							{getLang("Submit",lang?lang:"english")}
+							{getLang('Submit', lang ? lang : 'english')}
 						</button>
 					</div>
 				</form>

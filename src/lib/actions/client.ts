@@ -1466,3 +1466,58 @@ export const getReceiptsForProjectByGroup = async (
 
 	return groupedReceipts;
 };
+
+/**
+ * 	Function to delete a project
+ *
+ * @param project_id The project id we are wishing to delete
+ *
+ * @returns boolean indicating if the project was deleted successfully
+ */
+export const deleteProject = async (project_id: string): Promise<boolean> => {
+	const supabase = await createSupbaseClient();
+	const { data: deleteProj, error: deleteProjError } = await supabase
+		.from('projects')
+		.delete()
+		.eq('id', project_id);
+
+	if (deleteProjError) {
+		console.error('Error deleting project', deleteProjError);
+		return false;
+	}
+
+	return true;
+};
+
+export const editReceipt = async (receiptInfo: IReceipts) => {
+	console.log('info for receipt: ', receiptInfo);
+	const supabase = await createSupbaseClient();
+	const { data, error } = await supabase
+		.from('receipts')
+		.update({
+			...receiptInfo,
+		})
+		.eq('id', receiptInfo.id);
+
+	if (error) {
+		console.error('Error updating receipt:', error);
+		return false;
+	}
+
+	return true;
+};
+
+export const deleteReceipt = async (receipt_id: string) => {
+	const supaBase = await createSupbaseClient();
+	const { error } = await supaBase
+		.from('receipts')
+		.delete()
+		.eq('id', receipt_id);
+
+	if (error) {
+		console.error('Error deleting receipt:', error);
+		return false;
+	}
+
+	return true;
+};

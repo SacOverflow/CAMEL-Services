@@ -36,6 +36,7 @@
 		@apply flex flex-row gap-x-5 w-full items-stretch;
 		/* height */
 		/* @apply h-2/6; */
+		@apply min-h-[20rem];
 
 		/* bottom 2/3 of charts */
 		.revenues-chart,
@@ -70,6 +71,11 @@
 
 		.project-activity {
 			@apply w-4/6 self-stretch;
+
+			/* very first child */
+			> div {
+				@apply max-w-none !important;
+			}
 		}
 	}
 
@@ -78,6 +84,7 @@
 
 		@apply flex flex-col items-stretch;
 		@apply min-h-[100px];
+		@apply h-full !important;
 	}
 
 	.charts-title {

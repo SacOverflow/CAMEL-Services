@@ -20,7 +20,11 @@ import {
 	getLangPrefOfUser,
 } from '@/lib/actions';
 import { cookies } from 'next/headers';
-import { IOrganization, IProject_Activities } from '@/types/database.interface';
+import {
+	IOrganization,
+	IProject_Activities,
+	Roles,
+} from '@/types/database.interface';
 import { redirect } from 'next/navigation';
 
 const DashboardPage = async () => {
@@ -44,7 +48,7 @@ const DashboardPage = async () => {
 	}
 
 	// check if the user's role is admin for this org else redirect them to the /projects page
-	if (role !== 'admin') {
+	if (role !== Roles.ADMIN) {
 		redirect('/projects');
 	}
 
