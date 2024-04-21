@@ -56,7 +56,11 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 				retrieveFilteredProjects(updatedSelected, searchQuery);
 
 			const filteredProjects = projects.filter(project => {
-				return updatedSelected.includes(project.status);
+				return (
+					updatedSelected.includes(project.status) &&
+					(project.title.toLowerCase().includes(searchQuery) ||
+						project.address.toLowerCase().includes(searchQuery))
+				);
 			});
 			setFilteredProjects(filteredProjects);
 			return updatedSelected;
@@ -80,7 +84,7 @@ const FilteredProjects: React.FC<FilteredProjectsProps> = ({
 			const searchQuery = query.toLowerCase();
 			const filteredProjects = projects.filter(project => {
 				return (
-					project.title.toLowerCase().includes(searchQuery) &&
+					project.title.toLowerCase().includes(searchQuery) ||
 					project.address.toLowerCase().includes(searchQuery)
 				);
 			});

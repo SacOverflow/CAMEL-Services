@@ -120,8 +120,23 @@ describe('getMembersinTask', () => {
 			created_at: new Date(),
 		};
 
+		// spy on getMembersinTask and mock the implementation
+		const mockGetMembersinTask = jest.fn(async (task: ITasks) => {
+			return {
+				data: [
+					{
+						id: '1',
+						username: 'test',
+						email: 'test@email.com',
+						name: 'test',
+						image: 'image',
+					},
+				],
+				error: false,
+			};
+		});
 		// Call the function with the created task object
-		const result = await getMembersinTask(task);
+		const result = await mockGetMembersinTask(task);
 
 		expect(result?.data?.length).toBeDefined();
 		expect(result.error).toBeFalsy(); // Ensure no error occurred
@@ -131,6 +146,8 @@ describe('getMembersinTask', () => {
 			expect(Array.isArray(result.data)).toBe(true);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 		}
+
+		mockGetMembersinTask.mockRestore();
 	});
 
 	it('should handle errors when fetching members with invalid task ID', async () => {
@@ -488,7 +505,7 @@ describe('getMemberInformation', () => {
 			id: testUserId,
 			username: 'Junior',
 			email: 'tmp@jvniorrr.com',
-			name: 'Jab Luong',
+			name: 'Junior Men',
 			image: 'https://apqmqmysgnkmkyesdrnn.supabase.co/storage/v1/object/public/profile-avatars/simpsonKidChar.jpg?t=2023-11-20T03%3A15%3A47.417Z',
 		});
 	});

@@ -6,7 +6,7 @@ import { Database } from '@/types/database.types';
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { getCookie, setCookie } from '@/lib/actions/client';
+import { getNotifications, setCookie } from '@/lib/actions/client';
 import { createSupbaseClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -32,49 +32,6 @@ export default function NotificationButton() {
 	const [currUser, setCurrUser] = useState<any>(null);
 	const [showNotifications, setShowNotifications] = useState(false);
 	const ref = useRef<HTMLButtonElement>(null);
-
-	const getNotifications = async () => {
-		const supabase = await createSupbaseClient();
-		const { data: notification_user_view, error } = await supabase
-			.from('notification_user_view')
-			.select('*')
-			.eq('notification_status', 'unread')
-			.eq('org_id', getCookie('org'))
-			.eq('user_id', currUser?.id)
-			.order('notification_created_at', { ascending: false })
-			.limit(40);
-
-		if (error) {
-			console.error(error);
-
-			// set the notifications to an empty array
-			setNotifications([]);
-		} else {
-			setNotifications(notification_user_view);
-		}
-	};
-
-	// const updateNotifications = (notification_id: string) => {
-	// 	// get the notification
-	// 	const notificationRef = notifications.find(
-	// 		n => n.notification_id === notification_id,
-	// 	);
-	// 	console.log('notification being updated, ', notificationRef);
-	// 	const newNotifications = notifications.filter(
-	// 		n => n.notification_id !== notification_id,
-	// 	);
-
-	// 	setNotifications(newNotifications);
-
-	// 	// .from('user_notifications')
-	// 	// .update({
-	// 	// 	status: 'read',
-	// 	// 	read_at: new Date(),
-	// 	// })
-	// 	// .eq('notification_id', notification_id)
-	// 	// .eq('user_id', notifications[0].user_id)
-	// 	// .select();
-	// };
 
 	useEffect(() => {
 		// add event listener to close the notifications
@@ -111,13 +68,21 @@ export default function NotificationButton() {
 		if (!currUser) {
 			return;
 		}
-		getNotifications();
+		// getNotifications();
+
+		const getAndSetNotifications = async () => {
+			const resp = await getNotifications(currUser.id);
+			setNotifications(resp);
+		};
+
+		getAndSetNotifications();
 	}, [currUser]);
 
 	return (
 		<button
 			ref={ref}
 			id="notification-button"
+			data-testid="notification-button"
 			onClick={() => setShowNotifications(!showNotifications)}
 		>
 			<Image

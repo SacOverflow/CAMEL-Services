@@ -14,14 +14,20 @@ import {
 } from '@/lib/actions/dashboard';
 import getLang from '@/app/translations/translations';
 import { getCookie, getLangPrefOfUser } from '@/lib/actions/client';
-function capitalizeFirstLetter(inputString: string): string {
-	return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-}
 
 function PieChart(props: { className: string }) {
 	const { className } = props;
 	const [chartData, setChartData] = useState<PieChartDataElement[]>([]);
 	const [lang, setLang] = useState('english');
+
+	/**
+	 * Function to capitalize the first letter of a string
+	 * @param inputString string to capitalize
+	 * @returns string with first letter capitalized
+	 */
+	function capitalizeFirstLetter(inputString: string): string {
+		return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+	}
 
 	// To be used to display the category with the highest value on actions
 	const [selectedCategory, setSelectedCategory] = useState({
