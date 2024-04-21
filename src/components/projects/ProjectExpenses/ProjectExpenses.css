@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+
+@layer base {
+	#project-expenses {
+		@apply flex flex-col;
+		@apply overflow-hidden;
+
+		.header {
+			font-size: clamp(1.5rem, 2vw, 2rem);
+			@apply font-bold;
+		}
+	}
+
+	.projects-charts {
+		@apply flex gap-2 items-center justify-center;
+
+		.project-info {
+			@apply flex flex-col gap-2 items-start justify-center;
+			@apply w-1/2 max-w-[50%];
+			@apply overflow-hidden;
+
+			.budgets {
+				@apply flex gap-2 items-center justify-center;
+
+				/* left side */
+				.revenue-icon {
+					@apply stroke-green-600;
+					@apply w-auto h-full;
+				}
+
+				/* right side */
+				.budgets {
+					@apply flex flex-col gap-1 items-start justify-center;
+					@apply w-1/2;
+					font-size: clamp(0.65rem, 2vw, 1.75rem);
+
+					.budget-title {
+						@apply text-green-600;
+						@apply uppercase;
+						@apply md:whitespace-nowrap overflow-ellipsis overflow-hidden;
+					}
+
+					.revenue-earnings-amount,
+					.initial-budget,
+					.revenue-net-profit,
+					.remaining-budget {
+						@apply text-primary-green-700 capitalize;
+						@apply whitespace-nowrap overflow-ellipsis overflow-hidden;
+					}
+
+					.gross-revenue,
+					.budget-num,
+					.net-profit {
+						@apply text-gray-400;
+					}
+
+					.usage,
+					.allocation {
+						@apply text-green-600/90;
+						font-size: clamp(0.5rem, 2vw, 1rem);
+						@apply font-light;
+						@apply tracking-wider;
+						@apply whitespace-nowrap overflow-ellipsis overflow-hidden;
+					}
+				}
+			}
+
+			.expenses {
+				@apply flex gap-2 items-center justify-center;
+
+				.expenses-icon {
+					@apply stroke-red-800;
+					@apply w-auto h-full;
+				}
+
+				/* right side */
+				.expenses {
+					@apply flex flex-col gap-1 items-start justify-center;
+					@apply w-1/2;
+					font-size: clamp(0.65rem, 2vw, 1.75rem);
+
+					.expenses-title {
+						@apply text-red-400;
+						@apply uppercase;
+						@apply md:whitespace-nowrap overflow-ellipsis overflow-hidden;
+					}
+
+					.total-expenses-amount,
+					.store-costs {
+						@apply text-red-800 capitalize;
+						@apply whitespace-nowrap overflow-ellipsis overflow-hidden;
+					}
+
+					.expenses-total,
+					.store-costs-ammounts {
+						@apply text-gray-400;
+					}
+
+					.time-expenses {
+						@apply text-red-400/90;
+						font-size: clamp(0.5rem, 2vw, 1rem);
+						@apply font-light;
+						@apply tracking-wider;
+						@apply whitespace-nowrap overflow-ellipsis overflow-hidden;
+					}
+				}
+			}
+		}
+	}
+
+	.bar-chart {
+		@apply w-1/2 h-full;
+		@apply flex flex-col items-start md:items-center justify-center;
+		@apply overflow-hidden;
+
+		.chart-title {
+			@apply text-center;
+			font-size: clamp(1rem, 2vw, 2rem);
+			@apply text-primary-green-900;
+			@apply md:whitespace-nowrap overflow-ellipsis overflow-hidden;
+		}
+
+		#chartdiv {
+			height: 20rem !important;
+			@apply md:h-full !important;
+		}
+	}
+}

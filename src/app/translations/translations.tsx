@@ -9,7 +9,7 @@ const translation: any = translations;
 const getLang = (key: string, lang: string) => {
 	//IF word doesnt exist, return the passed word
 	if (!translation[key]) {
-		console.error(`Translation key "${key}" not found.`);
+		// console.error(`Translation key "${key}" not found.`);
 		return key;
 	}
 	// If the language doesnt exist but the word does, then return the english reference of it

@@ -23,7 +23,6 @@ export const NewProjectModal = ({
 		projectLocation: '',
 		projectStartDate: '',
 		projectEndDate: '',
-		projectAssignedMembers: '',
 		projectCreator: '',
 		projectCreatedDate: '',
 	});
@@ -302,20 +301,6 @@ export const NewProjectModal = ({
 							value={formData.projectEndDate}
 							onChange={handleChange}
 							required={true}
-						/>
-						<InputComponent
-							label="projectAssignedMembers"
-							labelText={getLang(
-								'Assigned Members',
-								lang ? lang : 'english',
-							)}
-							type="text"
-							id="projectAssignedMembers"
-							placeholder="Assigned Members"
-							value={formData.projectAssignedMembers}
-							onChange={handleChange}
-							required={true}
-							className="mb-4"
 						/>
 						{error && (
 							<span className="text-primary-red-300 text-center">

@@ -44,11 +44,7 @@ export default async function MemberProjects({
 	const projectTasks: ITasks[] | any = await getMemberTasks(
 		userId,
 		projectId,
-	).then(res => {
-		console.log('tasks got', res);
-
-		return res ? res.data : [];
-	});
+	);
 	// if there is no cookie association with the user for the org, redirect to the organization page
 	if (!org) {
 		redirect('/organization');

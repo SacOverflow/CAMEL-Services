@@ -10,26 +10,24 @@ import {
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Poppins } from 'next/font/google';
-import translations from '../../../translations/language.json';
 
 // CSS import
 import './SingleProjectPage.css';
 import ProjectActivity from '@/components/Dashboard/project_activity/project_activity';
 import ProjectMemberPagination from '@/components/projects/ProjectMemberCard/ProjectMemberPagination';
 import { SearchBar } from '@/components/projects/ProjectMemberCard/AddMemberInteraction';
-import ProjectAttachments from '@/components/projects/ProjectAttachments';
 import { AddProjectActivity } from '@/components/projects/ProjectActivity';
 import { IUsers, Roles } from '@/types/database.interface';
 
 // import { AddProjectReciept } from '@/components/projects/ProjectReciept';
 import { TasksSectionContainer } from '@/components/projects/ProjectTasks/server';
 import { SearchBar as AddNewTaskButton } from '@/components/projects/ProjectTasks/AddNewTask/index';
-import * as XLSX from 'xlsx';
 import DownloadExcelButton from '@/components/projects/excel_download_component/DownloadExcelButton.client';
 
 import RecieptList from '@/components/Invoices/ProjectReceiptList/recieptList';
 import { AddProjectReciept } from '@/components/projects/ProjectReciept';
 import getLang from '@/app/translations/translations';
+import ProjectExpenses from '@/components/projects/ProjectExpenses';
 const PoppinsSemiBold = Poppins({
 	subsets: ['latin-ext'],
 	weight: ['600'],
@@ -62,8 +60,6 @@ export default async function SingleProjectPage({
 	if (!orgAndProjectAssociation) {
 		redirect('/projects');
 	}
-	// Temp fix but will need to define its own interface ---FIX ME HELOO WOLRD ~Hashem Jaber
-	const translation: any = translations;
 
 	const {
 		id: project_id,
@@ -191,7 +187,11 @@ export default async function SingleProjectPage({
 					/>
 				</div>
 
-				<RecieptList proj_id={project_id} />
+				<RecieptList
+					proj_id={project_id}
+					role={role}
+					user={currUser}
+				/>
 			</div>
 
 			<div className="project-activity">
@@ -223,7 +223,7 @@ export default async function SingleProjectPage({
 				/>
 			</div>
 
-			<div className="project-attachments">
+			{/* <div className="project-attachments">
 				<div className="title">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -242,7 +242,7 @@ export default async function SingleProjectPage({
 					</span>
 				</div>
 				<ProjectAttachments />
-			</div>
+			</div> */}
 
 			<div className="project-expenses">
 				<div className="title">
@@ -260,6 +260,10 @@ export default async function SingleProjectPage({
 					</svg>
 					<span>{getLang('Project Expenses', langPref)}</span>
 				</div>
+				<ProjectExpenses
+					project_id={project_id}
+					lang={langPref}
+				/>
 			</div>
 		</div>
 	);

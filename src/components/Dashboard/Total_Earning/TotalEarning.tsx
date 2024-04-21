@@ -71,7 +71,7 @@ const TotalEarning = ({ org_id, lang }: { org_id: string; lang: string }) => {
 				<>
 					<div className="earning-header">
 						<div className="earning-title">
-							{getLang('Total Earning', lang)}
+							{getLang('Total Organization Budgets', lang)}
 						</div>
 					</div>
 					<div className="earning-format">

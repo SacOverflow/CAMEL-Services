@@ -172,11 +172,14 @@ export async function getFilteredTotalEarningWidget(
 	// return previous spent month/year
 }
 
-export async function fetchMonthlySpendingData(): Promise<SpendingData[]> {
+export async function fetchMonthlySpendingData(
+	orgId: string,
+): Promise<SpendingData[]> {
 	const supabase = await createSupbaseClient();
 	const { data: receipts, error } = await supabase
 		.from('receipts')
-		.select('store, price_total');
+		.select('store, price_total')
+		.eq('org_id', orgId);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -522,7 +525,10 @@ export const getDoubleLineChartData = async (
 
 		return (chartData as any) || [];
 	} catch (error) {
-		console.error('Error fetching double line charts data.', error);
+		console.error(
+			'Error fetching double line charts data. Likely not enough data present',
+			error,
+		);
 		return [] as any;
 	}
 };

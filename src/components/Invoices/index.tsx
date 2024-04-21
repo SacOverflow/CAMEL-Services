@@ -11,6 +11,8 @@ import {
 } from '@/lib/actions/client';
 import getLang from '@/app/translations/translations';
 
+import { tessearctImageOCR } from '@/lib/actions/OCR_actions';
+
 export default function ReceiptPage() {
 	const DEFAULT_IMAGE =
 		'https://apqmqmysgnkmkyesdrnn.supabase.co/storage/v1/object/public/profile-avatars/wyncoservices.png';
@@ -26,6 +28,7 @@ export default function ReceiptPage() {
 	}>({ error: false, errorMessage: 'No error for now', errorCode: 100 });
 
 	const [projects, setProjects] = useState<IProjects[]>([]);
+	const [receiptLoader, setReceiptLoader] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getuserLang = async () => {
@@ -113,13 +116,29 @@ export default function ReceiptPage() {
 		return `${year}-${month}-${day}`;
 	};
 
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (!event.target.files) {
+	const handleFileChange = async (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		if (!event.target.files || !event.target.files[0]) {
 			return;
 		}
 
 		setImage(event.target.files[0]);
 		setImageURL(URL.createObjectURL(event.target.files[0]));
+
+		setReceiptLoader(true);
+
+		const { total, confidence, store } = await tessearctImageOCR(
+			URL.createObjectURL(event.target.files[0]),
+		);
+		setReceiptLoader(false);
+
+		setReciept((prevReciept: any) => ({
+			...prevReciept,
+			price_total: total.toFixed(2),
+			store: store,
+		}));
+
 		setReceiptFile(event.target.files ? event.target.files[0] : null);
 	};
 
@@ -193,6 +212,8 @@ export default function ReceiptPage() {
 			});
 			return false;
 		}
+		reciept.store = reciept.store?.toUpperCase();
+
 		// query to create new row entry
 		const { data: entryData, error: entryError } = await supabase
 			.from('receipts')
@@ -239,6 +260,27 @@ export default function ReceiptPage() {
 		return resp;
 	};
 
+	const ReceiptLoaderComp = ({ className }: { className: string }) => {
+		return (
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				strokeWidth={1.5}
+				stroke="currentColor"
+				className={`loader-receipt-icon w-6 h-6 animate-spin text-center mx-auto ${
+					className || ''
+				}`}
+			>
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+				/>
+			</svg>
+		);
+	};
+
 	return (
 		<div className="receipts-input-form-container mx-auto max-w-[14rem] md:max-w-none">
 			<div className="receipts-input-form flex flex-col gap-2  bg-white rounded-md my-5 p-4 ">
@@ -248,7 +290,9 @@ export default function ReceiptPage() {
 
 				<form
 					onSubmit={() => {}}
-					className="flex flex-col gap-4"
+					className={`flex flex-col gap-4 ${
+						receiptLoader ? 'hidden' : ''
+					}`}
 				>
 					<input
 						type="file"
@@ -256,6 +300,9 @@ export default function ReceiptPage() {
 						className="mb-4"
 					/>
 				</form>
+				<ReceiptLoaderComp
+					className={`${!receiptLoader ? 'hidden' : ''}`}
+				/>
 				<div className="flex flex-col gap-4">
 					<input
 						className="p-2 md:p-4 border border-gray-300 rounded-md"

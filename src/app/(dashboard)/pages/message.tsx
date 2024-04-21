@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 const linkify = (text: string) => {
@@ -39,8 +40,9 @@ const Message = ({ text, isUser }: { text: string; isUser: boolean }) => {
 		margin: '5px',
 	};
 
-	const imagePath = '../../../public/images/CAMELIA.png';
-	console.log(`Image path: ${imagePath}`);
+	// const imagePath = '../../../public/images/CAMELIA.png';
+	const imagePath = '/images/camel.svg';
+	// console.log(`Image path: ${imagePath}`);
 	const processedText = linkify(text);
 	return (
 		<>
@@ -48,7 +50,14 @@ const Message = ({ text, isUser }: { text: string; isUser: boolean }) => {
 				<div style={messageStyle}>{text}</div>
 			) : (
 				<div className="flex flex-row">
-					<img
+					<Image
+						src={imagePath}
+						alt={"Camelia's profile picture"}
+						className="w-[50px] h-[50px] mr-2 rounded-[50%] object-cover"
+						width={50}
+						height={50}
+					/>
+					{/* <img
 						src={'https://en.pimg.jp/102/478/233/1/102478233.jpg'}
 						style={{
 							width: '50px',
@@ -57,7 +66,7 @@ const Message = ({ text, isUser }: { text: string; isUser: boolean }) => {
 							borderRadius: '50%',
 							objectFit: 'cover',
 						}}
-					></img>
+					></img> */}
 					<div
 						style={aiMessageStyle}
 						className="bg-primary-green-700"

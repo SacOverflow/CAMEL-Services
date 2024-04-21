@@ -374,6 +374,11 @@
     "viet": "Tổng thu nhập",
     "spanish": "Ingresos totales"
   },
+  "Total Organization Budgets": {
+    "english": "Total Organization Budgets",
+    "viet": "Tổng ngân sách tổ chức",
+    "spanish": "Presupuestos organizativos totales"
+  },
   "Project Details": {
     "english": "Project Details",
     "viet": "Chi tiết dự án",
@@ -493,5 +498,60 @@
     "english": "First Name",
     "viet": "Tên",
     "spanish": "Nombre"
+  },
+  "Project Budget": {
+    "english": "Project Budget",
+    "viet": "Ngân sách dự án",
+    "spanish": "Presupuesto del proyecto"
+  },
+  "Initial Budget": {
+    "english": "Initial Budget",
+    "viet": "Ngân sách ban đầu",
+    "spanish": "Presupuesto inicial"
+  },
+  "Project Budget Allocation": {
+    "english": "Project Budget Allocation",
+    "viet": "Phân bổ ngân sách dự án",
+    "spanish": "Asignación de presupuesto del proyecto"
+  },
+  "Budget Remaining": {
+    "english": "Budget Remaining",
+    "viet": "Ngân sách còn lại",
+    "spanish": "Presupuesto restante"
+  },
+  "Project Budget Usage": {
+    "english": "Project Budget Usage",
+    "viet": "Sử dụng ngân sách dự án",
+    "spanish": "Uso del presupuesto del proyecto"
+  },
+  "Total Expenses": {
+    "english": "Total Expenses",
+    "viet": "Tổng chi phí",
+    "spanish": "Gastos totales"
+  },
+  "Projects Expenses": {
+    "english": "Projects Expenses",
+    "viet": "Chi phí dự án",
+    "spanish": "Gastos de proyectos"
+  },
+  "Top Store Costs": {
+    "english": "Top Store Costs",
+    "viet": "Chi phí cửa hàng hàng đầu",
+    "spanish": "Costos de tienda principales"
+  },
+  "Top 10 Store Expenses": {
+    "english": "Top 10 Store Expenses",
+    "viet": "10 Chi phí cửa hàng hàng đầu",
+    "spanish": "10 Gastos de tienda principales"
+  },
+  "No data is present": {
+    "english": "No data is present 😕",
+    "viet": "Không có dữ liệu",
+    "spanish": "No hay datos presentes"
+  },
+  "No data available": {
+    "english": "No data available",
+    "viet": "Không có dữ liệu",
+    "spanish": "No hay datos disponibles"
   }
 }

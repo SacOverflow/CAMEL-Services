@@ -1,0 +1,64 @@
+@tailwind base;
+
+@layer base {
+	.receipt-cards-container {
+		@apply container mx-auto p-4;
+	}
+	/* inner container for  */
+	.receipts-scroll-container {
+		@apply flex overflow-x-auto;
+		/* @apply scroll-snap-x; */
+	}
+
+	.receipt-card {
+		@apply flex flex-col items-center;
+		@apply w-80 relative;
+		@apply bg-white rounded-lg shadow-lg;
+		@apply mx-1 p-4;
+
+		&:hover {
+			.receipt-edit-container {
+				@apply flex;
+			}
+		}
+
+		.receipt-image {
+			@apply w-full h-40 rounded-t-lg object-cover;
+		}
+
+		.receipt-context {
+			@apply w-full flex flex-col items-center;
+			@apply mt-4;
+
+			.store,
+			.total {
+				@apply text-lg font-bold;
+			}
+
+			.category {
+				@apply text-sm text-gray-500 mb-2;
+			}
+
+			.notes {
+				@apply w-full;
+				@apply text-sm text-gray-500 text-center;
+				@apply border-t pt-2;
+			}
+		}
+
+		.receipt-edit-container {
+			@apply flex justify-center items-center gap-2;
+			@apply absolute top-0 right-0;
+			@apply transition-all duration-300 ease-in-out;
+			@apply hidden;
+
+			.edit-receipt-icon {
+				@apply w-6 h-6 stroke-primary-green-700;
+			}
+
+			.delete-receipt-icon {
+				@apply w-6 h-6 stroke-red-700;
+			}
+		}
+	}
+}
