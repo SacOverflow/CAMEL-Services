@@ -1,0 +1,28 @@
+name: 'Automated Jest CI Tests'
+
+on: [push, pull_request]
+
+jobs:
+    unit-test:
+        name: 'Unit Tests'
+        runs-on: ubuntu-latest
+        env:
+          VALID_USER: ${{ secrets.VALID_USER }}
+          VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
+          DOTENV_CONFIG_PATH: ${{ secrets.DOTENV_CONFIG_PATH }}
+          TESTING_USER_ID: ${{ secrets.TESTING_USER_ID }}
+          ORG_ID: ${{ secrets.ORG_ID }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - uses: actions/setup-node@v1
+              with:
+                node-version: '20'
+            - name: Install Dependencies / Modules
+              run: npm install
+            - name: Run Tests
+              run: npm test
