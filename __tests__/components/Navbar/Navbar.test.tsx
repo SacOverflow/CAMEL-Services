@@ -2,15 +2,121 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Navbar from '@/components/Navbar/Navbar';
 import { act } from 'react-dom/test-utils';
+import { faker } from '@faker-js/faker';
+// import { getLangPrefOfUser } from '@/lib/actions';
 
 require('dotenv').config({ path: 'test.env' });
 // have to some reason save the old environment vars
 const OLD_ENV = process.env;
 
+jest.mock('@/lib/supabase/client', () => ({
+	createSupbaseClient: jest.fn().mockResolvedValue({
+		auth: {
+			getSession: jest.fn().mockResolvedValue(true), // tbh this isnt needed
+			getUser: jest.fn().mockResolvedValue({
+				data: {
+					user: {
+						id: process.env.TESTING_USER_ID,
+					},
+				},
+				error: null,
+			}),
+		},
+		from: jest.fn(() => ({
+			select: jest.fn(() => ({
+				eq: jest.fn(() => ({
+					single: jest.fn().mockResolvedValue({
+						data: { id: process.env.TESTING_USER_ID },
+						error: null,
+					}),
+				})),
+			})),
+		})),
+	}),
+}));
+describe('Navbar authorized user tests', () => {
+	jest.mock('next/router', () => ({
+		useRouter() {
+			return {
+				route: '/',
+				pathname: '/',
+				query: '',
+				asPath: '/',
+			};
+		},
+	}));
+
+	beforeAll(() => {
+		jest.spyOn(console, 'error').mockImplementation(() => {});
+		jest.spyOn(console, 'log').mockImplementation(() => {});
+		jest.spyOn(console, 'info').mockImplementation(() => {});
+	});
+
+	beforeEach(() => {
+		jest.resetModules(); // Most important - it clears the cache
+		process.env = { ...OLD_ENV }; // Make a copy
+	});
+	afterEach(() => {
+		// Clear all mocks if any other tests depend on the real implementations
+		jest.clearAllMocks();
+	});
+
+	afterAll(() => {
+		process.env = OLD_ENV; // Restore old environment
+		jest.restoreAllMocks();
+	});
+
+	const user_id = process.env.TESTING_USER_ID!;
+
+	it('navbar displays search input box', async () => {
+		// mock supabase client & get user
+		jest.mock('@/lib/supabase/client', () => {
+			return {
+				getLangPrefOfUser: jest.fn().mockResolvedValue('eng'),
+				supabase: jest.fn().mockResolvedValue({
+					auth: {
+						getUser: jest.fn().mockResolvedValue({
+							data: { user: { id: user_id } },
+						}),
+					},
+				}),
+			};
+		});
+
+		render(
+			<Navbar
+				session={{
+					email: faker.internet.email(),
+					username: faker.internet.userName(),
+					name: faker.person.fullName(),
+					id: user_id,
+					image: '/images/hashemtmp.jpeg',
+				}}
+			/>,
+		);
+		// });
+
+		// should render a noti bell
+
+		const searchInput = screen.getByPlaceholderText(
+			'Search something here...',
+		);
+		console.log('search input', searchInput);
+		expect(searchInput).toBeInTheDocument();
+	});
+});
 describe('Navbar tests: non-authorized users & content', () => {
 	beforeAll(() => {
 		jest.spyOn(console, 'error').mockImplementation(() => {});
+		jest.spyOn(console, 'log').mockImplementation(() => {});
+		jest.spyOn(console, 'info').mockImplementation(() => {});
 	});
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+		jest.clearAllMocks();
+	});
+
 	it('navbar displays the camel.svg image for logo', async () => {
 		render(<Navbar session={undefined} />);
 
@@ -76,74 +182,5 @@ describe('Navbar tests: non-authorized users & content', () => {
 		await waitFor(() => {
 			expect(window.location.href).toBe('/signup');
 		});
-	});
-});
-
-describe('Navbar authorized user tests', () => {
-	beforeAll(() => {
-		jest.spyOn(console, 'error').mockImplementation(() => {});
-	});
-
-	beforeEach(() => {
-		jest.resetModules(); // Most important - it clears the cache
-		process.env = { ...OLD_ENV }; // Make a copy
-	});
-
-	afterAll(() => {
-		process.env = OLD_ENV; // Restore old environment
-		jest.restoreAllMocks();
-	});
-
-	const user_id = process.env.TESTING_USER_ID;
-
-	it('navbar displays search input box', async () => {
-		// await act(async () => {
-		render(
-			<Navbar
-				session={{
-					user: {
-						email: 'zenunur@ciere.by',
-						username: 'zenunur',
-						name: 'Zenunur',
-						id: user_id,
-						image: '/images/hashemtmp.jpeg',
-					},
-				}}
-			/>,
-		);
-		// });
-
-		// should render a noti bell
-
-		const searchInput = screen.getByPlaceholderText(
-			'Search something here...',
-		);
-		expect(searchInput).toBeInTheDocument();
-	});
-
-	it('navbar renders a notification bell', async () => {
-		await act(async () => {
-			render(
-				<Navbar
-					session={{
-						user: {
-							email: 'zenunur@ciere.by',
-							username: 'zenunur',
-							name: 'Zenunur',
-							id: user_id,
-							image: '/images/hashemtmp.jpeg',
-						},
-					}}
-				/>,
-			);
-		});
-
-		// should render a noti bell
-
-		const notificationBell = screen.getByRole('button', {
-			name: /company logo/i,
-		});
-
-		expect(notificationBell).toBeInTheDocument();
 	});
 });

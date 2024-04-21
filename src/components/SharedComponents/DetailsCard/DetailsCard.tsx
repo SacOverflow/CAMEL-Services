@@ -15,6 +15,7 @@ import { useState } from 'react';
 import getLang from '@/app/translations/translations';
 import Buttons from '../Buttons';
 import './DetailsCard.css';
+import { deleteOrganizationById } from '@/lib/actions/client';
 
 export function CreateOrgCard({
 	className,
@@ -224,15 +225,15 @@ export const DeleteModal = ({
 }) => {
 	const router = useRouter();
 
-	const deleteOrg = async () => {
+	const deleteOrg = async (e: any) => {
+		e.preventDefault();
+		e.stopPropagation();
 		// delete the org from the database
-		const supabase = await createSupbaseClient();
-		const { data, error } = await supabase
-			.from('organization')
-			.delete()
-			.eq('id', org_id);
-		if (error) {
-			console.error(error);
+		const deleteOrgResponse = await deleteOrganizationById(org_id);
+
+		if (!deleteOrgResponse) {
+			// handle the error
+			console.error('Error deleting organization');
 			return;
 		}
 

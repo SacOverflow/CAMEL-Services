@@ -779,6 +779,21 @@ Delete organization
 deletes an organization based on the passed id, and but check before if
 org id, memeber_id required*/
 
+export const deleteOrganizationById = async (org_id: string) => {
+	const supabase = await createSupbaseClient();
+	const { data, error } = await supabase
+		.from('organization')
+		.delete()
+		.eq('id', org_id);
+
+	if (error) {
+		console.error('Failed to create organization:', error);
+		//If error in supabase api fetching then object of error and error message is returned
+		return false;
+	}
+	return true;
+};
+
 const deleteOrganization = async (org_id: string, member_id: string) => {
 	const supabase = await createSupbaseClient();
 
@@ -1520,4 +1535,25 @@ export const deleteReceipt = async (receipt_id: string) => {
 	}
 
 	return true;
+};
+
+export const getNotifications = async (user_id: string): Promise<any[]> => {
+	const supabase = await createSupbaseClient();
+	const { data: notification_user_view, error } = await supabase
+		.from('notification_user_view')
+		.select('*')
+		.eq('notification_status', 'unread')
+		.eq('org_id', getCookie('org'))
+		.eq('user_id', user_id)
+		.order('notification_created_at', { ascending: false })
+		.limit(40);
+
+	if (error) {
+		console.error(error);
+
+		// set the notifications to an empty array
+		return [];
+	} else {
+		return notification_user_view;
+	}
 };

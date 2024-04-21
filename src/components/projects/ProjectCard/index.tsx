@@ -18,7 +18,7 @@ function capitalizeFirstLetterOfEachWord(str: string) {
 		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ');
 }
-export const ProjectCard = async ({
+export const ProjectCard = ({
 	project,
 	role = Roles.MEMBER,
 	lang,

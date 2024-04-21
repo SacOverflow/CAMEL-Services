@@ -15,8 +15,32 @@ const config: Config = {
 	moduleNameMapper: {
 		'^@/(.*)$': '<rootDir>/src/$1',
 	},
+	moduleDirectories: ['node_modules', '<rootDir>/'],
+	verbose: true,
 	setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 	setupFiles: ['dotenv/config'],
+	collectCoverage: true,
+	coverageDirectory: 'coverage',
+	coveragePathIgnorePatterns: [
+		'<rootDir>/node_modules',
+		'<rootDir>/coverage',
+		'<rootDir>/jest.config.ts',
+		'<rootDir>/jest.setup.ts',
+		'<rootDir>/src/types',
+		'<rootDir>/src/components/projects/ProjectTasks/ContextProvider',
+	],
+	coverageReporters: ['json', 'lcov', 'text', 'clover'],
+	reporters: [
+		'default',
+		[
+			'./node_modules/jest-html-reporter',
+			{
+				publicPath: './testReports',
+				outputPath: './testReports/testReportsUpdate.html',
+				expand: true,
+			},
+		],
+	],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

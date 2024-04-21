@@ -65,6 +65,11 @@ const TotalEarning = ({ org_id, lang }: { org_id: string; lang: string }) => {
 		return difference;
 	};
 
+	const toFixedString = (value: string) => {
+		const parsedValue = parseFloat(value);
+		return parsedValue.toFixed(2);
+	};
+
 	return (
 		<div className="total-earning-container">
 			{hasData ? (
@@ -97,7 +102,7 @@ const TotalEarning = ({ org_id, lang }: { org_id: string; lang: string }) => {
 									? '▲ ' // if isPositive is true; up arrow
 									: '▼ ' // if isPositive is false; down arrow
 							}
-							{totalEarnings.difference}%
+							{toFixedString(totalEarnings.difference)}%
 						</div>
 					</div>
 					<div className="earning-comparison">
