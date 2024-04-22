@@ -5,7 +5,7 @@ import {
 } from '@/components/SharedComponents/DetailsCard/DetailsCard';
 import { createSupbaseServerClientReadOnly } from '@/lib/supabase/server';
 import { getLangPrefOfUser, getUserInformation } from '@/lib/actions/index';
-import { IOrganization } from '@/types/database.interface';
+import { IOrganization, Roles } from '@/types/database.interface';
 import getLang from '@/app/translations/translations';
 export default async function Page() {
 	const allOrgs = await getOrganizationsWithRole();
@@ -72,10 +72,10 @@ const getOrganizationsWithRole = async (): Promise<IOrganization_Role[]> => {
 				return { ...org, role: '' };
 			}
 
-			const role = roleData[0]?.role || '';
+			const role = roleData[0]?.role || Roles.MEMBER;
 
 			if (typeof role === 'undefined') {
-				return { ...org, role: '' };
+				return { ...org, role: Roles.MEMBER };
 			}
 
 			return { ...org, role: role };

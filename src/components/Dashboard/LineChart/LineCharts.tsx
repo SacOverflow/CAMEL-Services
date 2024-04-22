@@ -401,13 +401,32 @@ const SingleLineChartComponent = (props: {
 			</div>
 		);
 	}
+	function formatNumber(num: number): string {
+		// return val using suffixes (K, M, B, T)
+		if (num < 10000) {
+			return num.toFixed(2).toString();
+		}
 
+		// 728,609 should return 728.6K etc
+		if (num < 1000000) {
+			return (num / 1000).toFixed(1) + 'K';
+		}
+		if (num < 1000000000) {
+			return (num / 1000000).toFixed(1) + 'M';
+		}
+		if (num < 1000000000000) {
+			return (num / 1000000000).toFixed(1) + 'B';
+		}
+		return (num / 1000000000000).toFixed(1) + 'T';
+	}
 	return (
 		<>
 			<span className="title">
 				<span>{getLang(category.category, lang)}</span>
 			</span>
-			<span className="amount">${category?.total || '0'}</span>
+			<span className="amount">
+				${formatNumber(category?.total) || '0'}
+			</span>
 			<SingleLineChart
 				data={category.data}
 				filterType={`week`}

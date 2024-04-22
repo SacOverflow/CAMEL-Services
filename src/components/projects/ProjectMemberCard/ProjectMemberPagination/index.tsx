@@ -1,19 +1,21 @@
 'use client';
-// TODO: think more for above to not be client component
 import { useState } from 'react';
 import MemberCard from '@/components/projects/ProjectMemberCard';
 
 // CSS import
 import './ProjectMemberPagination.css';
+import { IUsers } from '@/types/database.interface';
 
 export default function ProjectMemberPagination({
 	members,
 	admin,
 	project_id,
+	currUser,
 }: {
 	members: any[];
 	admin?: boolean;
 	project_id: string;
+	currUser?: IUsers;
 }) {
 	const MEMBERS_PER_PAGE = 3;
 
@@ -48,6 +50,7 @@ export default function ProjectMemberPagination({
 								user_id={member.id}
 								project_id={project_id}
 								admin={admin}
+								currUserId={currUser?.id}
 							/>
 						))}
 

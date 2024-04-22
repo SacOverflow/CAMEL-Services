@@ -4,6 +4,7 @@
 	.member-card {
 		@apply flex flex-col gap-4;
 		@apply justify-center;
+		@apply h-full;
 
 		@apply bg-gray-200;
 

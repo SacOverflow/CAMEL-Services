@@ -4,6 +4,7 @@ import { Poppins } from 'next/font/google';
 // CSS import
 import './ProjectMemberCard.css';
 import MemberCardDropdown from './MemberCardDropdown';
+import { Roles } from '@/types/database.interface';
 
 const PoppinsRegular = Poppins({
 	subsets: ['latin-ext'],
@@ -21,6 +22,8 @@ interface MemberCardProps {
 	user_id: string;
 	project_id: string;
 	admin?: boolean;
+
+	currUserId?: string;
 }
 
 export default function MemberCard({
@@ -32,7 +35,18 @@ export default function MemberCard({
 	user_id,
 	project_id,
 	admin,
+	currUserId,
 }: MemberCardProps) {
+	const memberDescriptionText = () => {
+		if (memberDescription) {
+			return memberDescription;
+		} else if (memberRole === 'admin') {
+			return 'Member is an admin in the team.';
+		}
+
+		return `Member is a ${memberRole} in the team.`;
+	};
+
 	return (
 		<div
 			className={`member-card ${PoppinsRegular.className}${
@@ -40,7 +54,7 @@ export default function MemberCard({
 			}`}
 		>
 			{/* dropdown toggle */}
-			{admin ? (
+			{admin && user_id !== currUserId && memberRole !== Roles.ADMIN ? (
 				<MemberCardDropdown
 					user_id={user_id}
 					project_id={project_id}
@@ -60,11 +74,7 @@ export default function MemberCard({
 
 			<div className="member-role">Team {memberRole}</div>
 			<span className="member-description">
-				{/* TODO: edit to handle description */}
-				Lorem ipsum dolor sit amet consectetur adipisicing elit.
-				Dignissimos labore numquam provident quaerat dicta, maxime neque
-				iusto aut deserunt. Officiis, temporibus rerum quaerat quos
-				consectetur vitae rem fugit ut neque?
+				{memberDescriptionText()}
 			</span>
 		</div>
 	);

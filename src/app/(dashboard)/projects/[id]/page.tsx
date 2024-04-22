@@ -157,6 +157,7 @@ export default async function SingleProjectPage({
 					members={projectMembers}
 					project_id={project_id}
 					admin={role === Roles.ADMIN ? true : false}
+					currUser={currUser as IUsers}
 				/>
 			</div>
 			<div className="project-receipts">

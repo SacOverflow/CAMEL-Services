@@ -17,7 +17,7 @@ interface SpendingData {
 function formatNumber(num: number): string {
 	// return val using suffixes (K, M, B, T)
 	if (num < 10000) {
-		return num.toString();
+		return num.toFixed(2).toString();
 	}
 
 	// 728,609 should return 728.6K etc

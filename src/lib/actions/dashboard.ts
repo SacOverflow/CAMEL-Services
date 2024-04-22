@@ -523,6 +523,72 @@ export const getDoubleLineChartData = async (
 			},
 		);
 
+		// check the prev month, same year but 1 month back
+		const prevMonth = String(currentDate.getMonth()).padStart(2, '0');
+		const prevMonthKey = `${currentYear}-${prevMonth}`;
+
+		const prevMonthData = groupedData[prevMonthKey];
+		// utilize the top 2 categories & append to our chartData
+		const prevMonthDataFiltered = prevMonthData?.filter(
+			({ category }: { category: string }) =>
+				top2CategoriesData.includes(category),
+		);
+
+		if (!prevMonthDataFiltered) {
+			chartData.push({
+				date: `${prevMonthKey}-01`, // hardcoding day to 1st of the month
+				value: 0,
+				value2: 0,
+			});
+		} else {
+			// get the total for each category
+			const prevMonthValue = prevMonthDataFiltered[0]
+				? prevMonthDataFiltered[0].total
+				: 0;
+			const prevMonthValue2 = prevMonthDataFiltered[1]
+				? prevMonthDataFiltered[1].total
+				: 0;
+			// append to our chartData
+			chartData.push({
+				date: `${prevMonthKey}-01`, // hardcoding day to 1st of the month
+				value: prevMonthValue,
+				value2: prevMonthValue2,
+			});
+		}
+
+		const twoMonthsAgo = `${currentYear}-${String(
+			currentDate.getMonth() - 1,
+		).padStart(2, '0')}`;
+
+		// check 2 months back or return 0
+		const twoMonthsAgoData = groupedData[twoMonthsAgo];
+		const twoMonthsAgoDataFiltered = twoMonthsAgoData?.filter(
+			({ category }: { category: string }) =>
+				top2CategoriesData.includes(category),
+		);
+		if (!twoMonthsAgoDataFiltered) {
+			chartData.push({
+				date: `${twoMonthsAgo}-01`, // hardcoding day to 1st of the month
+				value: 0,
+				value2: 0,
+			});
+		} else {
+			// get the total for each category
+			const twoMonthsAgoValue = twoMonthsAgoDataFiltered[0]
+				? twoMonthsAgoDataFiltered[0]?.total
+				: 0;
+			const twoMonthsAgoValue2 = twoMonthsAgoDataFiltered[1]
+				? twoMonthsAgoDataFiltered[1]?.total
+				: 0;
+
+			// append to our chartData
+			chartData.push({
+				date: `${twoMonthsAgo}-01`, // hardcoding day to 1st of the month
+				value: twoMonthsAgoValue,
+				value2: twoMonthsAgoValue2,
+			});
+		}
+
 		return (chartData as any) || [];
 	} catch (error) {
 		console.error(
