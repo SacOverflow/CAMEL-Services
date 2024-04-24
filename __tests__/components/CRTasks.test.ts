@@ -49,6 +49,7 @@ describe('createTask', () => {
 
 		jest.spyOn(console, 'error').mockImplementation(() => {}); // Suppress console.error
 		jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+		jest.spyOn(console, 'info').mockImplementation(() => {}); // Suppress info
 	});
 
 	afterAll(() => {

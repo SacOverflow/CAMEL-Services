@@ -64,6 +64,34 @@ export const inviteProjectMember = async (
 	return resp;
 };
 
+export const inviteMemberToOrg = async (userId: any): Promise<boolean> => {
+	let resp = false;
+	const org = getCookie('org');
+
+	// Search with supabase if user exists
+	const supabase = await createSupbaseClient();
+
+	// insert the new user into the organization_member table
+	const { data: newOrgMember, error: newOrgMemberError } = await supabase
+		.from('organization_member')
+		.insert([
+			{
+				member_id: userId,
+				org_id: org,
+				role: 'member',
+			},
+		])
+		.select('*');
+
+	if (newOrgMemberError) {
+		return resp;
+	}
+
+	resp = true;
+
+	return resp;
+};
+
 export const insertReceipts = async (receipts: any) => {
 	// 1. Create supabase client in order to interact with SUPABASE service
 	const supabase = await createSupbaseClient();

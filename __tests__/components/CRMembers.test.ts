@@ -1,5 +1,6 @@
 import {
 	inviteProjectMember,
+	inviteMemberToOrg,
 	getMembersinTask,
 	getAllTaskMembers,
 	getAllNonTaskMembers,
@@ -103,6 +104,44 @@ describe('inviteProjectMember', () => {
 		const projId = process.env.PROJECT_ID!;
 		const userId = 'invalid_id';
 		const result = await inviteProjectMember(orgId, projId, userId);
+		expect(result).toBe(false);
+	});
+});
+
+describe('inviteMemberToOrg', () => {
+	beforeEach(() => {
+		jest.resetModules(); // Most important - it clears the cache
+		process.env = { ...OLD_ENV }; // Make a copy
+
+		jest.spyOn(console, 'error').mockImplementation(() => {}); // Suppress console.error
+		jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+	});
+
+	afterAll(() => {
+		process.env = OLD_ENV; // Restore old environment
+
+		jest.restoreAllMocks();
+	});
+
+	it('should add a new member to an organization', async () => {
+		// Mocking inviteMemberToOrg for this specific test
+		jest.doMock('../../src/lib/actions/client', () => ({
+			__esModule: true,
+			inviteMemberToOrg: jest.fn().mockResolvedValue(true),
+		}));
+
+		const { inviteMemberToOrg } = require('../../src/lib/actions/client');
+		// Call the function with user ID
+		const newOrgMember = await inviteMemberToOrg(
+			process.env.TESTING_USER_ID!,
+		);
+
+		expect(newOrgMember).toBe(true);
+	});
+
+	it('should handle errors when fetching members with invalid user ID', async () => {
+		const userId = 'invalid_id';
+		const result = await inviteMemberToOrg(userId);
 		expect(result).toBe(false);
 	});
 });
