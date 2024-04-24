@@ -1,5 +1,5 @@
 'use client';
-import { getCookie } from '@/lib/actions/client';
+import { getCookie, inviteMemberToOrg } from '@/lib/actions/client';
 
 import './MemberSearch.css';
 import { createSupbaseClient } from '@/lib/supabase/client';
@@ -195,33 +195,19 @@ export const SearchMemberCard = ({
 	'use client';
 
 	const [membershipText, setMembershipText] = useState('Invite');
-	const org = getCookie('org');
 
 	/**
 	 * Function to invite a user to the organization if they aren't already a member
 	 * @param e Event
 	 */
-	const inviteMember = async (e: any) => {
-		e.preventDefault();
+	async function inviteMember() {
+		const result = await inviteMemberToOrg(userId);
 
-		// Search withs upabase if user exists
-		const supabase = await createSupbaseClient();
+		if (result) {
+			setMembershipText('Member');
+		}
+	}
 
-		// insert the new user into the organization_member table
-		const { data: newOrgMember, error: newOrgMemberError } = await supabase
-			.from('organization_member')
-			.insert([
-				{
-					member_id: userId,
-					org_id: org,
-					role: 'member',
-				},
-			])
-			.select('*');
-
-		// if the user wasnt a member before, change text
-		setMembershipText('Member');
-	};
 	return (
 		<button
 			className={`member-info ${
