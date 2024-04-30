@@ -100,7 +100,7 @@ Ensure that your development environment meets the system requirements and follo
    ```bash
    git checkout Tests
    
-3. Add .test.env and .env.local files to the root directory. These files will be provided separately. Ensure to include your own API keys in these files.
+3. Create a `.test.env` file in the root directory. Ensure to include your own API keys in these files.
 > [!WARNING]  
 > Note: These files contain API keys and other sensitive information and should not be shared on GitHub.
 
@@ -154,7 +154,7 @@ Populate the `test.env` file with the following environment variables. These are
 1. Clone the repository to your local machine and change directories into it. Stable builds will be based off the main branch.
 
 ```bash
-git clone https://github.com/hashemJaber/SacOverflow.git
+git clone https://github.com/SacOverflow/CAMEL-Services.git
 cd SacOverflow
 ```
 
@@ -190,7 +190,11 @@ bun dev
 
 ```bash
 MOCKAROO_API_KEY=YOUR_API_KEY
+NEXT_PUBLIC_SUPABASE_URL=YOUR_URL_API_KEY
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_API_KEY
 ```
+
+Please refer to your [API Settings](https://supabase.com/dashboard/project/_/settings/api) page in your Supabase Dashboard. Here you can find your `URL`, `anon`, and `service_role` keys.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -233,6 +237,7 @@ MOCKAROO_API_KEY=YOUR_API_KEY
 
 <br/>
 <br/>
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -288,13 +293,13 @@ Meet the team behind SacOverflow, a diverse group of talented Computer Science u
 - **Fernando Mendoza Junior** - Lead Developer | [GitHub](https://github.com/jvniorrr)
 - **Miguel Lopez** - Developer | [GitHub](https://github.com/Miguel1357)
 - **Jacob Correa** - Developer | [GitHub](https://github.com/RealHoltz)
-- **Joseph Luong** - Developer | [GitHub](https://github.com/JDoan03)
+- **Joseph Doan** -  Developer | [GitHub](https://github.com/JDoan03)
 - **Kiran Kaur** -   Developer | [GitHub](https://github.com/KiranKaur3)
 - **Imren More** -   Developer | [GitHub](https://github.com/imrenmore)
 - **Dakota Conn** -  Developer | [GitHub](https://github.com/DGConn)
 - **Hashem Jaber** - Developer | [GitHub](https://github.com/hashemJaber)
 
-Each member is committed to delivering a high-quality product that helps project managers efficiently oversee their projects and tasks.
+Each member is committed to delivering a high-quality product that helps project managers efficiently oversee their projects, tasks, and financials.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
