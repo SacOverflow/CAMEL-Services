@@ -75,7 +75,65 @@ This project is aimed at assisting Project Managers in managing their team and p
 
 ## Testing
 
-[Place holder for testing instructions.]
+Ensure that your development environment meets the system requirements and follows the setup instructions below to run tests effectively.
+
+### Test Environment Setup
+
+#### System Requirements
+
+- **NextJS Version:** 13.5.6
+- **AmCharts/amcharts5 Version:** ^5.5.4
+- **SupaBase Version:** ^2.39.7
+- **TypeScript Version:** ^5.4.2
+- **Tailwind Version:** ^3
+- **Node Version:** 10.2.3
+- **React Version:** ^18
+- **Jest Version:** ^29.7.0
+
+### Setup Instructions
+
+1. Clone the GitHub repository:
+   ```bash
+   git clone https://github.com/SacOverflow/CAMEL-Services
+
+2. Switch to the testing branch:
+   ```bash
+   git checkout Tests
+   
+3. Add .test.env and .env.local files to the root directory. These files will be provided separately. Ensure to include your own API keys in these files.
+> [!WARNING]  
+> Note: These files contain API keys and other sensitive information and should not be shared on GitHub.
+
+4. Install all required packages:
+  ```bash
+  npm i
+
+5. To run all tests, execute:
+  ```bash
+  npm run test
+
+6. To run specific tests, use:
+   ```bash
+   npm run test -- -t "Test title"
+
+### Environment Variables for Testing
+
+Populate the `test.env` file with the following environment variables. These are crucial for accessing various services and are secrets, so ensure they are never shared:
+
+                        ```bash
+                            DOTENV_CONFIG_PATH=./test.env
+                            VALID_USER={PLACEHOLDER}
+                            VALID_PASSWORD={PLACEHOLDER}
+                            TESTING_USER_ID={PLACEHOLDER}
+                            ORG_ID={PLACEHOLDER}
+                            PROJECT_ID={PLACEHOLDER}
+                            NEXT_PUBLIC_SUPABASE_URL={DASHBOARD_VALUE}
+                            NEXT_PUBLIC_SUPABASE_ANON_KEY={DASHBOARD_VALUE}
+                            SUPABASE_SERVICE_KEY={DASHBOARD_VALUE}
+
+
+
+
 
 
 ## Documentation 
@@ -220,6 +278,24 @@ To learn more about Next.js, take a look at the following resources:
 -   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Team Members
+
+Meet the team behind SacOverflow, a diverse group of talented Computer Science undergraduates from California State University, Sacramento. Each member brings unique skills and perspectives to our project, dedicated to enhancing project management through our Cloud Asset Management Enhanced Launcher.
+
+- **Fernando Mendoza Junior** - Lead Developer | [GitHub](https://github.com/jvniorrr)
+- **Miguel Lopez** - Developer | [GitHub](https://github.com/Miguel1357)
+- **Jacob Correa** - Developer | [GitHub](https://github.com/RealHoltz)
+- **Joseph Luong** - Developer | [GitHub](https://github.com/JDoan03)
+- **Kiran Kaur** -   Developer | [GitHub](https://github.com/KiranKaur3)
+- **Imren More** -   Developer | [GitHub](https://github.com/imrenmore)
+- **Dakota Conn** -  Developer | [GitHub](https://github.com/DGConn)
+- **Hashem Jaber** - Developer | [GitHub](https://github.com/hashemJaber)
+
+Each member is committed to delivering a high-quality product that helps project managers efficiently oversee their projects and tasks.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 ## CSC 190
 <img width="1237" alt="Screenshot 2023-12-06 at 5 14 38 PM" src="https://github.com/hashemJaber/SacOverflow/assets/91439032/7819eb25-8e30-4365-83be-90676cccebd7">
