@@ -105,12 +105,12 @@ Ensure that your development environment meets the system requirements and follo
 > Note: These files contain API keys and other sensitive information and should not be shared on GitHub.
 
 4. Install all required packages:
-  ```bash
-  npm i
+   ```bash
+   npm i
 
 5. To run all tests, execute:
-  ```bash
-  npm run test
+   ```bash
+   npm run test
 
 6. To run specific tests, use:
    ```bash
@@ -119,17 +119,19 @@ Ensure that your development environment meets the system requirements and follo
 ### Environment Variables for Testing
 
 Populate the `test.env` file with the following environment variables. These are crucial for accessing various services and are secrets, so ensure they are never shared:
+         
+         
+         DOTENV_CONFIG_PATH=./test.env
+         VALID_USER={PLACEHOLDER}
+         VALID_PASSWORD={PLACEHOLDER}
+         TESTING_USER_ID={PLACEHOLDER}
+         ORG_ID={PLACEHOLDER}
+         PROJECT_ID={PLACEHOLDER}
+         NEXT_PUBLIC_SUPABASE_URL={DASHBOARD_VALUE}
+         NEXT_PUBLIC_SUPABASE_ANON_KEY={DASHBOARD_VALUE}
+         SUPABASE_SERVICE_KEY={DASHBOARD_VALUE}
 
-                        ```bash
-                            DOTENV_CONFIG_PATH=./test.env
-                            VALID_USER={PLACEHOLDER}
-                            VALID_PASSWORD={PLACEHOLDER}
-                            TESTING_USER_ID={PLACEHOLDER}
-                            ORG_ID={PLACEHOLDER}
-                            PROJECT_ID={PLACEHOLDER}
-                            NEXT_PUBLIC_SUPABASE_URL={DASHBOARD_VALUE}
-                            NEXT_PUBLIC_SUPABASE_ANON_KEY={DASHBOARD_VALUE}
-                            SUPABASE_SERVICE_KEY={DASHBOARD_VALUE}
+
 
 
 
