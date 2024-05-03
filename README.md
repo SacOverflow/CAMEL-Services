@@ -66,7 +66,7 @@ Welcome to Sacoverflow's GitHub! 🚀 This project is aimed at assisting Project
 
 ## About the Project
 
-The SacOverflow development team, consisting of Computer Science undergraduates from California State University, Sacramento, is behind this project.
+The SacOverflow development team, composed of Computer Science undergraduates from California State University, Sacramento, is responsible for this project.
 
 This project is aimed at assisting Project Managers in managing their team and projects. By making use of this software, supervisors or relevant stakeholders will be allowed to make more informed decisions within their organization and simplify their day-to-day task duties. This software is to be developed with the intention of being used on both mobile and web-based platforms.
 
@@ -164,7 +164,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Testing
 
-Ensure that your development environment meets the system requirements follow the setup instructions below to run tests effectively.
+Ensure that your development environment meets the system requirements. Follow the setup instructions below to efficiently run tests.
 
 ### Test Environment Setup
 
@@ -276,13 +276,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 Meet the team behind SacOverflow, a diverse group of talented Computer Science undergraduates from California State University, Sacramento. Each member brings unique skills and perspectives to our project, dedicated to enhancing project management through our Cloud Asset Management Enhanced Launcher.
 
 -   **Fernando Mendoza Junior** - Lead Developer | [GitHub](https://github.com/jvniorrr)
+-   **Hashem Jaber** - Developer | [GitHub](https://github.com/hashemJaber)
 -   **Miguel Lopez** - Developer | [GitHub](https://github.com/Miguel1357)
 -   **Jacob Correa** - Developer | [GitHub](https://github.com/RealHoltz)
 -   **Joseph Doan** - Developer | [GitHub](https://github.com/JDoan03)
--   **Kiran Kaur** - Developer | [GitHub](https://github.com/KiranKaur3)
+-   **Kiranjot Kaur** - Developer | [GitHub](https://github.com/KiranKaur3)
 -   **Imren More** - Developer | [GitHub](https://github.com/imrenmore)
 -   **Dakota Conn** - Developer | [GitHub](https://github.com/DGConn)
--   **Hashem Jaber** - Developer | [GitHub](https://github.com/hashemJaber)
 
 Each member is committed to delivering a high-quality product that helps project managers efficiently oversee their projects, tasks, and financials.
 
