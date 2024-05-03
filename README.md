@@ -16,7 +16,7 @@
   <h3 align="center">SacOverflow</h3>
   <h2 align="center">Cloud Asset Management Enhanced Launcher</h2>
   <div align="center">
-          <img src="assets/camel-asset.png" alt="Web Home" width="250" height="250">
+          <img src="assets/camel-asset.png" alt="Web Home" width="500" height="250">
 </div>
 
   <p align="center"> 
@@ -352,6 +352,30 @@ The invoices page allows individuals to upload receipts for their specific organ
 <img width="749" alt="Projects Pages" src="assets/ReadmeScreenshots/projects.PNG">
 
 The projects pages allows individuals to select projects on their needs at points in time. Only administrators will have access to the the creation of new projects, while members will have access to only projects they have associations to from within the organization. 
+
+#### Account Page
+
+<img width="749" alt="Account Page" src="assets/ReadmeScreenshots/account.png">
+
+The account page allows users to change their username, first and last name,email, profile image and password of their account at anytime. When changing your email, you will be sent a verification email to prompt any change.
+
+#### Settings Page
+
+<img width="749" alt="Settings Page" src="assets/ReadmeScreenshots/settings.png">
+
+The settings page allows users to navigate and either be redirected to adjust their account information or to select their preferred language.
+
+#### Language Page
+
+<img width="749" alt="Language Page" src="assets/ReadmeScreenshots/language.png">
+
+The language page enables users to select and set their preferred language, allowing for a personalized and accessible user experience. They can select from the following languages: English, Spanish or Vietnamese.
+
+#### Project Details Page
+
+<img width="749" alt="Project Tasks Page" src="assets/ReadmeScreenshots/projecttask.png">
+
+The project details page allows admins to add tasks for a specific project,select project members, add receipts, view project activities and their project expenses. The project tasks can be marked with the status of Completed, In Progress, or Cancelled Task. The admin can also assign members to a specific task. They can also add project receipts entries to that organization. The project activities table provides progress updates for a project. With the project expenses, the admin can visualize where their project budgets are allocated.
 
 # Coursework
 
