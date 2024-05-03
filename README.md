@@ -290,6 +290,18 @@ Each member is committed to delivering a high-quality product that helps project
 
 ## Screenshots
 
+#### Home Page
+
+<img width="749" alt="Sign Up" src="assets/ReadmeScreenshots/homepage.png">
+
+The homepage offers insights into the various aspects of Camel Services, including testimonials, features, and site functionalities.
+
+#### Login
+
+<img width="749" alt="Sign Up" src="assets/ReadmeScreenshots/login.png">
+
+This is the sign up page where users can sign in and create a user account. The user either needs to input current account information to sign in or they need to select 'Sign Up' to create an account. 
+
 #### Sign Up
 
 <img width="749" alt="Sign Up" src="assets/ReadmeScreenshots/SignUp.png">
@@ -316,6 +328,12 @@ A user can reset their password by entering their email in the password reset pa
 <img width="749" alt="Password Update" src="assets/ReadmeScreenshots/PasswordUpdate.png">
 
 In the password update page, the user will be able to update their password after clicking on the link that they emailed to themselves from the password reset page. The user will need to put in two passwords that match to confirm the password they want to have. Passwords would also need at least one uppercase letter and one number. The password must also be 6 or more characters long.
+
+#### Organization Page
+
+<img width="749" alt="Sign Up" src="assets/ReadmeScreenshots/organizationsPage.png">
+
+The organization page lets users select their specific business or organization and includes role-based access management to ensure that only members with the appropriate privileges have elevated access to their business details.
 
 # Coursework
 
