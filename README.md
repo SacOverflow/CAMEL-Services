@@ -335,6 +335,24 @@ In the password update page, the user will be able to update their password afte
 
 The organization page lets users select their specific business or organization and includes role-based access management to ensure that only members with the appropriate privileges have elevated access to their business details.
 
+#### Dashboard Page
+
+<img width="749" alt="Dashboard Page" src="assets/ReadmeScreenshots/dashboard.PNG">
+
+The dashboard page contains the analytical views of the business revenue expenses. It retrieves such information from the receipts table and associates it with the specific organization.
+
+#### Invoices Page
+
+<img width="749" alt="Invoices page" src="assets/ReadmeScreenshots/invoices.PNG">
+
+The invoices page allows individuals to upload receipts for their specific organization and associate them with specific projects. This allows for the future retrieving of information based on specific organizations or specific projects.
+
+#### Projects Page
+
+<img width="749" alt="Projects Pages" src="assets/ReadmeScreenshots/projects.PNG">
+
+The projects pages allows individuals to select projects on their needs at points in time. Only administrators will have access to the the creation of new projects, while members will have access to only projects they have associations to from within the organization. 
+
 # Coursework
 
 ## CSC 190
