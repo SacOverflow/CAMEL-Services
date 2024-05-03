@@ -288,6 +288,35 @@ Each member is committed to delivering a high-quality product that helps project
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Screenshots
+
+#### Sign Up
+
+<img width="749" alt="Sign Up" src="assets/ReadmeScreenshots/SignUp.png">
+
+In order for a user to create an account to login, they will first need to sign up in the sign up page. The user needs to type in the following information to create an account:
+
+1. First Name
+2. Last Name
+3. Email Address
+4. Username
+5. Password
+6. Confirm Password
+
+After all of the required information is properly typed in, the user can then click on the button at the bottom to confirm and create their account.
+
+#### Password Reset
+
+<img width="749" alt="Password Reset" src="assets/ReadmeScreenshots/PasswordReset.png">
+
+A user can reset their password by entering their email in the password reset page. Once the email is confirmed by pressing the button at the bottom, the email will be sent. This email will contain a link to another page of the application that will allow the user to update their own password.
+
+#### Password Update
+
+<img width="749" alt="Password Update" src="assets/ReadmeScreenshots/PasswordUpdate.png">
+
+In the password update page, the user will be able to update their password after clicking on the link that they emailed to themselves from the password reset page. The user will need to put in two passwords that match to confirm the password they want to have. Passwords would also need at least one uppercase letter and one number. The password must also be 6 or more characters long.
+
 # Coursework
 
 ## CSC 190
@@ -325,8 +354,6 @@ Each member is committed to delivering a high-quality product that helps project
 
 <br/>
 <br/>
-
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 #### Sprint 3
 
